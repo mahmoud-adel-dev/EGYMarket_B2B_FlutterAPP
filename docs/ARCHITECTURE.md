@@ -1,5 +1,9 @@
 # Architecture
 
+This document describes the current deployed architecture. For the target modular design,
+bounded contexts, event contracts, and staged service-extraction plan, see
+[Scalable Architecture & Evolution](SCALABLE_ARCHITECTURE.md).
+
 ## System overview
 
 ```

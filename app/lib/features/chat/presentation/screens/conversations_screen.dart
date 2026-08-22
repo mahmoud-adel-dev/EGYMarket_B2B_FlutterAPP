@@ -81,9 +81,8 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
       final rows = (response['conversations'] as List<dynamic>? ?? const [])
           .whereType<Map>()
           .map(
-            (item) => ChatConversationModel.fromJson(
-              Map<String, dynamic>.from(item),
-            ),
+            (item) =>
+                ChatConversationModel.fromJson(Map<String, dynamic>.from(item)),
           )
           .toList(growable: false);
       if (!mounted) return;
@@ -107,19 +106,22 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
 
   List<ChatConversationModel> get _visibleConversations {
     final query = _search.text.trim().toLowerCase();
-    return _conversations.where((conversation) {
-      if (_unreadOnly && conversation.unreadCount == 0) return false;
-      if (query.isEmpty) return true;
-      final title =
-          conversation.titleFor(widget.currentOrganizationId).toLowerCase();
-      final orderNumber = conversation.orderNumber?.toLowerCase() ?? '';
-      final productTitle = conversation.productTitle?.toLowerCase() ?? '';
-      final preview = conversation.lastMessage.toLowerCase();
-      return title.contains(query) ||
-          orderNumber.contains(query) ||
-          productTitle.contains(query) ||
-          preview.contains(query);
-    }).toList(growable: false);
+    return _conversations
+        .where((conversation) {
+          if (_unreadOnly && conversation.unreadCount == 0) return false;
+          if (query.isEmpty) return true;
+          final title = conversation
+              .titleFor(widget.currentOrganizationId)
+              .toLowerCase();
+          final orderNumber = conversation.orderNumber?.toLowerCase() ?? '';
+          final productTitle = conversation.productTitle?.toLowerCase() ?? '';
+          final preview = conversation.lastMessage.toLowerCase();
+          return title.contains(query) ||
+              orderNumber.contains(query) ||
+              productTitle.contains(query) ||
+              preview.contains(query);
+        })
+        .toList(growable: false);
   }
 
   @override
@@ -269,9 +271,8 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
         clipBehavior: Clip.antiAlias,
         child: ListTile(
           leading: CircleAvatar(
-            backgroundColor:
-                (isLocked ? AppColors.warning : AppColors.primary)
-                    .withValues(alpha: 0.12),
+            backgroundColor: (isLocked ? AppColors.warning : AppColors.primary)
+                .withValues(alpha: 0.12),
             child: ExcludeSemantics(
               child: Icon(
                 isLocked
@@ -298,10 +299,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
               if (date != null)
                 Text(
                   DateFormat('HH:mm').format(date.toLocal()),
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: AppColors.muted,
-                  ),
+                  style: const TextStyle(fontSize: 11, color: AppColors.muted),
                 ),
             ],
           ),
@@ -387,9 +385,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
               MaterialPageRoute(
                 builder: (_) => ConversationChatScreen(
                   conversationId: conversation.id,
-                  title: conversation.titleFor(
-                    widget.currentOrganizationId,
-                  ),
+                  title: conversation.titleFor(widget.currentOrganizationId),
                   currentOrganizationId: widget.currentOrganizationId,
                   networkManager: widget.networkManager,
                 ),
@@ -422,8 +418,7 @@ class ConversationChatScreen extends StatefulWidget {
   });
 
   @override
-  State<ConversationChatScreen> createState() =>
-      _ConversationChatScreenState();
+  State<ConversationChatScreen> createState() => _ConversationChatScreenState();
 }
 
 class _ConversationChatScreenState extends State<ConversationChatScreen>
@@ -524,9 +519,8 @@ class _ConversationChatScreenState extends State<ConversationChatScreen>
       final incoming = (response['messages'] as List<dynamic>? ?? const [])
           .whereType<Map>()
           .map(
-            (item) => ChatMessageModel.fromJson(
-              Map<String, dynamic>.from(item),
-            ),
+            (item) =>
+                ChatMessageModel.fromJson(Map<String, dynamic>.from(item)),
           )
           .toList(growable: false);
       if (!mounted) return;
@@ -566,7 +560,9 @@ class _ConversationChatScreenState extends State<ConversationChatScreen>
         ? Map<String, dynamic>.from(page['oldest_cursor'] as Map)
         : null;
     if (oldest != null) {
-      _oldestCursorAt = DateTime.tryParse(oldest['created_at']?.toString() ?? '');
+      _oldestCursorAt = DateTime.tryParse(
+        oldest['created_at']?.toString() ?? '',
+      );
       _oldestCursorId = oldest['id']?.toString();
     }
   }
@@ -574,8 +570,7 @@ class _ConversationChatScreenState extends State<ConversationChatScreen>
   Future<void> _loadOlder() async {
     if (_loadingOlder || !_hasMoreHistory || _requestInFlight) return;
     final anchorAt = _oldestCursorAt ?? _oldestPersistedMessage?.createdAt;
-    final anchorId =
-        _oldestCursorId ?? _oldestPersistedMessage?.id;
+    final anchorId = _oldestCursorId ?? _oldestPersistedMessage?.id;
     if (anchorAt == null || anchorId == null) return;
     setState(() => _loadingOlder = true);
     try {
@@ -589,9 +584,8 @@ class _ConversationChatScreenState extends State<ConversationChatScreen>
       final incoming = (response['messages'] as List<dynamic>? ?? const [])
           .whereType<Map>()
           .map(
-            (item) => ChatMessageModel.fromJson(
-              Map<String, dynamic>.from(item),
-            ),
+            (item) =>
+                ChatMessageModel.fromJson(Map<String, dynamic>.from(item)),
           )
           .toList(growable: false);
       if (!mounted) return;
@@ -646,8 +640,8 @@ class _ConversationChatScreenState extends State<ConversationChatScreen>
     setState(() {
       _messages = _messages
           .map(
-            (message) => message.clientMessageId ==
-                    failedMessage.clientMessageId
+            (message) =>
+                message.clientMessageId == failedMessage.clientMessageId
                 ? message.copyWith(deliveryState: ChatDeliveryState.sending)
                 : message,
           )
@@ -684,8 +678,8 @@ class _ConversationChatScreenState extends State<ConversationChatScreen>
       setState(() {
         _messages = _messages
             .map(
-              (message) => message.clientMessageId ==
-                      localMessage.clientMessageId
+              (message) =>
+                  message.clientMessageId == localMessage.clientMessageId
                   ? message.copyWith(deliveryState: ChatDeliveryState.failed)
                   : message,
             )
@@ -745,11 +739,7 @@ class _ConversationChatScreenState extends State<ConversationChatScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          widget.title,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
+        title: Text(widget.title, maxLines: 1, overflow: TextOverflow.ellipsis),
       ),
       body: Column(
         children: [
@@ -830,7 +820,11 @@ class _ConversationChatScreenState extends State<ConversationChatScreen>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.wifi_off_rounded, size: 52, color: AppColors.muted),
+            const Icon(
+              Icons.wifi_off_rounded,
+              size: 52,
+              color: AppColors.muted,
+            ),
             const SizedBox(height: 12),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -851,7 +845,11 @@ class _ConversationChatScreenState extends State<ConversationChatScreen>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.chat_bubble_outline_rounded, size: 56, color: Colors.black26),
+            Icon(
+              Icons.chat_bubble_outline_rounded,
+              size: 56,
+              color: Colors.black26,
+            ),
             SizedBox(height: 12),
             Text('ابدأ المحادثة بإرسال أول رسالة.'),
           ],
@@ -892,8 +890,7 @@ class _ConversationChatScreenState extends State<ConversationChatScreen>
   }
 
   Widget _buildMessage(ChatMessageModel message) {
-    final isMine =
-        message.senderOrganizationId == widget.currentOrganizationId;
+    final isMine = message.senderOrganizationId == widget.currentOrganizationId;
     final date = message.createdAt.millisecondsSinceEpoch == 0
         ? null
         : message.createdAt;

@@ -5,9 +5,15 @@ void main() {
   Map<String, dynamic> orderJson({String status = 'awaiting_payments'}) => {
     '_id': 'order-1',
     'order_number': 'ORD-TEST-1',
-    'seller_organization_id': {'_id': 'seller-1', 'display_name': 'تاجر الإلكترونيات'},
+    'seller_organization_id': {
+      '_id': 'seller-1',
+      'display_name': 'تاجر الإلكترونيات',
+    },
     'buyer_organization_id': {'_id': 'buyer-1', 'display_name': 'المشتري'},
-    'shipper_organization_id': {'_id': 'shipper-1', 'display_name': 'شركة الشحن'},
+    'shipper_organization_id': {
+      '_id': 'shipper-1',
+      'display_name': 'شركة الشحن',
+    },
     'goods_subtotal_piasters': 100000,
     'shipping_cost_piasters': 5000,
     'platform_fee_piasters': 5000,

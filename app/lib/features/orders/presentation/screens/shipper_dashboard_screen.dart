@@ -307,16 +307,18 @@ class _ShipperDashboardScreenState extends State<ShipperDashboardScreen> {
                   ),
                 const SizedBox(height: 24),
                 OutlinedButton.icon(
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          const OrdersListScreen(userRole: UserRole.shipper),
-                    ),
-                  ).then((_) {
-                    widget.onActivityChanged?.call();
-                    _load(silent: true);
-                  }),
+                  onPressed: () =>
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const OrdersListScreen(
+                            userRole: UserRole.shipper,
+                          ),
+                        ),
+                      ).then((_) {
+                        widget.onActivityChanged?.call();
+                        _load(silent: true);
+                      }),
                   icon: const Icon(Icons.list_alt_rounded),
                   label: const Text('كل الطلبات'),
                 ),
@@ -414,12 +416,9 @@ class _ShipmentTile extends StatelessWidget {
       child: ListTile(
         onTap: onOpen,
         leading: CircleAvatar(
-          backgroundColor: (attention
-                  ? AppColors.warning
-                  : AppColors.primary)
+          backgroundColor: (attention ? AppColors.warning : AppColors.primary)
               .withValues(alpha: 0.12),
-          foregroundColor:
-              attention ? AppColors.warning : AppColors.primary,
+          foregroundColor: attention ? AppColors.warning : AppColors.primary,
           child: Icon(
             order.status == OrderStatus.delivered
                 ? Icons.task_alt_rounded

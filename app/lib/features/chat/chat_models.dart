@@ -60,12 +60,17 @@ class ChatConversationModel {
       conversationType: json['conversation_type']?.toString() ?? 'order',
       participants: (participantRows ?? const [])
           .whereType<Map>()
-          .map((item) => ChatParticipantModel.fromJson(Map<String, dynamic>.from(item)))
+          .map(
+            (item) =>
+                ChatParticipantModel.fromJson(Map<String, dynamic>.from(item)),
+          )
           .toList(growable: false),
       orderNumber: order?['order_number']?.toString(),
       productTitle: product?['title']?.toString(),
       lastMessage: json['last_message']?.toString() ?? '',
-      lastMessageAt: DateTime.tryParse(json['last_message_at']?.toString() ?? ''),
+      lastMessageAt: DateTime.tryParse(
+        json['last_message_at']?.toString() ?? '',
+      ),
       unreadCount: (json['unread_count'] as num?)?.toInt() ?? 0,
       chatAllowed: chatAccess?['allowed'] != false,
     );
@@ -174,7 +179,9 @@ String createClientMessageId() {
   final bytes = List<int>.generate(16, (_) => random.nextInt(256));
   bytes[6] = (bytes[6] & 0x0f) | 0x40;
   bytes[8] = (bytes[8] & 0x3f) | 0x80;
-  final hex = bytes.map((byte) => byte.toRadixString(16).padLeft(2, '0')).join();
+  final hex = bytes
+      .map((byte) => byte.toRadixString(16).padLeft(2, '0'))
+      .join();
   return '${hex.substring(0, 8)}-'
       '${hex.substring(8, 12)}-'
       '${hex.substring(12, 16)}-'

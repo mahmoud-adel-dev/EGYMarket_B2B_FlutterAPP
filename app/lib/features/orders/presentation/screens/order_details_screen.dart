@@ -66,12 +66,15 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       }
       final order = B2BOrderModel.fromJson(
         orderJson,
-        obligations: response['payment_obligations'] as List<dynamic>? ?? const [],
+        obligations:
+            response['payment_obligations'] as List<dynamic>? ?? const [],
         chatAccess: response['chat_access'] is Map
             ? Map<String, dynamic>.from(response['chat_access'] as Map)
             : null,
-        allowedActions: response['allowed_actions'] as List<dynamic>? ?? const [],
-        trackingEvents: response['tracking_events'] as List<dynamic>? ?? const [],
+        allowedActions:
+            response['allowed_actions'] as List<dynamic>? ?? const [],
+        trackingEvents:
+            response['tracking_events'] as List<dynamic>? ?? const [],
         paymentSummary: response['payment_summary'] is Map
             ? Map<String, dynamic>.from(response['payment_summary'] as Map)
             : null,
@@ -132,7 +135,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     final access = _order?.chatAccess;
     if (access?.allowed != true) {
       final amount =
-          (access?.platformFeeAmountPiasters ?? _order?.platformFeePiasters ?? 5000) / 100;
+          (access?.platformFeeAmountPiasters ??
+              _order?.platformFeePiasters ??
+              5000) /
+          100;
       ErrorHandler.showSecureSnackBar(
         context,
         'تُفتح متابعة الطلب بعد تأكيد رسوم المنصة (${amount.toStringAsFixed(2)} ج.م).',
@@ -499,10 +505,12 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
-          ...order.obligations.map((obligation) => Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: _obligationCard(order, obligation, isBuyer),
-              )),
+          ...order.obligations.map(
+            (obligation) => Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: _obligationCard(order, obligation, isBuyer),
+            ),
+          ),
         ],
         if (order.statusHistory.isNotEmpty ||
             order.trackingEvents.isNotEmpty) ...[
@@ -528,10 +536,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                 Expanded(
                   child: Text(
                     order.orderNumber,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge
-                        ?.copyWith(fontWeight: FontWeight.w800),
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                 ),
                 _StatusPill(status: order.status),
@@ -566,8 +573,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               const SizedBox(height: 10),
               Container(
                 width: double.infinity,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 9,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.warning.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
@@ -598,7 +607,11 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
             _metaRow(Icons.storefront_outlined, 'البائع', order.sellerName),
             _metaRow(Icons.person_outline_rounded, 'المشتري', order.buyerName),
             if (order.shipperName.isNotEmpty)
-              _metaRow(Icons.local_shipping_outlined, 'الشحن', order.shipperName),
+              _metaRow(
+                Icons.local_shipping_outlined,
+                'الشحن',
+                order.shipperName,
+              ),
             const Divider(height: 22),
             _amountRow(
               'البضاعة',
@@ -608,10 +621,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               'رسم المنصة',
               (order.platformFeePiasters / 100).toStringAsFixed(2),
             ),
-            _amountRow(
-              'الشحن',
-              order.shippingCost.toStringAsFixed(2),
-            ),
+            _amountRow('الشحن', order.shippingCost.toStringAsFixed(2)),
             const Divider(height: 22),
             Row(
               children: [
@@ -620,9 +630,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                 Text(
                   '${order.totalAmount.toStringAsFixed(2)} ج.م',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w800,
-                      ),
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ],
             ),
@@ -734,14 +744,11 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               radius: 19,
               backgroundColor: statusColor.withValues(alpha: 0.11),
               foregroundColor: statusColor,
-              child: Icon(
-                switch (obligation.kind) {
-                  'platform_fee' => Icons.account_balance_outlined,
-                  'shipping' => Icons.local_shipping_outlined,
-                  _ => Icons.inventory_2_outlined,
-                },
-                size: 20,
-              ),
+              child: Icon(switch (obligation.kind) {
+                'platform_fee' => Icons.account_balance_outlined,
+                'shipping' => Icons.local_shipping_outlined,
+                _ => Icons.inventory_2_outlined,
+              }, size: 20),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -790,31 +797,32 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   }
 
   Widget _timelineCard(B2BOrderModel order) {
-    final entries = <_OrderTimelineEntry>[
-      ...order.statusHistory.map(
-        (history) => _OrderTimelineEntry(
-          title: history.status.displayName,
-          subtitle: history.note ?? _roleName(history.changedByRole),
-          date: history.timestamp,
-          icon: Icons.task_alt_outlined,
-          color: AppColors.primary,
-        ),
-      ),
-      ...order.trackingEvents.map(
-        (tracking) => _OrderTimelineEntry(
-          title: _trackingEventName(tracking.eventType),
-          subtitle:
-              '${tracking.location}${tracking.note == null || tracking.note!.isEmpty ? '' : ' — ${tracking.note}'}',
-          date: tracking.occurredAt,
-          icon: Icons.local_shipping_outlined,
-          color: const Color(0xFF0369A1),
-        ),
-      ),
-    ]..sort((a, b) {
-        if (a.date == null) return -1;
-        if (b.date == null) return 1;
-        return a.date!.compareTo(b.date!);
-      });
+    final entries =
+        <_OrderTimelineEntry>[
+          ...order.statusHistory.map(
+            (history) => _OrderTimelineEntry(
+              title: history.status.displayName,
+              subtitle: history.note ?? _roleName(history.changedByRole),
+              date: history.timestamp,
+              icon: Icons.task_alt_outlined,
+              color: AppColors.primary,
+            ),
+          ),
+          ...order.trackingEvents.map(
+            (tracking) => _OrderTimelineEntry(
+              title: _trackingEventName(tracking.eventType),
+              subtitle:
+                  '${tracking.location}${tracking.note == null || tracking.note!.isEmpty ? '' : ' — ${tracking.note}'}',
+              date: tracking.occurredAt,
+              icon: Icons.local_shipping_outlined,
+              color: const Color(0xFF0369A1),
+            ),
+          ),
+        ]..sort((a, b) {
+          if (a.date == null) return -1;
+          if (b.date == null) return 1;
+          return a.date!.compareTo(b.date!);
+        });
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(14),
@@ -826,24 +834,26 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
-            ...entries.map((entry) => ListTile(
-                  dense: true,
-                  contentPadding: EdgeInsets.zero,
-                  leading: CircleAvatar(
-                    radius: 17,
-                    backgroundColor: entry.color.withValues(alpha: 0.11),
-                    child: Icon(entry.icon, size: 17, color: entry.color),
-                  ),
-                  title: Text(
-                    entry.title,
-                    style: const TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  subtitle: Text(
-                    '${entry.subtitle}${entry.date == null ? '' : '\n${_formatDateTime(entry.date!.toLocal())}'}',
-                    style: const TextStyle(fontSize: 12.5),
-                  ),
-                  isThreeLine: entry.subtitle.length > 42,
-                )),
+            ...entries.map(
+              (entry) => ListTile(
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                leading: CircleAvatar(
+                  radius: 17,
+                  backgroundColor: entry.color.withValues(alpha: 0.11),
+                  child: Icon(entry.icon, size: 17, color: entry.color),
+                ),
+                title: Text(
+                  entry.title,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+                subtitle: Text(
+                  '${entry.subtitle}${entry.date == null ? '' : '\n${_formatDateTime(entry.date!.toLocal())}'}',
+                  style: const TextStyle(fontSize: 12.5),
+                ),
+                isThreeLine: entry.subtitle.length > 42,
+              ),
+            ),
           ],
         ),
       ),
@@ -916,8 +926,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest
-                  .withValues(alpha: 0.4),
+              color: Theme.of(
+                context,
+              ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
               borderRadius: BorderRadius.circular(12),
             ),
             alignment: Alignment.center,
@@ -960,9 +971,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                       'متابعة الطلب',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    Text(
-                      'محادثة خاصة بين أطراف الطلب وسجل لكل العمليات.',
-                    ),
+                    Text('محادثة خاصة بين أطراف الطلب وسجل لكل العمليات.'),
                   ],
                 ),
               ),
@@ -1015,8 +1024,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                       ['pending', 'rejected'].contains(platformFee.status)) ...[
                     const SizedBox(height: 10),
                     FilledButton.icon(
-                      onPressed:
-                          _busy ? null : () => _submitProof(platformFee!),
+                      onPressed: _busy
+                          ? null
+                          : () => _submitProof(platformFee!),
                       icon: const Icon(Icons.upload_file, size: 18),
                       label: const Text('رفع إثبات رسوم المنصة'),
                     ),
@@ -1087,38 +1097,38 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   }
 
   String _kindName(String kind) => switch (kind) {
-        'platform_fee' => 'رسوم المنصة',
-        'goods' => 'قيمة البضاعة للبائع',
-        'shipping' => 'قيمة الشحن',
-        _ => kind,
-      };
+    'platform_fee' => 'رسوم المنصة',
+    'goods' => 'قيمة البضاعة للبائع',
+    'shipping' => 'قيمة الشحن',
+    _ => kind,
+  };
 
   String _paymentStatus(String status) => switch (status) {
-        'pending' => 'بانتظار التحويل',
-        'proof_submitted' => 'الإثبات قيد المراجعة',
-        'confirmed' => 'تم التأكيد',
-        'rejected' => 'الإثبات مرفوض',
-        'disputed' => 'متنازع عليه',
-        _ => status,
-      };
+    'pending' => 'بانتظار التحويل',
+    'proof_submitted' => 'الإثبات قيد المراجعة',
+    'confirmed' => 'تم التأكيد',
+    'rejected' => 'الإثبات مرفوض',
+    'disputed' => 'متنازع عليه',
+    _ => status,
+  };
 
   String _trackingEventName(String type) => switch (type) {
-        'picked_up' => 'استلمت شركة الشحن الطلبية',
-        'checkpoint' => 'محطة متابعة',
-        'out_for_delivery' => 'خرجت للتسليم النهائي',
-        'delivery_attempt' => 'محاولة تسليم',
-        'delivered' => 'تم التسليم',
-        'exception' => 'عائق في الشحن',
-        _ => 'تحديث الشحنة',
-      };
+    'picked_up' => 'استلمت شركة الشحن الطلبية',
+    'checkpoint' => 'محطة متابعة',
+    'out_for_delivery' => 'خرجت للتسليم النهائي',
+    'delivery_attempt' => 'محاولة تسليم',
+    'delivered' => 'تم التسليم',
+    'exception' => 'عائق في الشحن',
+    _ => 'تحديث الشحنة',
+  };
 
   String _roleName(String role) => switch (role.toLowerCase()) {
-        'wholesaler' => 'البائع',
-        'retailer' => 'المشتري',
-        'shipper' => 'شركة الشحن',
-        'admin' => 'إدارة المنصة',
-        _ => 'النظام',
-      };
+    'wholesaler' => 'البائع',
+    'retailer' => 'المشتري',
+    'shipper' => 'شركة الشحن',
+    'admin' => 'إدارة المنصة',
+    _ => 'النظام',
+  };
 
   static String _formatDateTime(DateTime value) {
     String two(int number) => number.toString().padLeft(2, '0');
@@ -1126,46 +1136,46 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   }
 
   static String _actionLabel(String action) => switch (action) {
-        'accept' => 'قبول الطلب وإصدار التزامات الدفع',
-        'reject' => 'رفض الطلب',
-        'mark_ready' => 'تم تجهيز الطلبية',
-        'confirm_pickup' => 'استلمت الطلبية وخرجت للشحن',
-        'confirm_delivery' => 'تم تسليم الطلبية للمشتري',
-        'confirm_receipt' => 'تأكيد استلام الطلبية',
-        'cancel' => 'إلغاء الطلب',
-        'open_dispute' => 'فتح نزاع',
-        'resolve_dispute_complete' => 'حسم النزاع وإكمال الطلب',
-        'resolve_dispute_cancel' => 'حسم النزاع وإلغاء الطلب',
-        _ => action,
-      };
+    'accept' => 'قبول الطلب وإصدار التزامات الدفع',
+    'reject' => 'رفض الطلب',
+    'mark_ready' => 'تم تجهيز الطلبية',
+    'confirm_pickup' => 'استلمت الطلبية وخرجت للشحن',
+    'confirm_delivery' => 'تم تسليم الطلبية للمشتري',
+    'confirm_receipt' => 'تأكيد استلام الطلبية',
+    'cancel' => 'إلغاء الطلب',
+    'open_dispute' => 'فتح نزاع',
+    'resolve_dispute_complete' => 'حسم النزاع وإكمال الطلب',
+    'resolve_dispute_cancel' => 'حسم النزاع وإلغاء الطلب',
+    _ => action,
+  };
 
   static IconData _actionIcon(String action) => switch (action) {
-        'accept' => Icons.check_circle_outline_rounded,
-        'reject' => Icons.cancel_outlined,
-        'mark_ready' => Icons.inventory_2_outlined,
-        'confirm_pickup' => Icons.local_shipping_outlined,
-        'confirm_delivery' => Icons.mark_email_read_outlined,
-        'confirm_receipt' => Icons.receipt_long_rounded,
-        'cancel' => Icons.do_not_disturb_on_outlined,
-        'open_dispute' => Icons.gavel_outlined,
-        'resolve_dispute_complete' => Icons.fact_check_outlined,
-        'resolve_dispute_cancel' => Icons.rule_outlined,
-        _ => Icons.tune_rounded,
-      };
+    'accept' => Icons.check_circle_outline_rounded,
+    'reject' => Icons.cancel_outlined,
+    'mark_ready' => Icons.inventory_2_outlined,
+    'confirm_pickup' => Icons.local_shipping_outlined,
+    'confirm_delivery' => Icons.mark_email_read_outlined,
+    'confirm_receipt' => Icons.receipt_long_rounded,
+    'cancel' => Icons.do_not_disturb_on_outlined,
+    'open_dispute' => Icons.gavel_outlined,
+    'resolve_dispute_complete' => Icons.fact_check_outlined,
+    'resolve_dispute_cancel' => Icons.rule_outlined,
+    _ => Icons.tune_rounded,
+  };
 
   static String _actionSuccessMessage(String action) => switch (action) {
-        'accept' => 'تم قبول الطلب وإصدار التزامات الدفع',
-        'reject' => 'تم رفض الطلب',
-        'mark_ready' => 'تم تأكيد تجهيز الطلبية',
-        'confirm_pickup' => 'تم استلام الطلبية وبدء الشحن',
-        'confirm_delivery' => 'تم تسليم الطلبية للمشتري',
-        'confirm_receipt' => 'تم تأكيد استلام الطلبية',
-        'cancel' => 'تم إلغاء الطلب',
-        'open_dispute' => 'تم فتح النزاع على الطلب',
-        'resolve_dispute_complete' => 'تم حسم النزاع وإكمال الطلب',
-        'resolve_dispute_cancel' => 'تم حسم النزاع وإلغاء الطلب',
-        _ => 'تم تحديث الطلب',
-      };
+    'accept' => 'تم قبول الطلب وإصدار التزامات الدفع',
+    'reject' => 'تم رفض الطلب',
+    'mark_ready' => 'تم تأكيد تجهيز الطلبية',
+    'confirm_pickup' => 'تم استلام الطلبية وبدء الشحن',
+    'confirm_delivery' => 'تم تسليم الطلبية للمشتري',
+    'confirm_receipt' => 'تم تأكيد استلام الطلبية',
+    'cancel' => 'تم إلغاء الطلب',
+    'open_dispute' => 'تم فتح النزاع على الطلب',
+    'resolve_dispute_complete' => 'تم حسم النزاع وإكمال الطلب',
+    'resolve_dispute_cancel' => 'تم حسم النزاع وإلغاء الطلب',
+    _ => 'تم تحديث الطلب',
+  };
 }
 
 class _StatusPill extends StatelessWidget {
@@ -1201,27 +1211,27 @@ class _StatusPill extends StatelessWidget {
   }
 
   Color get _color => switch (status) {
-        OrderStatus.completed => AppColors.success,
-        OrderStatus.rejected || OrderStatus.canceled => const Color(0xFFB91C1C),
-        OrderStatus.disputed => const Color(0xFFB45309),
-        OrderStatus.inTransit || OrderStatus.delivered => const Color(0xFF0369A1),
-        OrderStatus.awaitingPayments => const Color(0xFF7C3AED),
-        OrderStatus.preparing => AppColors.success,
-        _ => AppColors.primary,
-      };
+    OrderStatus.completed => AppColors.success,
+    OrderStatus.rejected || OrderStatus.canceled => const Color(0xFFB91C1C),
+    OrderStatus.disputed => const Color(0xFFB45309),
+    OrderStatus.inTransit || OrderStatus.delivered => const Color(0xFF0369A1),
+    OrderStatus.awaitingPayments => const Color(0xFF7C3AED),
+    OrderStatus.preparing => AppColors.success,
+    _ => AppColors.primary,
+  };
 
   IconData get _icon => switch (status) {
-        OrderStatus.completed => Icons.task_alt_rounded,
-        OrderStatus.rejected || OrderStatus.canceled => Icons.cancel_outlined,
-        OrderStatus.disputed => Icons.gavel_outlined,
-        OrderStatus.inTransit => Icons.route_outlined,
-        OrderStatus.delivered => Icons.move_to_inbox_outlined,
-        OrderStatus.awaitingPayments => Icons.account_balance_wallet_outlined,
-        OrderStatus.preparing => Icons.inventory_2_outlined,
-        OrderStatus.readyForPickup => Icons.local_shipping_outlined,
-        OrderStatus.requested => Icons.mark_email_unread_outlined,
-        OrderStatus.unknown => Icons.help_outline_rounded,
-      };
+    OrderStatus.completed => Icons.task_alt_rounded,
+    OrderStatus.rejected || OrderStatus.canceled => Icons.cancel_outlined,
+    OrderStatus.disputed => Icons.gavel_outlined,
+    OrderStatus.inTransit => Icons.route_outlined,
+    OrderStatus.delivered => Icons.move_to_inbox_outlined,
+    OrderStatus.awaitingPayments => Icons.account_balance_wallet_outlined,
+    OrderStatus.preparing => Icons.inventory_2_outlined,
+    OrderStatus.readyForPickup => Icons.local_shipping_outlined,
+    OrderStatus.requested => Icons.mark_email_unread_outlined,
+    OrderStatus.unknown => Icons.help_outline_rounded,
+  };
 }
 
 class _MiniChip extends StatelessWidget {
