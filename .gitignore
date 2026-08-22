@@ -1,0 +1,51 @@
+# Secrets and machine-local environment files
+**/.env
+**/.env.*
+!**/.env.example
+!**/.env.*.example
+
+# JavaScript / Next.js dependencies and build output
+**/node_modules/
+**/.next/
+**/out/
+**/dist/
+**/coverage/
+**/.vercel/
+**/*.tsbuildinfo
+**/next-env.d.ts
+
+# Flutter / Android generated state
+app/.dart_tool/
+app/build/
+app/.flutter-plugins-dependencies
+app/android/.gradle/
+app/android/.kotlin/
+app/**/ephemeral/
+app/**/Pods/
+**/*.iml
+
+# Runtime uploads, logs, and temporary files
+backend/public/uploads/
+*.log
+*.pid
+*.tmp
+backups/
+artifacts/
+
+# IDE / operating-system files
+.idea/
+.vscode/
+.DS_Store
+
+# Local signing and archive artifacts
+*.archive.gz
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+**/key.properties
+**/service-account*.json
+**/credentials*.json
+**/firebase-admin*.json

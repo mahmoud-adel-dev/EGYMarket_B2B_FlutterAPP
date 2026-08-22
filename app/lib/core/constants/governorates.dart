@@ -1,0 +1,32 @@
+/// The 27 Egyptian governorates used by registration and checkout. This is the
+/// single source of truth — the previous divergent copies (27 vs 8 entries)
+/// allowed buyers to check out to governorates with no shipper coverage.
+const List<String> egyptGovernorates = [
+  'القاهرة',
+  'الجيزة',
+  'الإسكندرية',
+  'القليوبية',
+  'الدقهلية',
+  'الشرقية',
+  'الغربية',
+  'المنوفية',
+  'البحيرة',
+  'كفر الشيخ',
+  'دمياط',
+  'بورسعيد',
+  'الإسماعيلية',
+  'السويس',
+  'شمال سيناء',
+  'جنوب سيناء',
+  'بني سويف',
+  'الفيوم',
+  'المنيا',
+  'أسيوط',
+  'سوهاج',
+  'قنا',
+  'الأقصر',
+  'أسوان',
+  'البحر الأحمر',
+  'مطروح',
+  'الوادي الجديد',
+];

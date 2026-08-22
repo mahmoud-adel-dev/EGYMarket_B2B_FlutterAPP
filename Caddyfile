@@ -1,0 +1,51 @@
+# =============================================================================
+# SEALS production routing
+#   APP_DOMAIN  → Flutter Web SPA (nginx)
+#   API_DOMAIN  → Next.js API + Admin dashboard
+#
+# Domains are injected from the root .env.production via docker-compose.
+# =============================================================================
+
+{$APP_DOMAIN} {
+	encode zstd gzip
+
+	reverse_proxy web:8080
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+
+	log {
+		output stdout
+		format json
+	}
+}
+
+{$API_DOMAIN} {
+	encode zstd gzip
+
+	# Uploads arrive as base64 JSON payloads (10MB images / 50MB videos ≈ 68MB encoded).
+	request_body {
+		max_size 70MB
+	}
+
+	reverse_proxy api:3000
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		-Server
+	}
+
+	log {
+		output stdout
+		format json
+	}
+}

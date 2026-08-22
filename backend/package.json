@@ -1,0 +1,36 @@
+{
+  "name": "b2b-marketplace-backend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -H 0.0.0.0",
+    "build": "next build",
+    "start": "next start",
+    "lint": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "bootstrap:admin": "node scripts/create-admin.mjs",
+    "seed:mvp": "node scripts/seed-mvp.mjs",
+    "qa:order-workflow": "node --env-file=.env scripts/qa-order-workflow.mjs",
+    "migrate:inquiries": "node scripts/migrate-conversation-inquiries.mjs"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "mongoose": "^8.0.0",
+    "next": "^16.3.2",
+    "next-auth": "^4.24.15",
+    "nodemailer": "^9.0.5",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^20.0.0",
+    "@types/nodemailer": "^7.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^3.2.7"
+  }
+}
