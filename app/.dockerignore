@@ -1,0 +1,15 @@
+.dart_tool
+.git
+.idea
+.vscode
+build
+coverage
+
+# Never send local configuration or credentials to the Docker builder.
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+*.iml
+*.log

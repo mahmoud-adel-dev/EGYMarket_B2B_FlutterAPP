@@ -4,7 +4,7 @@
 # with SPA fallback and hashed-asset caching (see nginx-web.conf).
 # =============================================================================
 
-FROM ghcr.io/cirruslabs/flutter:3.44.8 AS build
+FROM plugfox/flutter:3.44.8-web@sha256:e00f4cf2ae530cabe476d4f13e28ebe3cb9e83d2f2de7a40b7de8937407a6658 AS build
 
 WORKDIR /src
 COPY pubspec.yaml pubspec.lock* ./
@@ -18,6 +18,12 @@ ENV ENVIRONMENT=production
 
 # Fail fast if the operator forgot the API URL (ApiConstants throws otherwise).
 RUN test -n "$API_BASE_URL_PROD" || (echo "API_BASE_URL_PROD build arg is required" && exit 1)
+
+# flutter_dotenv loads this asset at startup. Generate a public, production-only
+# configuration inside the builder; local .env files are excluded from context.
+RUN sed -e 's|^ENVIRONMENT=.*|ENVIRONMENT=production|' \
+        -e "s|^API_BASE_URL_PROD=.*|API_BASE_URL_PROD=${API_BASE_URL_PROD}|" \
+        .env.example > .env
 
 RUN flutter build web --release --wasm --source-maps
 
