@@ -14,12 +14,16 @@ declare global {
   var mongooseCache: GlobalMongooseCache | undefined;
 }
 
-const MONGODB_URI = process.env.MONGODB_URI;
+function getMongoDbUri(): string {
+  const uri = process.env.MONGODB_URI;
 
-if (!MONGODB_URI) {
-  throw new Error(
-    'Please define the MONGODB_URI environment variable inside .env.local or environment variables.'
-  );
+  if (!uri) {
+    throw new Error(
+      'Please define the MONGODB_URI environment variable inside .env.local or environment variables.'
+    );
+  }
+
+  return uri;
 }
 
 /**
@@ -42,6 +46,10 @@ export async function connectToDatabase(): Promise<Mongoose> {
   }
 
   if (!cached.promise) {
+    // Resolve runtime configuration only when a request actually needs the
+    // database. Importing an API route during `next build` must not require
+    // production credentials to exist in the image builder.
+    const mongodbUri = getMongoDbUri();
     const opts = {
       bufferCommands: false,
       maxPoolSize: 10,
@@ -49,7 +57,7 @@ export async function connectToDatabase(): Promise<Mongoose> {
       socketTimeoutMS: 45000,
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI as string, opts).then((mongooseInstance) => {
+    cached.promise = mongoose.connect(mongodbUri, opts).then((mongooseInstance) => {
       return mongooseInstance;
     });
   }
