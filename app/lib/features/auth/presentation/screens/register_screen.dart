@@ -1,12 +1,12 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/constants/governorates.dart';
 import '../../../../core/errors/error_handler.dart';
+import '../../../../core/utils/app_directionality.dart';
 import '../../data/models/auth_models.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
@@ -285,6 +285,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     TextFormField(
                       controller: _passwordController,
                       obscureText: _isPasswordObscured,
+                      textDirection: TextDirection.ltr,
                       textInputAction: TextInputAction.done,
                       style: const TextStyle(
                         color: Color(0xFF1A1D3B),
@@ -599,8 +600,7 @@ class _SectionCard extends StatelessWidget {
         children: [
           Text(
             title,
-            style: GoogleFonts.poppins(
-              fontSize: 14,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w700,
               color: const Color(0xFF1A1D3B),
             ),
@@ -640,6 +640,9 @@ class _Field extends StatelessWidget {
     return TextFormField(
       controller: controller,
       keyboardType: keyboard,
+      textDirection: AppDirectionality.inputTextDirection(
+        keyboardType: keyboard,
+      ),
       textInputAction: TextInputAction.next,
       style: const TextStyle(
         color: Color(0xFF1A1D3B),

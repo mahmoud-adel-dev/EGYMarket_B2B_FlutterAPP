@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/di/service_locator.dart';
+import '../../../../core/utils/app_directionality.dart';
 import '../../../auth/data/models/auth_models.dart';
 import '../../../auth/presentation/widgets/role_selector_widget.dart';
 import '../cubit/profile_settings_cubit.dart';
@@ -242,7 +243,7 @@ class _ProfileView extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _sectionTitle(tr('account_information')),
+                          _sectionTitle(context, tr('account_information')),
                           _infoCard([
                             _infoRow(
                               Icons.person_outline_rounded,
@@ -273,7 +274,10 @@ class _ProfileView extends StatelessWidget {
                           ]),
 
                           ...[
-                            _sectionTitle(tr('profile_business_details')),
+                            _sectionTitle(
+                              context,
+                              tr('profile_business_details'),
+                            ),
                             _infoCard([
                               _infoRow(
                                 Icons.storefront_outlined,
@@ -353,8 +357,8 @@ class _ProfileView extends StatelessWidget {
     decoration: const BoxDecoration(
       gradient: LinearGradient(
         colors: [Color(0xFF1E3A5F), Color(0xFF3B82F6)],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
+        begin: AlignmentDirectional.topStart,
+        end: AlignmentDirectional.bottomEnd,
       ),
     ),
   );
@@ -370,16 +374,19 @@ class _ProfileView extends StatelessWidget {
     }
   }
 
-  Widget _sectionTitle(String text) {
+  Widget _sectionTitle(BuildContext context, String text) {
     return Padding(
       padding: const EdgeInsets.only(top: 4, bottom: 8),
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 13,
           fontWeight: FontWeight.w700,
-          color: Color(0xFF64748B),
-          letterSpacing: 0.8,
+          color: const Color(0xFF64748B),
+          letterSpacing: AppDirectionality.localizedLetterSpacing(
+            context,
+            0.8,
+          ),
         ),
       ),
     );

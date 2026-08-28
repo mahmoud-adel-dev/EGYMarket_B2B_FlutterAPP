@@ -19,7 +19,7 @@ class ProfileHeaderWidget extends StatelessWidget {
         // Cover & Avatar Stack
         Stack(
           clipBehavior: Clip.none,
-          alignment: Alignment.bottomLeft,
+          alignment: AlignmentDirectional.bottomStart,
           children: [
             // Cover Photo
             SizedBox(
@@ -44,9 +44,9 @@ class ProfileHeaderWidget extends StatelessWidget {
               ),
             ),
             // Profile Avatar Positioned Over Cover
-            Positioned(
+            PositionedDirectional(
               bottom: -40,
-              left: 16,
+              start: 16,
               child: Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(

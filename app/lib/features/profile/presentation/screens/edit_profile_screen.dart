@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../core/di/service_locator.dart';
 import '../../../../core/errors/error_handler.dart';
 import '../../../../core/network/network_manager.dart';
+import '../../../../core/utils/app_directionality.dart';
 import '../../data/models/profile_models.dart';
 import '../cubit/profile_settings_cubit.dart';
 
@@ -328,7 +329,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         fontSize: 13,
         fontWeight: FontWeight.w700,
         color: Color(0xFF64748B),
-        letterSpacing: 1,
+        letterSpacing: AppDirectionality.localizedLetterSpacing(context, 1),
       ),
     ),
   );
@@ -347,6 +348,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         controller: ctrl,
         maxLines: maxLines,
         keyboardType: keyboard,
+        textDirection: AppDirectionality.inputTextDirection(
+          keyboardType: keyboard,
+        ),
         decoration: InputDecoration(
           labelText: label,
           prefixIcon: Icon(icon, color: const Color(0xFF6C63FF), size: 20),
@@ -390,7 +394,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _field(ctrl, label, icon),
+          _field(ctrl, label, icon, keyboard: TextInputType.url),
           SizedBox(
             width: double.infinity,
             child: OutlinedButton.icon(

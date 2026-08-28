@@ -12,8 +12,35 @@ val keystorePropertiesFile = rootProject.file("key.properties")
 val isReleaseTask = gradle.startParameter.taskNames.any { it.contains("Release", ignoreCase = true) }
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
-} else if (isReleaseTask) {
-    throw GradleException("Missing android/key.properties. Copy key.properties.example and configure a private release keystore.")
+}
+
+fun signingValue(propertyName: String, environmentName: String): String? =
+    keystoreProperties.getProperty(propertyName)?.trim()?.takeIf { it.isNotEmpty() }
+        ?: System.getenv(environmentName)?.trim()?.takeIf { it.isNotEmpty() }
+
+val releaseStorePath = signingValue("storeFile", "SEALS_ANDROID_STORE_FILE")
+val releaseStorePassword = signingValue("storePassword", "SEALS_ANDROID_STORE_PASSWORD")
+val releaseKeyAlias = signingValue("keyAlias", "SEALS_ANDROID_KEY_ALIAS")
+val releaseKeyPassword = signingValue("keyPassword", "SEALS_ANDROID_KEY_PASSWORD")
+val releaseStoreFile = releaseStorePath?.let { file(it) }
+val missingSigningValues = buildList {
+    if (releaseStorePath == null) add("storeFile / SEALS_ANDROID_STORE_FILE")
+    if (releaseStorePassword == null) add("storePassword / SEALS_ANDROID_STORE_PASSWORD")
+    if (releaseKeyAlias == null) add("keyAlias / SEALS_ANDROID_KEY_ALIAS")
+    if (releaseKeyPassword == null) add("keyPassword / SEALS_ANDROID_KEY_PASSWORD")
+}
+val hasReleaseSigning = missingSigningValues.isEmpty() && releaseStoreFile?.isFile == true
+
+if (isReleaseTask && missingSigningValues.isNotEmpty()) {
+    throw GradleException(
+        "Missing Android release signing values: ${missingSigningValues.joinToString()}. " +
+            "Copy android/key.properties.example to android/key.properties, or set the documented CI environment variables.",
+    )
+}
+if (isReleaseTask && releaseStoreFile?.isFile != true) {
+    throw GradleException(
+        "Android release keystore was not found at: ${releaseStoreFile?.absolutePath ?: releaseStorePath}",
+    )
 }
 
 android {
@@ -37,19 +64,19 @@ android {
     }
 
     signingConfigs {
-        if (keystorePropertiesFile.exists()) {
+        if (hasReleaseSigning) {
             create("release") {
-                keyAlias = keystoreProperties["keyAlias"] as String
-                keyPassword = keystoreProperties["keyPassword"] as String
-                storeFile = file(keystoreProperties["storeFile"] as String)
-                storePassword = keystoreProperties["storePassword"] as String
+                keyAlias = requireNotNull(releaseKeyAlias)
+                keyPassword = requireNotNull(releaseKeyPassword)
+                storeFile = requireNotNull(releaseStoreFile)
+                storePassword = requireNotNull(releaseStorePassword)
             }
         }
     }
 
     buildTypes {
         release {
-            if (keystorePropertiesFile.exists()) {
+            if (hasReleaseSigning) {
                 signingConfig = signingConfigs.getByName("release")
             }
             isMinifyEnabled = true

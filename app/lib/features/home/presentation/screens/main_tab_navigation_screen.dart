@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/service_locator.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/utils/app_directionality.dart';
 import '../../../auth/data/models/auth_models.dart';
 import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../../../auth/presentation/screens/login_screen.dart';
@@ -550,7 +551,8 @@ class _DesktopSidebar extends StatelessWidget {
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     color: Colors.white38,
                     fontWeight: FontWeight.w800,
-                    letterSpacing: 1.2,
+                    letterSpacing:
+                        AppDirectionality.localizedLetterSpacing(context, 1.2),
                   ),
                 ),
               ),

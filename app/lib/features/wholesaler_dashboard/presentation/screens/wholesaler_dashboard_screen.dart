@@ -193,8 +193,8 @@ class _WholesalerDashboardScreenState extends State<WholesalerDashboardScreen> {
                         shape: BoxShape.circle,
                         gradient: const LinearGradient(
                           colors: [Color(0xFF6C63FF), Color(0xFF9C8FFF)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
+                          begin: AlignmentDirectional.topStart,
+                          end: AlignmentDirectional.bottomEnd,
                         ),
                         boxShadow: [
                           BoxShadow(

@@ -149,9 +149,9 @@ class _VideoPostWidgetState extends State<VideoPostWidget> {
 
                   // Mute / Sound Toggle Button
                   if (_isInitialized && _controller != null)
-                    Positioned(
+                    PositionedDirectional(
                       bottom: 12,
-                      right: 12,
+                      end: 12,
                       child: IconButton(
                         icon: Icon(
                           _controller!.value.volume == 0

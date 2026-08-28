@@ -511,7 +511,7 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
                     final cat = _categories[i];
                     final isSelected = _selectedCategory == cat;
                     return Padding(
-                      padding: const EdgeInsets.only(right: 8),
+                      padding: const EdgeInsetsDirectional.only(end: 8),
                       child: FilterChip(
                         label: Text(cat),
                         selected: isSelected,

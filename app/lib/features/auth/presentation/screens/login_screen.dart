@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/errors/error_handler.dart';
+import '../../../../core/utils/app_directionality.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../data/models/auth_models.dart';
 import '../cubit/auth_cubit.dart';
@@ -521,6 +522,10 @@ class _ModernField extends StatelessWidget {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
+      textDirection: AppDirectionality.inputTextDirection(
+        keyboardType: keyboardType,
+        obscureText: obscureText,
+      ),
       textInputAction: action,
       obscureText: obscureText,
       onFieldSubmitted: onSubmitted,

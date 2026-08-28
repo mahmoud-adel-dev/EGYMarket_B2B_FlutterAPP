@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'core/di/service_locator.dart';
 import 'core/theme/app_theme.dart';
+import 'core/utils/app_directionality.dart';
 import 'features/auth/presentation/cubit/auth_cubit.dart';
 import 'features/auth/presentation/cubit/auth_state.dart';
 import 'features/home/presentation/screens/main_tab_navigation_screen.dart';
@@ -72,8 +73,8 @@ class AuthWrapper extends StatelessWidget {
                       borderRadius: BorderRadius.circular(24),
                       gradient: const LinearGradient(
                         colors: [AppColors.navy, AppColors.primary],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
+                        begin: AlignmentDirectional.topStart,
+                        end: AlignmentDirectional.bottomEnd,
                       ),
                       boxShadow: [
                         BoxShadow(
@@ -102,7 +103,10 @@ class AuthWrapper extends StatelessWidget {
                       color: AppColors.primary,
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
-                      letterSpacing: 3,
+                      letterSpacing: AppDirectionality.localizedLetterSpacing(
+                        context,
+                        3,
+                      ),
                     ),
                   ),
                 ],

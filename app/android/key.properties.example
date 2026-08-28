@@ -1,3 +1,7 @@
+# Copy this file to android/key.properties. Both key.properties and *.jks are
+# ignored by Git and must be stored in a password manager / secure backup.
+# Paths are resolved relative to android/app. This example therefore points to
+# android/seals-release.jks.
 storePassword=replace-me
 keyPassword=replace-me
 keyAlias=seals-release

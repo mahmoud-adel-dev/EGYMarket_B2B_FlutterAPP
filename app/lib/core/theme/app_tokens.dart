@@ -12,6 +12,32 @@ abstract final class AppSpacing {
   static const double xxxl = 48;
 }
 
+/// Direction-aware insets for the layouts repeated across the application.
+///
+/// Feature widgets should prefer these values (or [EdgeInsetsDirectional])
+/// whenever horizontal spacing is not symmetrical. This makes the same widget
+/// naturally mirror when the locale changes between English and Arabic.
+abstract final class AppInsets {
+  static const EdgeInsetsDirectional page = EdgeInsetsDirectional.fromSTEB(
+    AppSpacing.lg,
+    AppSpacing.lg,
+    AppSpacing.lg,
+    AppSpacing.xl,
+  );
+  static const EdgeInsetsDirectional card = EdgeInsetsDirectional.all(
+    AppSpacing.lg,
+  );
+  static const EdgeInsetsDirectional field = EdgeInsetsDirectional.symmetric(
+    horizontal: AppSpacing.lg,
+    vertical: 15,
+  );
+  static const EdgeInsetsDirectional listItem =
+      EdgeInsetsDirectional.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.md,
+      );
+}
+
 /// Corner-radius scale.
 abstract final class AppRadius {
   static const double sm = 8;
@@ -49,4 +75,11 @@ abstract final class AppBreakpoints {
 /// Touch-target accessibility floor per Material guidance.
 abstract final class AppTouchTargets {
   static const double minimum = 48;
+}
+
+/// Component dimensions which are shared by the application shell and forms.
+abstract final class AppComponentSizes {
+  static const double controlHeight = AppTouchTargets.minimum;
+  static const double icon = 24;
+  static const double iconSmall = 20;
 }
