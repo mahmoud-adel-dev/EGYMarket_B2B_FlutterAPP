@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/constants/api_constants.dart';
@@ -34,6 +35,23 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
     'shipper' => 'shipper',
     _ => 'buyer',
   };
+
+  String? _subscriptionStatusLabel(String? status) {
+    switch (status) {
+      case 'active':
+        return tr('subscription_status_active');
+      case 'pending':
+        return tr('subscription_status_pending');
+      case 'proof_submitted':
+        return tr('subscription_status_proof_submitted');
+      case 'rejected':
+        return tr('subscription_status_rejected');
+      case 'canceled':
+        return tr('subscription_status_canceled');
+      default:
+        return status;
+    }
+  }
 
   Future<void> _load() async {
     try {
@@ -99,7 +117,7 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
       if (mounted) {
         ErrorHandler.showSecureSnackBar(
           context,
-          'حساب تحصيل المنصة غير مضبوط بعد',
+          tr('subscription_platform_account_missing'),
           isError: true,
         );
       }
@@ -111,7 +129,7 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          title: const Text('بيانات تحويل الاشتراك'),
+          title: Text(tr('subscription_transfer_details')),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -132,8 +150,8 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
               const SizedBox(height: 12),
               TextField(
                 controller: reference,
-                decoration: const InputDecoration(
-                  labelText: 'رقم/مرجع التحويل',
+                decoration: InputDecoration(
+                  labelText: tr('subscription_reference_label'),
                 ),
               ),
             ],
@@ -141,11 +159,11 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('إلغاء'),
+              child: Text(tr('cancel')),
             ),
             ElevatedButton(
               onPressed: () => Navigator.pop(context, true),
-              child: const Text('اختيار الإيصال'),
+              child: Text(tr('subscription_pick_receipt')),
             ),
           ],
         ),
@@ -209,7 +227,7 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
         )
         .toList();
     return Scaffold(
-      appBar: AppBar(title: const Text('اشتراك المؤسسة')),
+      appBar: AppBar(title: Text(tr('subscription_title'))),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
@@ -221,15 +239,26 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Text(
-                        'الحالة: ${_subscription?['status'] ?? 'لا يوجد اشتراك'}\nنهاية الفترة: ${_subscription?['current_period_ends_at'] ?? '-'}',
+                        tr(
+                          'subscription_summary',
+                          namedArgs: {
+                            'status': _subscriptionStatusLabel(
+                                  _subscription?['status']?.toString(),
+                                ) ??
+                                tr('subscription_none'),
+                            'date':
+                                _subscription?['current_period_ends_at'] ??
+                                '-',
+                          },
+                        ),
                       ),
                     ),
                   ),
                   if (openInvoices.isNotEmpty) ...[
                     const SizedBox(height: 14),
-                    const Text(
-                      'فواتير تحتاج إجراء',
-                      style: TextStyle(
+                    Text(
+                      tr('subscription_invoices_action'),
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 17,
                       ),
@@ -241,7 +270,7 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
                             invoice['invoice_number']?.toString() ?? '',
                           ),
                           subtitle: Text(
-                            '${((invoice['amount_piasters'] as num? ?? 0) / 100).toStringAsFixed(2)} ج.م — ${invoice['status']}',
+                            '${tr('price', namedArgs: {'price': ((invoice['amount_piasters'] as num? ?? 0) / 100).toStringAsFixed(2)})} — ${_subscriptionStatusLabel(invoice['status']?.toString())}',
                           ),
                           trailing:
                               [
@@ -260,15 +289,18 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
                     ),
                   ],
                   const SizedBox(height: 14),
-                  const Text(
-                    'الخطط المتاحة',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                  Text(
+                    tr('subscription_available_plans'),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 17,
+                    ),
                   ),
                   if (_plans.isEmpty)
-                    const Card(
+                    Card(
                       child: Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Text('لم تُضف الإدارة أسعار الخطط بعد.'),
+                        padding: const EdgeInsets.all(16),
+                        child: Text(tr('subscription_no_plans')),
                       ),
                     )
                   else
@@ -287,7 +319,7 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
                                 ),
                               ),
                               Text(
-                                '${((plan['price_piasters'] as num? ?? 0) / 100).toStringAsFixed(2)} ج.م / ${plan['billing_interval'] == 'yearly' ? 'سنة' : 'شهر'}',
+                                '${tr('price', namedArgs: {'price': ((plan['price_piasters'] as num? ?? 0) / 100).toStringAsFixed(2)})} / ${plan['billing_interval'] == 'yearly' ? tr('subscription_year') : tr('subscription_month')}',
                               ),
                               const SizedBox(height: 10),
                               SizedBox(
@@ -297,7 +329,7 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
                                       ? null
                                       : () =>
                                             _subscribe(plan['_id'].toString()),
-                                  child: const Text('إنشاء فاتورة اشتراك'),
+                                  child: Text(tr('subscription_create_invoice')),
                                 ),
                               ),
                             ],

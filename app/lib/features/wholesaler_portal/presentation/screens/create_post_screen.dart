@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/di/service_locator.dart';
@@ -76,6 +77,25 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     if (category != null && category.isNotEmpty) _category = category;
   }
 
+  String _categoryLabel(String value) {
+    switch (value) {
+      case 'General':
+        return tr('post_category_general');
+      case 'Electronics':
+        return tr('cat_electronics');
+      case 'Fashion':
+        return tr('cat_fashion');
+      case 'Food & Beverages':
+        return tr('cat_food_beverages');
+      case 'Home & Living':
+        return tr('cat_home_living');
+      case 'Medical':
+        return tr('cat_medical');
+      default:
+        return value;
+    }
+  }
+
   Future<void> _createProduct() async {
     final created = await Navigator.of(context).push<bool>(
       MaterialPageRoute(builder: (_) => const ProductEditorScreen()),
@@ -119,7 +139,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     if (_selectedProductId == null) {
       ErrorHandler.showSecureSnackBar(
         context,
-        'اختر منتجًا منشورًا أولًا حتى يصل العرض إلى الكتالوج والسلة',
+        tr('post_select_published_error'),
         isError: true,
       );
       return;
@@ -127,7 +147,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     if (_caption.text.trim().isEmpty || _files.isEmpty) {
       ErrorHandler.showSecureSnackBar(
         context,
-        'أدخل وصفًا واختر صورة أو فيديو',
+        tr('post_caption_media_error'),
         isError: true,
       );
       return;
@@ -157,7 +177,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       });
       ErrorHandler.showSecureSnackBar(
         context,
-        'تم نشر العرض وربطه بالمنتج. سيظهر في الصفحة الرئيسية ويمكن فتحه وإضافته للسلة.',
+        tr('post_published'),
         isError: false,
       );
     } catch (error) {
@@ -191,23 +211,21 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       _category,
     }.toList();
     return Scaffold(
-      appBar: AppBar(title: const Text('نشر عرض جملة')),
+      appBar: AppBar(title: Text(tr('post_title'))),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
           Card(
             color: Theme.of(context).colorScheme.primaryContainer,
-            child: const Padding(
-              padding: EdgeInsets.all(14),
+            child: Padding(
+              padding: const EdgeInsets.all(14),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.info_outline),
-                  SizedBox(width: 10),
+                  const Icon(Icons.info_outline),
+                  const SizedBox(width: 10),
                   Expanded(
-                    child: Text(
-                      'المنتج هو سجل المخزون والسعر ويظهر في الكتالوج. هذا العرض منشور تسويقي مرتبط بالمنتج ويظهر في الصفحة الرئيسية.',
-                    ),
+                    child: Text(tr('post_info')),
                   ),
                 ],
               ),
@@ -223,14 +241,12 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Text(
-                      'لا يوجد منتج منشور يمكن ربطه بالعرض. أنشئ المنتج أولًا، وأكمل توثيق المتجر إذا حُفظ كمسودة.',
-                    ),
+                    Text(tr('post_no_published_product')),
                     const SizedBox(height: 12),
                     FilledButton.icon(
                       onPressed: _createProduct,
                       icon: const Icon(Icons.add_box_outlined),
-                      label: const Text('إنشاء منتج الآن'),
+                      label: Text(tr('post_create_product_now')),
                     ),
                   ],
                 ),
@@ -239,16 +255,17 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           else ...[
             DropdownButtonFormField<String>(
               initialValue: _selectedProductId,
-              decoration: const InputDecoration(
-                labelText: 'المنتج المرتبط بالعرض',
-                prefixIcon: Icon(Icons.inventory_2_outlined),
+              decoration: InputDecoration(
+                labelText: tr('post_select_product'),
+                prefixIcon: const Icon(Icons.inventory_2_outlined),
               ),
               items: _products
                   .map(
                     (product) => DropdownMenuItem<String>(
                       value: product['_id']?.toString(),
                       child: Text(
-                        product['title']?.toString() ?? 'منتج',
+                        product['title']?.toString() ??
+                            tr('post_product_fallback'),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -268,7 +285,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               child: TextButton.icon(
                 onPressed: _submitting ? null : _createProduct,
                 icon: const Icon(Icons.add),
-                label: const Text('إضافة منتج آخر'),
+                label: Text(tr('post_add_another_product')),
               ),
             ),
           ],
@@ -277,15 +294,16 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             controller: _caption,
             maxLines: 5,
             maxLength: 2000,
-            decoration: const InputDecoration(labelText: 'وصف العرض'),
+            decoration: InputDecoration(labelText: tr('post_caption_label')),
           ),
           const SizedBox(height: 12),
           DropdownButtonFormField<String>(
             initialValue: _category,
-            decoration: const InputDecoration(labelText: 'الفئة'),
+            decoration: InputDecoration(labelText: tr('post_category_label')),
             items: categories
                 .map(
-                  (value) => DropdownMenuItem(value: value, child: Text(value)),
+                  (value) =>
+                      DropdownMenuItem(value: value, child: Text(_categoryLabel(value))),
                 )
                 .toList(),
             onChanged: (value) =>
@@ -293,16 +311,16 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           ),
           const SizedBox(height: 12),
           SegmentedButton<String>(
-            segments: const [
+            segments: [
               ButtonSegment(
                 value: 'image',
-                label: Text('صور'),
-                icon: Icon(Icons.image),
+                label: Text(tr('post_images')),
+                icon: const Icon(Icons.image),
               ),
               ButtonSegment(
                 value: 'video',
-                label: Text('فيديو'),
-                icon: Icon(Icons.videocam),
+                label: Text(tr('post_video')),
+                icon: const Icon(Icons.videocam),
               ),
             ],
             selected: {_mediaType},
@@ -317,8 +335,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             icon: const Icon(Icons.upload_file),
             label: Text(
               _files.isEmpty
-                  ? 'اختر من الهاتف'
-                  : 'تم اختيار ${_files.length} ملف',
+                  ? tr('post_pick_from_phone')
+                  : tr(
+                      'post_files_selected',
+                      namedArgs: {'count': '${_files.length}'},
+                    ),
             ),
           ),
           const SizedBox(height: 20),
@@ -328,7 +349,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               onPressed: _submitting ? null : _publish,
               child: _submitting
                   ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text('نشر'),
+                  : Text(tr('post_publish')),
             ),
           ),
         ],

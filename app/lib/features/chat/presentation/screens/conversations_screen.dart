@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../../../core/di/service_locator.dart';
 import '../../../../core/errors/error_handler.dart';
@@ -132,7 +132,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
       (sum, conversation) => sum + (conversation.unreadCount > 0 ? 1 : 0),
     );
     return Scaffold(
-      appBar: AppBar(title: const Text('الرسائل والاستفسارات')),
+      appBar: AppBar(title: Text(tr('conversation_title'))),
       body: _loading && _conversations.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : _error != null && _conversations.isEmpty
@@ -154,7 +154,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                   FilledButton.icon(
                     onPressed: _load,
                     icon: const Icon(Icons.refresh_rounded),
-                    label: const Text('إعادة المحاولة'),
+                    label: Text(tr('retry')),
                   ),
                 ],
               ),
@@ -167,8 +167,8 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                     controller: _search,
                     onChanged: (_) => setState(() {}),
                     decoration: InputDecoration(
-                      labelText: 'البحث في المحادثات',
-                      hintText: 'اسم الطرف، المنتج أو رقم الطلب',
+                      labelText: tr('conversation_search_label'),
+                      hintText: tr('conversation_search_hint'),
                       prefixIcon: const Icon(Icons.search_rounded),
                       suffixIcon: _search.text.isEmpty
                           ? null
@@ -178,7 +178,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                                 setState(() {});
                               },
                               icon: const Icon(Icons.close_rounded),
-                              tooltip: 'مسح البحث',
+                              tooltip: tr('conversation_clear_search'),
                             ),
                     ),
                   ),
@@ -195,14 +195,19 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                               : Icons.mark_chat_unread_outlined,
                           size: 17,
                         ),
-                        label: Text('غير المقروءة ($unreadTotal)'),
+                        label: Text(
+                          tr(
+                            'conversation_unread_filter',
+                            namedArgs: {'count': '$unreadTotal'},
+                          ),
+                        ),
                         onSelected: (value) =>
                             setState(() => _unreadOnly = value),
                       ),
                       const Spacer(),
                       IconButton.outlined(
                         onPressed: () => unawaited(_load(silent: true)),
-                        tooltip: 'تحديث المحادثات',
+                        tooltip: tr('conversation_refresh'),
                         icon: const Icon(Icons.refresh_rounded, size: 20),
                       ),
                     ],
@@ -230,8 +235,8 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
             const SizedBox(height: 12),
             Text(
               _search.text.isNotEmpty || _unreadOnly
-                  ? 'لا توجد محادثات مطابقة للبحث'
-                  : 'لا توجد رسائل بعد. ابدأ باستفسار من صفحة المنتج أو من تفاصيل الطلب.',
+                  ? tr('conversation_no_matching')
+                  : tr('conversation_empty'),
               textAlign: TextAlign.center,
               style: const TextStyle(color: AppColors.muted),
             ),
@@ -255,16 +260,23 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
     final isLocked = !conversation.chatAllowed;
     final date = conversation.lastMessageAt;
     final fallback =
-        conversation.orderNumber ?? conversation.productTitle ?? 'استفسار';
+        conversation.orderNumber ??
+        conversation.productTitle ??
+        tr('conversation_inquiry');
     final preview = isLocked
-        ? 'تُفتح بعد تأكيد رسوم المنصة'
+        ? tr('conversation_locked_preview')
         : conversation.lastMessage.isEmpty
-        ? 'ابدأ المحادثة'
+        ? tr('conversation_start')
         : conversation.lastMessage;
     final hasUnread = conversation.unreadCount > 0;
     return Semantics(
       label: isLocked
-          ? '${conversation.titleFor(widget.currentOrganizationId)}، محادثة مقفلة حتى تأكيد رسوم المنصة'
+          ? tr(
+              'conversation_locked_semantics',
+              namedArgs: {
+                'title': conversation.titleFor(widget.currentOrganizationId),
+              },
+            )
           : null,
       child: Card(
         margin: EdgeInsets.zero,
@@ -337,7 +349,12 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                     )
                   else if (hasUnread)
                     Semantics(
-                      label: '${conversation.unreadCount} رسائل غير مقروءة',
+                      label: tr(
+                        'conversation_unread_count',
+                        namedArgs: {
+                          'count': '${conversation.unreadCount}',
+                        },
+                      ),
                       child: Container(
                         constraints: const BoxConstraints(
                           minWidth: 21,
@@ -376,7 +393,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
             if (isLocked) {
               ErrorHandler.showSecureSnackBar(
                 context,
-                'يجب تأكيد رسوم المنصة أولًا من تفاصيل الطلب.',
+                tr('conversation_locked_snackbar'),
                 isError: true,
               );
               return;
@@ -687,7 +704,7 @@ class _ConversationChatScreenState extends State<ConversationChatScreen>
       });
       ErrorHandler.showSecureSnackBar(
         context,
-        '${ErrorHandler.getUserFriendlyMessage(error)} يمكنك إعادة إرسال الرسالة.',
+        '${ErrorHandler.getUserFriendlyMessage(error)} ${tr('chat_resend_suffix')}',
         isError: true,
       );
     }
@@ -772,15 +789,15 @@ class _ConversationChatScreenState extends State<ConversationChatScreen>
                 maxLength: 3000,
                 textInputAction: TextInputAction.newline,
                 onSubmitted: (_) => unawaited(_send()),
-                decoration: const InputDecoration(
-                  labelText: 'الرسالة',
-                  hintText: 'اكتب رسالتك...',
+                decoration: InputDecoration(
+                  labelText: tr('chat_message_label'),
+                  hintText: tr('chat_message_hint'),
                   counterText: '',
                   border: InputBorder.none,
                   enabledBorder: InputBorder.none,
                   focusedBorder: InputBorder.none,
                   filled: false,
-                  contentPadding: EdgeInsets.symmetric(
+                  contentPadding: const EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 12,
                   ),
@@ -793,7 +810,7 @@ class _ConversationChatScreenState extends State<ConversationChatScreen>
                 final canSend = value.text.trim().isNotEmpty;
                 return IconButton.filled(
                   onPressed: canSend ? () => unawaited(_send()) : null,
-                  tooltip: 'إرسال الرسالة',
+                  tooltip: tr('chat_send'),
                   icon: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 150),
                     child: Icon(
@@ -834,24 +851,24 @@ class _ConversationChatScreenState extends State<ConversationChatScreen>
             FilledButton.icon(
               onPressed: _load,
               icon: const Icon(Icons.refresh_rounded),
-              label: const Text('إعادة المحاولة'),
+              label: Text(tr('retry')),
             ),
           ],
         ),
       );
     }
     if (_messages.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
+            const Icon(
               Icons.chat_bubble_outline_rounded,
               size: 56,
               color: Colors.black26,
             ),
-            SizedBox(height: 12),
-            Text('ابدأ المحادثة بإرسال أول رسالة.'),
+            const SizedBox(height: 12),
+            Text(tr('chat_empty')),
           ],
         ),
       );
@@ -883,7 +900,7 @@ class _ConversationChatScreenState extends State<ConversationChatScreen>
             : TextButton.icon(
                 onPressed: () => unawaited(_loadOlder()),
                 icon: const Icon(Icons.history_rounded, size: 18),
-                label: const Text('تحميل الرسائل الأقدم'),
+                label: Text(tr('chat_load_older')),
               ),
       ),
     );
@@ -897,7 +914,7 @@ class _ConversationChatScreenState extends State<ConversationChatScreen>
     if (message.isSystem) {
       return Semantics(
         container: true,
-        label: 'تحديث للطلب: ${message.body}',
+        label: tr('chat_system_update_semantics', namedArgs: {'body': message.body}),
         child: Container(
           width: double.infinity,
           margin: const EdgeInsets.only(bottom: 10),
@@ -958,18 +975,22 @@ class _ConversationChatScreenState extends State<ConversationChatScreen>
         ? Colors.white
         : const Color(0xFF0F172A);
     final senderLabel = isMine
-        ? 'أنت'
+        ? tr('chat_you')
         : message.senderDisplayName.isEmpty
-        ? 'الطرف الآخر'
+        ? tr('chat_other_party')
         : message.senderDisplayName;
     final deliveryLabel = switch (message.deliveryState) {
-      ChatDeliveryState.sending => 'قيد الإرسال',
-      ChatDeliveryState.sent => 'تم الإرسال',
-      ChatDeliveryState.failed => 'فشل الإرسال',
+      ChatDeliveryState.sending => tr('chat_delivery_sending'),
+      ChatDeliveryState.sent => tr('chat_delivery_sent'),
+      ChatDeliveryState.failed => tr('chat_delivery_failed'),
     };
     return Semantics(
       container: true,
-      label: 'رسالة من $senderLabel، ${message.body}، $deliveryLabel',
+      label: tr('chat_message_semantics', namedArgs: {
+        'sender': senderLabel,
+        'body': message.body,
+        'delivery': deliveryLabel,
+      }),
       child: Align(
         alignment: isMine
             ? AlignmentDirectional.centerEnd
@@ -1023,23 +1044,23 @@ class _ConversationChatScreenState extends State<ConversationChatScreen>
                   if (isMine) ...[
                     const SizedBox(width: 5),
                     if (message.deliveryState == ChatDeliveryState.sending)
-                      const Icon(
+                      Icon(
                         Icons.schedule_rounded,
                         size: 15,
                         color: Colors.white,
-                        semanticLabel: 'قيد الإرسال',
+                        semanticLabel: tr('chat_delivery_sending'),
                       )
                     else if (message.deliveryState == ChatDeliveryState.sent)
-                      const Icon(
+                      Icon(
                         Icons.check_rounded,
                         size: 15,
                         color: Colors.white,
-                        semanticLabel: 'تم الإرسال',
+                        semanticLabel: tr('chat_delivery_sent'),
                       )
                     else
                       IconButton(
                         onPressed: () => unawaited(_retry(message)),
-                        tooltip: 'إعادة إرسال الرسالة',
+                        tooltip: tr('chat_resend_tooltip'),
                         visualDensity: VisualDensity.compact,
                         icon: const Icon(
                           Icons.refresh_rounded,

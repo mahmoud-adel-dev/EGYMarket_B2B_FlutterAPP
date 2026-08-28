@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:seals_app/core/di/service_locator.dart';
 import 'package:seals_app/core/errors/network_exception.dart';
 import 'package:seals_app/core/network/network_manager.dart';
@@ -276,14 +278,29 @@ void main() {
         await authCubit.close();
       });
 
+      SharedPreferences.setMockInitialValues({});
+      await EasyLocalization.ensureInitialized();
       await tester.pumpWidget(
-        BlocProvider<AuthCubit>.value(
-          value: authCubit,
-          child: MaterialApp(
-            home: ValueListenableBuilder<bool>(
-              valueListenable: showFeed,
-              builder: (_, visible, _) =>
-                  visible ? const SocialFeedScreen() : const SizedBox.shrink(),
+        EasyLocalization(
+          supportedLocales: const [Locale('en'), Locale('ar')],
+          path: 'assets/translations',
+          fallbackLocale: const Locale('en'),
+          saveLocale: false,
+          useOnlyLangCode: true,
+          child: Builder(
+            builder: (localizationContext) => BlocProvider<AuthCubit>.value(
+              value: authCubit,
+              child: MaterialApp(
+                localizationsDelegates:
+                    localizationContext.localizationDelegates,
+                supportedLocales: localizationContext.supportedLocales,
+                home: ValueListenableBuilder<bool>(
+                  valueListenable: showFeed,
+                  builder: (_, visible, _) => visible
+                      ? const SocialFeedScreen()
+                      : const SizedBox.shrink(),
+                ),
+              ),
             ),
           ),
         ),

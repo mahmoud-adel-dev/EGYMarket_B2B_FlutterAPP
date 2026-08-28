@@ -1,6 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 
 import '../../../../core/di/service_locator.dart';
 import '../../../../core/network/network_manager.dart';
@@ -69,9 +69,9 @@ class _WholesalerDashboardScreenState extends State<WholesalerDashboardScreen> {
 
   String _getGreeting() {
     final hour = DateTime.now().hour;
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
+    if (hour < 12) return tr('good_morning');
+    if (hour < 17) return tr('good_afternoon');
+    return tr('good_evening');
   }
 
   @override
@@ -111,9 +111,9 @@ class _WholesalerDashboardScreenState extends State<WholesalerDashboardScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Could not load dashboard',
-            style: TextStyle(
+          Text(
+            tr('dashboard_load_error'),
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16,
               color: Color(0xFF1A1D3B),
@@ -121,13 +121,13 @@ class _WholesalerDashboardScreenState extends State<WholesalerDashboardScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Check your connection and try again',
+            tr('dashboard_connection_check'),
             style: TextStyle(color: Colors.grey[500], fontSize: 13),
           ),
           const SizedBox(height: 20),
           ElevatedButton.icon(
             icon: const Icon(Icons.refresh_rounded, size: 18),
-            label: const Text('Retry'),
+            label: Text(tr('retry')),
             onPressed: _fetchData,
           ),
         ],
@@ -144,7 +144,7 @@ class _WholesalerDashboardScreenState extends State<WholesalerDashboardScreen> {
     final userName =
         _profile?['name'] as String? ??
         _profile?['business_name'] as String? ??
-        'there';
+        tr('dashboard_name_fallback');
     final firstName = userName.split(' ').first;
 
     return RefreshIndicator(
@@ -226,7 +226,7 @@ class _WholesalerDashboardScreenState extends State<WholesalerDashboardScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Overview',
+                    tr('dashboard_overview'),
                     style: GoogleFonts.poppins(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -239,9 +239,13 @@ class _WholesalerDashboardScreenState extends State<WholesalerDashboardScreen> {
                     children: [
                       Expanded(
                         child: _MetricCard(
-                          label: 'Revenue',
-                          value:
-                              '${_formatNum(totalRevenuePiasters / 100)} EGP',
+                          label: tr('dashboard_revenue'),
+                          value: tr(
+                            'price',
+                            namedArgs: {
+                              'price': _formatNum(totalRevenuePiasters / 100),
+                            },
+                          ),
                           icon: Icons.trending_up_rounded,
                           bgColor: const Color(0xFFEEEBFF),
                           iconColor: const Color(0xFF6C63FF),
@@ -250,7 +254,7 @@ class _WholesalerDashboardScreenState extends State<WholesalerDashboardScreen> {
                       const SizedBox(width: 14),
                       Expanded(
                         child: _MetricCard(
-                          label: 'Active Orders',
+                          label: tr('dashboard_active_orders'),
                           value: '$activeOrders',
                           icon: Icons.local_shipping_rounded,
                           bgColor: const Color(0xFFFFE8F3),
@@ -264,7 +268,7 @@ class _WholesalerDashboardScreenState extends State<WholesalerDashboardScreen> {
                     children: [
                       Expanded(
                         child: _MetricCard(
-                          label: 'Products',
+                          label: tr('total_products'),
                           value: '$totalProducts',
                           icon: Icons.inventory_2_rounded,
                           bgColor: const Color(0xFFE6FAF9),
@@ -274,7 +278,7 @@ class _WholesalerDashboardScreenState extends State<WholesalerDashboardScreen> {
                       const SizedBox(width: 14),
                       Expanded(
                         child: _MetricCard(
-                          label: 'Total Orders',
+                          label: tr('total_orders'),
                           value: '$totalOrders',
                           icon: Icons.receipt_long_rounded,
                           bgColor: const Color(0xFFFFF3E0),
@@ -298,7 +302,7 @@ class _WholesalerDashboardScreenState extends State<WholesalerDashboardScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Quick Actions',
+                    tr('dashboard_quick_actions'),
                     style: GoogleFonts.poppins(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -310,7 +314,7 @@ class _WholesalerDashboardScreenState extends State<WholesalerDashboardScreen> {
                     children: [
                       _QuickAction(
                         icon: Icons.add_box_rounded,
-                        label: 'Add Product',
+                        label: tr('add_product'),
                         color: const Color(0xFF6C63FF),
                         onTap: () => Navigator.of(context).push(
                           MaterialPageRoute(
@@ -321,7 +325,7 @@ class _WholesalerDashboardScreenState extends State<WholesalerDashboardScreen> {
                       const SizedBox(width: 12),
                       _QuickAction(
                         icon: Icons.inventory_rounded,
-                        label: 'Inventory',
+                        label: tr('dashboard_inventory'),
                         color: const Color(0xFF4ECDC4),
                         onTap: () => Navigator.of(context).push(
                           MaterialPageRoute(
@@ -332,7 +336,7 @@ class _WholesalerDashboardScreenState extends State<WholesalerDashboardScreen> {
                       const SizedBox(width: 12),
                       _QuickAction(
                         icon: Icons.bar_chart_rounded,
-                        label: 'Analytics',
+                        label: tr('dashboard_analytics'),
                         color: const Color(0xFFFF9800),
                         onTap: () => Navigator.of(context).push(
                           MaterialPageRoute(
@@ -343,7 +347,7 @@ class _WholesalerDashboardScreenState extends State<WholesalerDashboardScreen> {
                       const SizedBox(width: 12),
                       _QuickAction(
                         icon: Icons.settings_rounded,
-                        label: 'Settings',
+                        label: tr('settings'),
                         color: const Color(0xFFFF6B9D),
                         onTap: () => Navigator.of(context).push(
                           MaterialPageRoute(
@@ -368,7 +372,7 @@ class _WholesalerDashboardScreenState extends State<WholesalerDashboardScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Order Status',
+                    tr('dashboard_order_status'),
                     style: GoogleFonts.poppins(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -377,14 +381,14 @@ class _WholesalerDashboardScreenState extends State<WholesalerDashboardScreen> {
                   ),
                   const SizedBox(height: 14),
                   _OrderStatusCard(
-                    label: 'In Progress',
+                    label: tr('dashboard_in_progress'),
                     count: activeOrders,
                     color: const Color(0xFF6C63FF),
                     bgColor: const Color(0xFFEEEBFF),
                   ),
                   const SizedBox(height: 10),
                   _OrderStatusCard(
-                    label: 'Completed',
+                    label: tr('dashboard_completed'),
                     count: totalOrders - activeOrders < 0
                         ? 0
                         : totalOrders - activeOrders,
@@ -584,7 +588,7 @@ class _OrderStatusCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
-              '$count orders',
+              tr('dashboard_orders_count', namedArgs: {'count': '$count'}),
               style: TextStyle(
                 color: color,
                 fontWeight: FontWeight.w700,

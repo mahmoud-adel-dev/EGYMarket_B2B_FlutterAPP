@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -144,15 +145,11 @@ class ProfileHeaderWidget extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _buildStatItem(context, profile.totalOrders, 'Orders'),
+                    _buildStatItem(context, profile.totalOrders, tr('orders')),
                     _buildDivider(),
-                    _buildStatItem(context, '⭐ ${profile.rating}', 'Rating'),
+                    _buildStatItem(context, '⭐ ${profile.rating}', tr('rating')),
                     _buildDivider(),
-                    _buildStatItem(
-                      context,
-                      '${profile.totalProducts}',
-                      'Products',
-                    ),
+                    _buildStatItem(context, '${profile.totalProducts}', tr('total_products')),
                   ],
                 ),
               ),

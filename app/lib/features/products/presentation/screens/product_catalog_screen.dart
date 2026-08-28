@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -169,7 +170,7 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
   }
 
   Future<void> _followWholesaler(String organizationId) async {
-    final buyer = await requireBuyer(context, actionLabel: 'متابعة المورد');
+    final buyer = await requireBuyer(context, actionLabel: tr('catalog_follow_supplier'));
     if (buyer == null || !mounted) return;
     try {
       await _network.post<Map<String, dynamic>>(
@@ -184,7 +185,7 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
       );
       ErrorHandler.showSecureSnackBar(
         context,
-        'تمت متابعة المورد',
+        tr('catalog_followed_supplier'),
         isError: false,
       );
     } catch (error) {
@@ -222,20 +223,25 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text('فلترة ذكية', style: Theme.of(context).textTheme.titleLarge),
+              Text(
+                  tr('catalog_smart_filter'),
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String?>(
                 initialValue: selectedSaleType,
-                decoration: const InputDecoration(labelText: 'طريقة البيع'),
-                items: const [
+                decoration: InputDecoration(
+                  labelText: tr('catalog_sale_type'),
+                ),
+                items: [
                   DropdownMenuItem<String?>(
                     value: null,
-                    child: Text('كل طرق البيع'),
+                    child: Text(tr('catalog_all_sale_types')),
                   ),
-                  DropdownMenuItem(value: 'piece', child: Text('بالقطعة')),
-                  DropdownMenuItem(value: 'pack', child: Text('بالعبوة')),
-                  DropdownMenuItem(value: 'carton', child: Text('بالكرتونة')),
-                  DropdownMenuItem(value: 'pallet', child: Text('بالطبالي')),
+                  DropdownMenuItem(value: 'piece', child: Text(tr('sale_type_piece'))),
+                  DropdownMenuItem(value: 'pack', child: Text(tr('sale_type_pack'))),
+                  DropdownMenuItem(value: 'carton', child: Text(tr('sale_type_carton'))),
+                  DropdownMenuItem(value: 'pallet', child: Text(tr('sale_type_pallet'))),
                 ],
                 onChanged: (value) =>
                     setSheetState(() => selectedSaleType = value),
@@ -243,24 +249,27 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 initialValue: selectedSort,
-                decoration: const InputDecoration(labelText: 'الترتيب'),
-                items: const [
+                decoration: InputDecoration(labelText: tr('sort')),
+                items: [
                   DropdownMenuItem(
                     value: 'relevance',
-                    child: Text('الأكثر صلة'),
+                    child: Text(tr('sort_relevance')),
                   ),
-                  DropdownMenuItem(value: 'newest', child: Text('الأحدث')),
+                  DropdownMenuItem(
+                    value: 'newest',
+                    child: Text(tr('sort_newest')),
+                  ),
                   DropdownMenuItem(
                     value: 'price_asc',
-                    child: Text('السعر: الأقل أولًا'),
+                    child: Text(tr('sort_price_asc')),
                   ),
                   DropdownMenuItem(
                     value: 'price_desc',
-                    child: Text('السعر: الأعلى أولًا'),
+                    child: Text(tr('sort_price_desc')),
                   ),
                   DropdownMenuItem(
                     value: 'stock_desc',
-                    child: Text('الأعلى مخزونًا'),
+                    child: Text(tr('sort_stock_desc')),
                   ),
                 ],
                 onChanged: (value) =>
@@ -275,7 +284,9 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
-                      decoration: const InputDecoration(labelText: 'أقل سعر'),
+                      decoration: InputDecoration(
+                        labelText: tr('catalog_min_price'),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -285,7 +296,9 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
-                      decoration: const InputDecoration(labelText: 'أعلى سعر'),
+                      decoration: InputDecoration(
+                        labelText: tr('catalog_max_price'),
+                      ),
                     ),
                   ),
                 ],
@@ -293,7 +306,7 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
               const SizedBox(height: 20),
               FilledButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: const Text('تطبيق'),
+                child: Text(tr('apply')),
               ),
             ],
           ),
@@ -367,7 +380,10 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
       if (!mounted) return false;
       ErrorHandler.showSecureSnackBar(
         context,
-        'تمت إضافة ${product.minOrderQuantity} من ${product.productName} للسلة',
+        tr('added_to_cart', namedArgs: {
+          'qty': '${product.minOrderQuantity}',
+          'name': product.productName,
+        }),
         isError: false,
       );
       return true;
@@ -408,14 +424,13 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
   @override
   Widget build(BuildContext context) {
     final isDesktop = MediaQuery.sizeOf(context).width >= 1024;
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: isDesktop
           ? null
           : AppBar(
-              title: Text(isArabic ? 'كتالوج الجملة' : 'Wholesale catalog'),
+              title: Text(tr('wholesale_catalog')),
               actions: [
                 IconButton(
                   icon: const Icon(Icons.shopping_cart_outlined),
@@ -449,16 +464,12 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        isArabic
-                            ? 'سوق الجملة الموثوق'
-                            : 'Trusted wholesale marketplace',
+                        tr('catalog_trusted_heading'),
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        isArabic
-                            ? 'قارن الموردين والكميات الدنيا قبل إنشاء الطلب'
-                            : 'Compare suppliers and minimum quantities before ordering',
+                        tr('catalog_compare_subtitle'),
                         style: Theme.of(
                           context,
                         ).textTheme.bodySmall?.copyWith(color: AppColors.muted),
@@ -470,9 +481,7 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
                     child: TextField(
                       controller: _search,
                       decoration: InputDecoration(
-                        hintText: isArabic
-                            ? 'ابحث باسم المنتج أو المورد'
-                            : 'Search product or supplier',
+                        hintText: tr('catalog_search_hint'),
                         prefixIcon: const Icon(Icons.search_rounded),
                         suffixIcon: _search.text.isEmpty
                             ? IconButton(
@@ -523,7 +532,7 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
                     Padding(
                       padding: const EdgeInsetsDirectional.only(end: 8),
                       child: ChoiceChip(
-                        label: const Text('الكل'),
+                        label: Text(tr('all')),
                         selected: _category == null,
                         onSelected: (_) {
                           setState(() => _category = null);
@@ -557,10 +566,10 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
                   isDesktop ? 6 : 16,
                   8,
                 ),
-                child: const Text(
-                  'موردون مقترحون حسب اهتماماتك',
-                  style: TextStyle(fontWeight: FontWeight.w800),
-                ),
+                child: Text(
+                    tr('catalog_recommended_suppliers'),
+                    style: const TextStyle(fontWeight: FontWeight.w800),
+                  ),
               ),
               SizedBox(
                 height: 94,
@@ -601,7 +610,9 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
                                   ),
                                 ),
                                 Text(
-                                  '${supplier['matching_products'] ?? 0} منتجات مناسبة',
+                                  tr('catalog_matching_products', namedArgs: {
+                                    'count': supplier['matching_products'] ?? 0,
+                                  }),
                                   style: const TextStyle(
                                     fontSize: 11,
                                     color: AppColors.muted,
@@ -611,7 +622,7 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
                             ),
                           ),
                           IconButton(
-                            tooltip: 'متابعة',
+                            tooltip: tr('catalog_follow'),
                             onPressed: () =>
                                 _followWholesaler(supplier['id'].toString()),
                             icon: const Icon(
@@ -642,7 +653,7 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
                   ? ListView(
                       children: [
                         const SizedBox(height: 100),
-                        _CatalogEmptyState(isArabic: isArabic),
+                        const _CatalogEmptyState(),
                       ],
                     )
                   : GridView.builder(
@@ -669,7 +680,6 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
                         final product = _products[index];
                         return _CatalogProductCard(
                           product: product,
-                          isArabic: isArabic,
                           onAdd: () => _addToCart(product),
                           onTap: () => _showProductDetails(product),
                         );
@@ -685,13 +695,11 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
 
 class _CatalogProductCard extends StatelessWidget {
   final CartItemModel product;
-  final bool isArabic;
   final VoidCallback onAdd;
   final VoidCallback onTap;
 
   const _CatalogProductCard({
     required this.product,
-    required this.isArabic,
     required this.onAdd,
     required this.onTap,
   });
@@ -723,7 +731,9 @@ class _CatalogProductCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        '${isArabic ? 'حد أدنى' : 'MOQ'} ${product.minOrderQuantity}',
+                        tr('catalog_moq_badge', namedArgs: {
+                          'qty': '${product.minOrderQuantity}',
+                        }),
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 10,
@@ -754,7 +764,9 @@ class _CatalogProductCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          '${product.unitPrice.toStringAsFixed(2)} ${isArabic ? 'ج.م' : 'EGP'}',
+                          tr('price', namedArgs: {
+                            'price': product.unitPrice.toStringAsFixed(2),
+                          }),
                           style: Theme.of(context).textTheme.titleMedium
                               ?.copyWith(
                                 color: AppColors.primary,
@@ -763,7 +775,7 @@ class _CatalogProductCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        isArabic ? '/ وحدة' : '/ unit',
+                        tr('unit_per'),
                         style: Theme.of(
                           context,
                         ).textTheme.bodySmall?.copyWith(color: AppColors.muted),
@@ -801,7 +813,7 @@ class _CatalogProductCard extends StatelessWidget {
                         Icons.add_shopping_cart_rounded,
                         size: 18,
                       ),
-                      label: Text(isArabic ? 'أضف للسلة' : 'Add to cart'),
+                      label: Text(tr('add_cart')),
                     ),
                   ),
                 ],
@@ -948,10 +960,10 @@ class _ProductDetailsSheet extends StatelessWidget {
     final tiers = details['price_tiers'] as List<dynamic>? ?? const [];
     final discount = (details['discount_percent'] as num?)?.toDouble() ?? 0;
     final saleType = switch (details['sale_type']) {
-      'pack' => 'بالعبوة',
-      'carton' => 'بالكرتونة',
-      'pallet' => 'بالطبالي',
-      _ => 'بالقطعة',
+      'pack' => tr('sale_type_pack'),
+      'carton' => tr('sale_type_carton'),
+      'pallet' => tr('sale_type_pallet'),
+      _ => tr('sale_type_piece'),
     };
     return FractionallySizedBox(
       heightFactor: .92,
@@ -993,28 +1005,37 @@ class _ProductDetailsSheet extends StatelessWidget {
                       _DetailBadge(icon: Icons.sell_outlined, text: saleType),
                       _DetailBadge(
                         icon: Icons.inventory_2_outlined,
-                        text: 'الحد الأدنى ${details['moq'] ?? 1}',
+                        text: tr('catalog_moq_badge', namedArgs: {
+                          'qty': details['moq'] ?? 1,
+                        }),
                       ),
                       _DetailBadge(
                         icon: Icons.layers_outlined,
-                        text: '${details['units_per_sale'] ?? 1} قطعة/وحدة',
+                        text: tr('catalog_units_per_sale', namedArgs: {
+                          'count': details['units_per_sale'] ?? 1,
+                        }),
                       ),
                       _DetailBadge(
                         icon: Icons.schedule_outlined,
-                        text: 'تجهيز ${details['lead_time_days'] ?? 1} يوم',
+                        text: tr('catalog_lead_time', namedArgs: {
+                          'days': details['lead_time_days'] ?? 1,
+                        }),
                       ),
                       if (discount > 0)
                         _DetailBadge(
                           icon: Icons.percent_rounded,
-                          text:
-                              'خصم ${discount.toStringAsFixed(discount % 1 == 0 ? 0 : 1)}%',
+                          text: tr('catalog_discount', namedArgs: {
+                            'percent': discount.toStringAsFixed(
+                              discount % 1 == 0 ? 0 : 1,
+                            ),
+                          }),
                         ),
                     ],
                   ),
                   if (tiers.isNotEmpty) ...[
                     const SizedBox(height: 22),
                     Text(
-                      'أسعار الكميات',
+                      tr('catalog_tier_prices'),
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w800,
                       ),
@@ -1030,9 +1051,15 @@ class _ProductDetailsSheet extends StatelessWidget {
                           Icons.trending_down_rounded,
                           color: AppColors.primary,
                         ),
-                        title: Text('من ${tier['min_quantity']} وحدة'),
+                        title: Text(
+                          tr('catalog_tier_from', namedArgs: {
+                            'count': tier['min_quantity'],
+                          }),
+                        ),
                         trailing: Text(
-                          '${price.toStringAsFixed(2)} ج.م',
+                          tr('price', namedArgs: {
+                            'price': price.toStringAsFixed(2),
+                          }),
                           style: const TextStyle(fontWeight: FontWeight.w800),
                         ),
                       );
@@ -1041,7 +1068,7 @@ class _ProductDetailsSheet extends StatelessWidget {
                   if (specifications.isNotEmpty) ...[
                     const SizedBox(height: 18),
                     Text(
-                      'المواصفات',
+                      tr('catalog_specifications'),
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w800,
                       ),
@@ -1076,7 +1103,7 @@ class _ProductDetailsSheet extends StatelessWidget {
                       .isNotEmpty) ...[
                     const SizedBox(height: 18),
                     Text(
-                      'سياسة الاستبدال',
+                      tr('catalog_return_policy'),
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w800,
                       ),
@@ -1087,7 +1114,7 @@ class _ProductDetailsSheet extends StatelessWidget {
                   if (faqs.isNotEmpty) ...[
                     const SizedBox(height: 18),
                     Text(
-                      'الأسئلة الشائعة',
+                      tr('catalog_faqs'),
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w800,
                       ),
@@ -1120,20 +1147,22 @@ class _ProductDetailsSheet extends StatelessWidget {
                   OutlinedButton.icon(
                     onPressed: onInquiry,
                     icon: const Icon(Icons.question_answer_outlined),
-                    label: const Text('إرسال استفسار إلى المورد'),
+                    label: Text(tr('catalog_inquiry_to_supplier')),
                   ),
                   const SizedBox(height: 8),
                   FilledButton.icon(
                     onPressed: onPurchase,
                     icon: const Icon(Icons.shopping_bag_rounded),
                     label: Text(
-                      'طلب شراء الحد الأدنى (${product.minOrderQuantity})',
+                      tr('catalog_moq_purchase', namedArgs: {
+                        'qty': '${product.minOrderQuantity}',
+                      }),
                     ),
                   ),
                   TextButton.icon(
                     onPressed: onAdd,
                     icon: const Icon(Icons.add_shopping_cart_rounded),
-                    label: const Text('إضافة للسلة ومتابعة التسوق'),
+                    label: Text(tr('catalog_add_to_cart_continue')),
                   ),
                 ],
               ),
@@ -1264,9 +1293,7 @@ class _DetailBadge extends StatelessWidget {
 }
 
 class _CatalogEmptyState extends StatelessWidget {
-  final bool isArabic;
-
-  const _CatalogEmptyState({required this.isArabic});
+  const _CatalogEmptyState();
 
   @override
   Widget build(BuildContext context) {
@@ -1288,12 +1315,12 @@ class _CatalogEmptyState extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            isArabic ? 'لا توجد منتجات مطابقة' : 'No matching products',
+            tr('catalog_no_matching'),
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 5),
           Text(
-            isArabic ? 'جرّب تغيير عبارة البحث' : 'Try another search term',
+            tr('catalog_try_another_search'),
             style: Theme.of(
               context,
             ).textTheme.bodySmall?.copyWith(color: AppColors.muted),

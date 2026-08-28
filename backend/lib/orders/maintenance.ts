@@ -1,8 +1,50 @@
 import Order from '@/models/Order';
 import PaymentObligation from '@/models/PaymentObligation';
 import { releaseReservedStockOnce } from '@/lib/orders/order_service';
+import Product from '@/models/Product';
 import { createOrganizationNotification } from '@/lib/notifications/notification_service';
 import { appendOrderSystemEvent } from '@/lib/orders/order_chat';
+
+/**
+ * O-1: Release orphaned inventory / reservations left behind by a crash in the
+ * standalone (non-replica-set) fallback of `acceptOrder`. On such deployments a
+ * crash between reserving stock and the status transition leaves the order in
+ * `requested` with `inventory_reserved: true` but never reaches `awaiting_payments`.
+ *
+ * Normally a `requested` order holds no reservation (the flag is only set at
+ * accept). Reaching `awaiting_payments` is required for a legitimate reservation,
+ * so any `requested` order still flagged as reserved past a settlement horizon is
+ * genuinely orphaned and safe to release. `releaseReservedStockOnce` is gated by
+ * the single-winner flag claim, so this is idempotent across concurrent runs.
+ */
+export async function reconcileOrphanedReservations(now = new Date(), staleMs = 30 * 60 * 1000) {
+  const cutoff = new Date(now.getTime() - staleMs);
+  const orphans = await Order.find({
+    status: 'requested',
+    inventory_reserved: true,
+    inventory_committed: false,
+    updatedAt: { $lte: cutoff },
+  }).lean();
+
+  let released = 0;
+  for (const order of orphans) {
+    const updated = await Order.findOneAndUpdate(
+      { _id: order._id, status: 'requested', inventory_reserved: true, inventory_committed: false },
+      { $set: { inventory_reserved: false } },
+      { new: true }
+    );
+    if (!updated) continue; // concurrent winner already handled it
+    await releaseReservedStockOnce(updated);
+    await appendOrderSystemEvent({
+      order: updated,
+      body: 'تم تحرير مخزون محجوز لطلب عالق في حالة طلب (تعطل غير متوقع)',
+      eventType: 'system',
+      metadata: { status: 'requested', note: 'orphaned reservation reconciled' },
+    });
+    released += 1;
+  }
+  return { scanned: orphans.length, released };
+}
 
 /**
  * Cancel orders whose payment deadline expired without any submitted proof.

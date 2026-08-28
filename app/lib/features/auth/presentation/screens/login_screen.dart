@@ -7,6 +7,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../data/models/auth_models.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
+import '../widgets/role_selector_widget.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -69,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen>
     if (email.isEmpty || !email.contains('@')) {
       ErrorHandler.showSecureSnackBar(
         context,
-        'أدخل البريد الإلكتروني أولًا.',
+        tr('resend_email_first'),
         isError: true,
       );
       return;
@@ -83,8 +84,8 @@ class _LoginScreenState extends State<LoginScreen>
       ErrorHandler.showSecureSnackBar(
         context,
         verifiedInDevelopment
-            ? 'تم تأكيد البريد في بيئة التطوير. يمكنك تسجيل الدخول الآن.'
-            : 'تم إرسال رابط تأكيد جديد إلى بريدك الإلكتروني.',
+            ? tr('resend_verified_in_dev')
+            : tr('resend_sent'),
         isError: false,
       );
     } catch (error) {
@@ -118,7 +119,7 @@ class _LoginScreenState extends State<LoginScreen>
                 'welcome_back',
                 namedArgs: {
                   'name': state.user.name,
-                  'role': state.user.role.displayName,
+                  'role': roleLabel(state.user.role),
                 },
               ),
               isError: false,
@@ -135,9 +136,7 @@ class _LoginScreenState extends State<LoginScreen>
                   if (isWide)
                     Expanded(
                       flex: 11,
-                      child: _LoginValuePanel(
-                        isArabic: context.locale.languageCode == 'ar',
-                      ),
+                      child: _LoginValuePanel(),
                     ),
                   Expanded(
                     flex: isWide ? 10 : 1,
@@ -299,11 +298,7 @@ class _LoginScreenState extends State<LoginScreen>
                             Icons.mark_email_unread_outlined,
                             size: 17,
                           ),
-                    label: Text(
-                      context.locale.languageCode == 'ar'
-                          ? 'إعادة إرسال تأكيد البريد'
-                          : 'Resend email verification',
-                    ),
+                    label: Text(tr('resend_verification')),
                   ),
                 ),
                 const SizedBox(height: 22),
@@ -354,29 +349,15 @@ class _LoginScreenState extends State<LoginScreen>
 }
 
 class _LoginValuePanel extends StatelessWidget {
-  final bool isArabic;
-
-  const _LoginValuePanel({required this.isArabic});
+  const _LoginValuePanel();
 
   @override
   Widget build(BuildContext context) {
-    final features = isArabic
-        ? const [
-            ('موردون موثقون', 'تعامل مع شركات وتجار جملة بعد مراجعة بياناتهم'),
-            ('مدفوعات محلية واضحة', 'إثبات وتأكيد مستقل لكل طرف في الطلب'),
-            ('إدارة متكاملة', 'طلبات ومخزون وشحن واشتراك من مساحة عمل واحدة'),
-          ]
-        : const [
-            ('Verified suppliers', 'Trade with reviewed wholesale businesses'),
-            (
-              'Clear local payments',
-              'Separate proof and confirmation for every party',
-            ),
-            (
-              'One business workspace',
-              'Orders, stock, shipping and subscription together',
-            ),
-          ];
+    final features = [
+      (tr('value_suppliers'), tr('value_suppliers_desc')),
+      (tr('value_payments'), tr('value_payments_desc')),
+      (tr('value_workspace'), tr('value_workspace_desc')),
+    ];
     return ColoredBox(
       color: AppColors.navy,
       child: Padding(
@@ -399,10 +380,10 @@ class _LoginValuePanel extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 13),
-                const Column(
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'SEALS',
                       style: TextStyle(
                         color: Colors.white,
@@ -412,8 +393,8 @@ class _LoginValuePanel extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'B2B MARKETPLACE',
-                      style: TextStyle(
+                      tr('b2b_marketplace'),
+                      style: const TextStyle(
                         color: Colors.white54,
                         fontSize: 9,
                         letterSpacing: 1.3,
@@ -434,9 +415,7 @@ class _LoginValuePanel extends StatelessWidget {
                 ),
               ),
               child: Text(
-                isArabic
-                    ? 'منصة الجملة للأعمال في مصر'
-                    : 'Wholesale infrastructure for Egypt',
+                tr('value_tagline'),
                 style: const TextStyle(
                   color: AppColors.primaryBright,
                   fontWeight: FontWeight.w700,
@@ -446,9 +425,7 @@ class _LoginValuePanel extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              isArabic
-                  ? 'تجارة جملة أكثر وضوحًا،\nمن أول طلب حتى التسليم.'
-                  : 'Wholesale trade, clearer\nfrom order to delivery.',
+              tr('value_closing_line'),
               style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.w800,

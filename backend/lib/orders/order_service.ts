@@ -305,11 +305,26 @@ export async function acceptOrder(orderId: string, actor: ActorContext): Promise
 
     await reserveItems(order.items, session);
 
+    // O-1: persist the reservation marker atomically with the reservation itself.
+    // This makes the reservation durable even if the standalone fallback crashes
+    // between here and the status transition, so a reconciliation sweep can find
+    // and release the (now-detectable) orphan instead of double-reserving. On
+    // replica sets this and the transition below roll back together in the
+    // transaction.
+    order = (await Order.findByIdAndUpdate(
+      order._id,
+      { $set: { inventory_reserved: true } },
+      { new: true, session }
+    ))!;
+
     let settings;
     try {
       settings = await insertObligationsIdempotent(order, session);
     } catch (error) {
       await reserveCompensation(order.items, session);
+      // Keep the order's reservation flag consistent after a clean rollback so a
+      // reconciliation sweep never double-releases a reservation we already undid.
+      await Order.updateOne({ _id: order._id, inventory_committed: false }, { $set: { inventory_reserved: false } }, { session });
       throw error;
     }
 
@@ -329,6 +344,7 @@ export async function acceptOrder(orderId: string, actor: ActorContext): Promise
     if (!updated) {
       // Lost an accept race in a non-transactional deployment — undo our reservation.
       await reserveCompensation(order.items, session);
+      await Order.updateOne({ _id: order._id, status: 'requested', inventory_committed: false }, { $set: { inventory_reserved: false } }, { session });
       throw new ApiError(409, 'Order was already processed by another user', 'ORDER_CONFLICT');
     }
     return updated;
@@ -396,6 +412,18 @@ export async function cancelOrderByBuyer(order: IOrder, reason: string, actor: A
 /** Buyer confirms receipt: transition is the gate; inventory commits exactly once. */
 export async function confirmReceipt(order: IOrder, actor: ActorContext): Promise<IOrder> {
   return runInTransaction(async (session) => {
+    // O-3 defense in depth: an order may only complete once every money obligation
+    // is confirmed. Today this is guaranteed implicitly by the state machine (an
+    // order must pass through `preparing`, which requires all obligations confirmed),
+    // but we gate here explicitly so a future route/state change can never complete
+    // an unpaid order.
+    const unpaid = await PaymentObligation.exists({
+      order_id: order._id,
+      status: { $in: ['pending', 'proof_submitted', 'rejected', 'disputed'] },
+    }).session(session ?? null);
+    if (unpaid) {
+      throw new ApiError(409, 'Order cannot be completed because not all payments are confirmed', 'PAYMENT_NOT_CONFIRMED');
+    }
     const from: OrderStatus[] =
       order.fulfillment_method === 'buyer_pickup' ? ['ready_for_pickup'] : ['delivered'];
     const updated = await transitionOrder(order._id, from, 'completed', actor, {}, 'Buyer confirmed receipt', session);

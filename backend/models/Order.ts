@@ -57,6 +57,9 @@ export interface IOrder extends Document {
   payment_due_at?: Date;
   /** Immutable business milestone: once set, later disputes/refunds never re-lock the buyer's order room. */
   buyer_chat_unlocked_at?: Date;
+  /** Client-generated idempotency key: the same logical submit (retry/double-tap)
+   *  reuses one key so it cannot create duplicate orders. Nullable. */
+  client_order_id?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -139,10 +142,19 @@ const OrderSchema = new Schema<IOrder>(
     cancellation_reason: { type: String, trim: true, maxlength: 1000 },
     payment_due_at: { type: Date, index: true },
     buyer_chat_unlocked_at: Date,
+    client_order_id: { type: String, trim: true, maxlength: 100 },
   },
   { timestamps: true }
 );
 OrderSchema.set('optimisticConcurrency', true);
+
+// Idempotency: at most one order per creator per client idempotency key.
+// The partial filter means an absent key is not constrained (attributes are
+// optional), while a supplied key dedupes retries/double-taps.
+OrderSchema.index(
+  { created_by: 1, client_order_id: 1 },
+  { unique: true, partialFilterExpression: { client_order_id: { $type: 'string' } } }
+);
 
 OrderSchema.index({ buyer_organization_id: 1, createdAt: -1 });
 OrderSchema.index({ buyer_organization_id: 1, status: 1, fulfillment_method: 1 });

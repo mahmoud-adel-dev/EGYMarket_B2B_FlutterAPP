@@ -36,6 +36,16 @@ export const POST = withAuth([], async (req, context, session) => {
   if (!organization || !plan) {
     return NextResponse.json({ error: 'Not Found', message: 'Organization or plan not found' }, { status: 404 });
   }
+
+  // A-1: Only the organization owner or a manager may initiate a (potentially
+  // paid) subscription obligation. Plain staff members lack billing authority.
+  const memberRole = session.user.organizationMemberRole || session.user.role;
+  if (!['owner', 'manager', 'Admin'].includes(memberRole)) {
+    return NextResponse.json(
+      { error: 'Forbidden', message: 'Only the organization owner or manager can manage subscription billing' },
+      { status: 403 }
+    );
+  }
   if (!plan.organization_types.includes(organization.type)) {
     return NextResponse.json({ error: 'Bad Request', message: 'Plan is not available for this organization type' }, { status: 400 });
   }

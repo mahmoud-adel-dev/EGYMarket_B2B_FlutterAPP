@@ -79,9 +79,9 @@ class _WholesalersListScreenState extends State<WholesalersListScreen> {
             child: TextField(
               controller: _search,
               textInputAction: TextInputAction.search,
-              decoration: const InputDecoration(
-                hintText: 'ابحث باسم التاجر أو نشاطه',
-                prefixIcon: Icon(Icons.search_rounded),
+              decoration: InputDecoration(
+                hintText: tr('wholesalers_search_hint'),
+                prefixIcon: const Icon(Icons.search_rounded),
               ),
               onChanged: (_) {
                 _debounce?.cancel();
@@ -115,7 +115,7 @@ class _WholesalersListScreenState extends State<WholesalersListScreen> {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _fetchWholesalers,
-              child: const Text('Retry'),
+              child: Text(tr('retry')),
             ),
           ],
         ),
@@ -123,7 +123,7 @@ class _WholesalersListScreenState extends State<WholesalersListScreen> {
     }
 
     if (_wholesalers.isEmpty) {
-      return const Center(child: Text('No wholesalers found.'));
+      return Center(child: Text(tr('wholesalers_empty')));
     }
 
     return ListView.builder(
@@ -236,7 +236,14 @@ class _WholesalersListScreenState extends State<WholesalersListScreen> {
                                   size: 16,
                                 ),
                                 const SizedBox(width: 4),
-                                Text('${wholesaler.totalProducts} Products'),
+                                Text(
+                                  tr(
+                                    'wholesalers_products_count',
+                                    namedArgs: {
+                                      'count': '${wholesaler.totalProducts}',
+                                    },
+                                  ),
+                                ),
                               ],
                             ),
                           ],

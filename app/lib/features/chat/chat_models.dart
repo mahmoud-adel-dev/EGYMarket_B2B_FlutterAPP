@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:easy_localization/easy_localization.dart';
+
 enum ChatMessageType { text, system }
 
 enum ChatDeliveryState { sending, sent, failed }
@@ -84,10 +86,10 @@ class ChatConversationModel {
         .toList(growable: false);
     if (productTitle?.isNotEmpty == true) {
       return names.isEmpty
-          ? 'استفسار: $productTitle'
-          : '${names.join('، ')} · $productTitle';
+          ? tr('inquiry_title', namedArgs: {'product': productTitle!})
+          : '${names.join(tr('conversation_name_separator'))} ${tr('conversation_name_divider')} $productTitle';
     }
-    return names.isEmpty ? 'محادثة الطلب' : names.join('، ');
+    return names.isEmpty ? tr('conversation_order') : names.join(tr('conversation_name_separator'));
   }
 }
 

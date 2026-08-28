@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../data/models/auth_models.dart';
 import '../cubit/auth_cubit.dart';
@@ -18,19 +19,19 @@ Future<AuthUserModel?> requireAuthenticatedUser(
     context: context,
     builder: (dialogContext) => AlertDialog(
       icon: const Icon(Icons.lock_person_outlined),
-      title: const Text('تسجيل الدخول مطلوب'),
+      title: Text(tr('sign_in_required')),
       content: Text(
-        'يمكنك تصفح المنصة بحرية، لكن يجب تسجيل الدخول حتى تتمكن من $actionLabel.',
+        tr('login_required_body', namedArgs: {'action': actionLabel}),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(dialogContext, false),
-          child: const Text('لاحقًا'),
+          child: Text(tr('later')),
         ),
         FilledButton.icon(
           onPressed: () => Navigator.pop(dialogContext, true),
           icon: const Icon(Icons.login_rounded),
-          label: const Text('تسجيل الدخول'),
+          label: Text(tr('sign_in')),
         ),
       ],
     ),
@@ -57,7 +58,7 @@ Future<AuthUserModel?> requireBuyer(
   if (user.role == UserRole.retailer) return user;
 
   ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(content: Text('هذه العملية متاحة لحسابات المشترين فقط.')),
+    SnackBar(content: Text(tr('buyer_only_action'))),
   );
   return null;
 }

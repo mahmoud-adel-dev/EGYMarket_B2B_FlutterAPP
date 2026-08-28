@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -87,7 +88,12 @@ class ProductCardWidget extends StatelessWidget {
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
-                    'MOQ: ${product.minOrderQuantity} units',
+                    tr(
+                      'moq',
+                      namedArgs: {
+                        'qty': '${product.minOrderQuantity}',
+                      },
+                    ),
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
@@ -105,7 +111,7 @@ class ProductCardWidget extends StatelessWidget {
                         Icons.question_answer_outlined,
                         size: 16,
                       ),
-                      label: const Text('استفسار'),
+                      label: Text(tr('inquire')),
                     ),
                   ),
                 ],
@@ -119,7 +125,7 @@ class ProductCardWidget extends StatelessWidget {
                         Icons.add_shopping_cart_rounded,
                         size: 16,
                       ),
-                      label: const Text('أضف للسلة'),
+                      label: Text(tr('add_cart')),
                     ),
                   ),
                 ],

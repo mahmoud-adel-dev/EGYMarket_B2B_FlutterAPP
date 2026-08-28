@@ -45,8 +45,11 @@ export const PATCH = withAuth([], async (req, context, session) => {
         isRead: notification.is_read,
       },
     });
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Internal Server Error';
-    return NextResponse.json({ error: 'Internal Server Error', message }, { status: 500 });
+  } catch (_error: unknown) {
+    // Never echo internal exception details to clients (see A-3 in the security review).
+    return NextResponse.json(
+      { error: 'Internal Server Error', message: 'An unexpected error occurred' },
+      { status: 500 }
+    );
   }
 });

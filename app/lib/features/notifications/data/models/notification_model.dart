@@ -1,3 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
+
 enum NotificationTargetKind {
   order,
   conversation,
@@ -154,7 +156,7 @@ class NotificationModel {
     return NotificationModel(
       id: json['id']?.toString() ?? json['_id']?.toString() ?? '',
       type: json['type']?.toString() ?? 'system',
-      title: json['title']?.toString() ?? 'إشعار',
+      title: json['title']?.toString() ?? tr('notification_default_title'),
       body: json['body']?.toString() ?? '',
       orderId: value('orderId', 'order_id'),
       postId: value('postId', 'post_id'),

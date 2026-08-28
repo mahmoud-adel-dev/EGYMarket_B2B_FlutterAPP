@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/di/service_locator.dart';
@@ -51,7 +52,7 @@ class _LocalCartScreenState extends State<LocalCartScreen> {
     if (_items.isEmpty) {
       final buyer = await requireBuyer(
         context,
-        actionLabel: 'فتح السلة وإتمام الشراء',
+        actionLabel: tr('cart_open_and_checkout'),
       );
       if (buyer != null && mounted) {
         await Navigator.of(
@@ -63,12 +64,15 @@ class _LocalCartScreenState extends State<LocalCartScreen> {
     if (_items.map((item) => item.sellerOrganizationId).toSet().length > 1) {
       ErrorHandler.showSecureSnackBar(
         context,
-        'يجب إتمام طلب مستقل لكل بائع. اترك منتجات بائع واحد في السلة أولًا.',
+        tr('local_cart_multiple_sellers_error'),
         isError: true,
       );
       return;
     }
-    final buyer = await requireBuyer(context, actionLabel: 'إتمام طلب الشراء');
+    final buyer = await requireBuyer(
+      context,
+      actionLabel: tr('cart_checkout_purchase'),
+    );
     if (buyer == null || !mounted) return;
 
     setState(() => _syncing = true);
@@ -107,7 +111,7 @@ class _LocalCartScreenState extends State<LocalCartScreen> {
     );
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: AppBar(title: const Text('سلة المشتريات')),
+      appBar: AppBar(title: Text(tr('my_cart'))),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : Column(
@@ -116,18 +120,14 @@ class _LocalCartScreenState extends State<LocalCartScreen> {
                   width: double.infinity,
                   color: const Color(0xFFE4F2F0),
                   padding: const EdgeInsets.all(12),
-                  child: const Text(
-                    'تُحفظ هذه السلة على جهازك. يمكنك إضافة المنتجات دون حساب، وسيُطلب تسجيل الدخول عند إتمام الشراء فقط.',
+                  child: Text(
+                    tr('local_cart_saved_locally'),
                     textAlign: TextAlign.center,
                   ),
                 ),
                 Expanded(
                   child: _items.isEmpty
-                      ? const Center(
-                          child: Text(
-                            'السلة المحلية فارغة. أضف منتجات من الكتالوج.',
-                          ),
-                        )
+                      ? Center(child: Text(tr('local_cart_empty')))
                       : ListView.separated(
                           padding: const EdgeInsets.all(16),
                           itemCount: _items.length,
@@ -182,7 +182,10 @@ class _LocalCartScreenState extends State<LocalCartScreen> {
                                           ),
                                           Text(item.sellerName),
                                           Text(
-                                            '${item.subtotal.toStringAsFixed(2)} ج.م',
+                                            tr('price', namedArgs: {
+                                              'price': item.subtotal
+                                                  .toStringAsFixed(2),
+                                            }),
                                           ),
                                         ],
                                       ),
@@ -224,7 +227,7 @@ class _LocalCartScreenState extends State<LocalCartScreen> {
                                             Icons.delete_outline,
                                             size: 17,
                                           ),
-                                          label: const Text('حذف'),
+                                          label: Text(tr('remove')),
                                         ),
                                       ],
                                     ),
@@ -243,7 +246,9 @@ class _LocalCartScreenState extends State<LocalCartScreen> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Text(
-                          'الإجمالي المحلي: ${(total / 100).toStringAsFixed(2)} ج.م',
+                          tr('local_cart_total', namedArgs: {
+                            'price': (total / 100).toStringAsFixed(2),
+                          }),
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         const SizedBox(height: 8),
@@ -260,8 +265,8 @@ class _LocalCartScreenState extends State<LocalCartScreen> {
                               : const Icon(Icons.lock_open_rounded),
                           label: Text(
                             _items.isEmpty
-                                ? 'فتح سلة الحساب'
-                                : 'تسجيل الدخول وإتمام الطلب',
+                                ? tr('cart_open_account_cart')
+                                : tr('cart_signin_and_order'),
                           ),
                         ),
                       ],

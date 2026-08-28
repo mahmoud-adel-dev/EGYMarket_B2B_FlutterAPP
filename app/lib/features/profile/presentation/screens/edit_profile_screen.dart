@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -171,8 +172,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFFF5F6FA),
         elevation: 0,
-        title: const Text(
-          'Edit Profile',
+        title: Text(
+          tr('profile_edit'),
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Color(0xFF1A1D3B),
@@ -198,9 +199,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           else
             TextButton(
               onPressed: _save,
-              child: const Text(
-                'Save',
-                style: TextStyle(
+              child: Text(
+                tr('save'),
+                style: const TextStyle(
                   color: Color(0xFF6C63FF),
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
@@ -214,70 +215,70 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            _sectionLabel('Personal Information'),
+            _sectionLabel(tr('edit_personal_info')),
             _field(
               _nameCtrl,
-              'Full Name',
+              tr('profile_full_name'),
               Icons.person_outline,
               required: true,
             ),
             _field(
               _phoneCtrl,
-              'Phone Number',
+              tr('phone_number'),
               Icons.phone_outlined,
               required: true,
               keyboard: TextInputType.phone,
             ),
             _imageField(
               _avatarCtrl,
-              'رابط الصورة الشخصية',
+              tr('edit_avatar_url_label'),
               Icons.account_circle_outlined,
               isAvatar: true,
             ),
             _imageField(
               _coverCtrl,
-              'رابط صورة الغلاف',
+              tr('edit_cover_url_label'),
               Icons.panorama_outlined,
               isAvatar: false,
             ),
 
-            _sectionLabel('Location'),
+            _sectionLabel(tr('location')),
             _field(
               _governorateCtrl,
-              'Governorate',
+              tr('governorate'),
               Icons.location_city_outlined,
               required: true,
             ),
             _field(
               _addressCtrl,
-              'Street Address (optional)',
+              tr('edit_street_address'),
               Icons.home_outlined,
             ),
 
             ...[
-              _sectionLabel('Business Information'),
+              _sectionLabel(tr('edit_business_info')),
               _field(
                 _businessNameCtrl,
-                'Business Name',
+                tr('profile_business_name'),
                 Icons.storefront_outlined,
                 required: true,
               ),
               _field(
                 _businessDescCtrl,
-                'Business Description',
+                tr('edit_business_description'),
                 Icons.description_outlined,
                 maxLines: 3,
               ),
-              _sectionLabel('Business Contact'),
+              _sectionLabel(tr('edit_business_contact')),
               _field(
                 _whatsappCtrl,
-                'WhatsApp Number',
+                tr('edit_whatsapp_number'),
                 Icons.chat_bubble_outline,
                 keyboard: TextInputType.phone,
               ),
               _field(
                 _businessEmailCtrl,
-                'Business Email',
+                tr('business_email'),
                 Icons.alternate_email_rounded,
                 keyboard: TextInputType.emailAddress,
               ),
@@ -309,7 +310,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           strokeWidth: 2,
                         ),
                       )
-                    : const Text('Save Changes'),
+                    : Text(tr('edit_save_changes')),
               ),
             ),
             const SizedBox(height: 32),
@@ -369,8 +370,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ),
         ),
         validator: required
-            ? (v) =>
-                  (v == null || v.trim().isEmpty) ? '$label is required' : null
+            ? (v) => (v == null || v.trim().isEmpty)
+                  ? tr('edit_field_required', namedArgs: {'label': label})
+                  : null
             : null,
       ),
     );
@@ -398,8 +400,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               icon: const Icon(Icons.photo_library_outlined),
               label: Text(
                 (isAvatar ? _avatarFile : _coverFile) == null
-                    ? (isAvatar ? 'اختيار صورة شخصية' : 'اختيار صورة غلاف')
-                    : 'تم اختيار ${(isAvatar ? _avatarFile : _coverFile)!.name}',
+                    ? (isAvatar
+                          ? tr('edit_pick_avatar')
+                          : tr('edit_pick_cover'))
+                    : tr(
+                        'edit_selected_file',
+                        namedArgs: {
+                          'name': (isAvatar
+                                  ? _avatarFile
+                                  : _coverFile)!
+                              .name,
+                        },
+                      ),
               ),
             ),
           ),

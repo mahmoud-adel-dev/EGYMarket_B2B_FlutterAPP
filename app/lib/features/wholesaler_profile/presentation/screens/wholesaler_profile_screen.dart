@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -72,7 +73,7 @@ class _WholesalerProfileViewState extends State<_WholesalerProfileView>
   }
 
   Future<void> _submitRating() async {
-    final buyer = await requireBuyer(context, actionLabel: 'تقييم التاجر');
+    final buyer = await requireBuyer(context, actionLabel: tr('review_rate_merchant'));
     if (buyer == null || !mounted) return;
 
     try {
@@ -90,7 +91,7 @@ class _WholesalerProfileViewState extends State<_WholesalerProfileView>
         if (!mounted) return;
         ErrorHandler.showSecureSnackBar(
           context,
-          'يمكن تقييم التاجر بعد اكتمال أول طلب شراء منه فقط.',
+          tr('review_eligibility_error'),
           isError: true,
         );
         return;
@@ -113,7 +114,7 @@ class _WholesalerProfileViewState extends State<_WholesalerProfileView>
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          title: const Text('تقييم التاجر'),
+          title: Text(tr('review_rate_merchant')),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -137,29 +138,29 @@ class _WholesalerProfileViewState extends State<_WholesalerProfileView>
                 minLines: 3,
                 maxLines: 5,
                 maxLength: 1000,
-                decoration: const InputDecoration(
-                  labelText: 'اكتب تجربتك (اختياري)',
+                decoration: InputDecoration(
+                  labelText: tr('review_experience_label'),
                   alignLabelWithHint: true,
                 ),
               ),
               const SizedBox(height: 6),
-              const Text(
-                'لضمان مصداقية التقييمات، يجب أن يكون لديك طلب مكتمل من هذا التاجر.',
-                style: TextStyle(fontSize: 12, color: Colors.grey),
+              Text(
+                tr('review_credibility_note'),
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
               ),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('إلغاء'),
+              child: Text(tr('cancel')),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(dialogContext, {
                 'rating': stars,
                 'review': reviewController.text.trim(),
               }),
-              child: const Text('حفظ التقييم'),
+              child: Text(tr('review_save')),
             ),
           ],
         ),
@@ -181,7 +182,7 @@ class _WholesalerProfileViewState extends State<_WholesalerProfileView>
       if (!mounted) return;
       ErrorHandler.showSecureSnackBar(
         context,
-        'تم حفظ تقييمك وإشعار التاجر.',
+        tr('review_saved'),
         isError: false,
       );
       await context.read<WholesalerProfileCubit>().fetchWholesalerProfile(
@@ -212,9 +213,9 @@ class _WholesalerProfileViewState extends State<_WholesalerProfileView>
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('تمت إضافة المنتج للسلة المحلية.'),
+          content: Text(tr('product_added_local_cart')),
           action: SnackBarAction(
-            label: 'السلة',
+            label: tr('cart'),
             onPressed: () => Navigator.of(
               context,
             ).push(MaterialPageRoute(builder: (_) => const LocalCartScreen())),
@@ -260,7 +261,7 @@ class _WholesalerProfileViewState extends State<_WholesalerProfileView>
                           .read<WholesalerProfileCubit>()
                           .fetchWholesalerProfile(widget.wholesalerId);
                     },
-                    child: const Text('Retry'),
+                    child: Text(tr('retry')),
                   ),
                 ],
               ),
@@ -292,7 +293,7 @@ class _WholesalerProfileViewState extends State<_WholesalerProfileView>
                                 child: FilledButton.icon(
                                   onPressed: _submitRating,
                                   icon: const Icon(Icons.star_rounded),
-                                  label: const Text('تقييم التاجر'),
+                                  label: Text(tr('review_rate_merchant')),
                                 ),
                               ),
                               const SizedBox(width: 10),
@@ -303,7 +304,7 @@ class _WholesalerProfileViewState extends State<_WholesalerProfileView>
                                 icon: const Icon(
                                   Icons.question_answer_outlined,
                                 ),
-                                label: const Text('اختر منتجًا للاستفسار'),
+                                label: Text(tr('choose_product_inquiry')),
                               ),
                             ),
                           ],
@@ -323,10 +324,10 @@ class _WholesalerProfileViewState extends State<_WholesalerProfileView>
                           unselectedLabelColor: Colors.grey[600],
                           indicatorColor: Colors.blueAccent,
                           indicatorWeight: 3,
-                          tabs: const [
-                            Tab(text: 'Feed (Videos)'),
-                            Tab(text: 'Products'),
-                            Tab(text: 'Reviews'),
+                          tabs: [
+                            Tab(text: tr('tab_feed_videos')),
+                            Tab(text: tr('products_tab')),
+                            Tab(text: tr('reviews_tab')),
                           ],
                         ),
                         backgroundColor: Theme.of(
@@ -362,7 +363,7 @@ class _WholesalerProfileViewState extends State<_WholesalerProfileView>
   /// Tab 1: Video Feed with Memory Management
   Widget _buildFeedTab(WholesalerProfileLoaded state) {
     if (state.videoPosts.isEmpty) {
-      return const Center(child: Text('No video posts available.'));
+      return Center(child: Text(tr('empty_feed_videos')));
     }
 
     return ListView.builder(
@@ -378,7 +379,7 @@ class _WholesalerProfileViewState extends State<_WholesalerProfileView>
   /// Tab 2: Products Sliver Grid with Cached Images
   Widget _buildProductsTab(WholesalerProfileLoaded state) {
     if (state.products.isEmpty) {
-      return const Center(child: Text('No products listed yet.'));
+      return Center(child: Text(tr('empty_products_listed')));
     }
 
     return GridView.builder(
@@ -408,7 +409,7 @@ class _WholesalerProfileViewState extends State<_WholesalerProfileView>
   /// Tab 3: Reviews List
   Widget _buildReviewsTab(WholesalerProfileLoaded state) {
     if (state.reviews.isEmpty) {
-      return const Center(child: Text('No reviews yet.'));
+      return Center(child: Text(tr('no_reviews')));
     }
 
     return ListView.separated(

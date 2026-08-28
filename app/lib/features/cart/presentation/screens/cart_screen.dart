@@ -79,7 +79,7 @@ class CartScreen extends StatelessWidget {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            'تُطبّق الكمية الدنيا لكل صنف. ترسل الخطوة التالية طلب شراء للبائع دون دفع فوري، ويضاف رسم المنصة 50 ج.م لكل طلب.',
+                            tr('cart_moq_banner'),
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.amber[900],
@@ -146,7 +146,11 @@ class CartScreen extends StatelessWidget {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        '${item.unitPrice.toStringAsFixed(2)} ج.م / وحدة',
+                                        tr('cart_unit_price', namedArgs: {
+                                          'price': item.unitPrice.toStringAsFixed(
+                                            2,
+                                          ),
+                                        }),
                                         style: const TextStyle(
                                           color: Colors.blueAccent,
                                           fontWeight: FontWeight.w600,
@@ -165,7 +169,9 @@ class CartScreen extends StatelessWidget {
                                           ),
                                         ),
                                         child: Text(
-                                          'الحد الأدنى: ${item.minOrderQuantity}',
+                                          tr('min_order', namedArgs: {
+                                            'qty': '${item.minOrderQuantity}',
+                                          }),
                                           style: TextStyle(
                                             fontSize: 11,
                                             color: Colors.blue[900],
@@ -198,7 +204,9 @@ class CartScreen extends StatelessWidget {
                                             if (!success) {
                                               ErrorHandler.showSecureSnackBar(
                                                 context,
-                                                'Cannot decrease quantity below Minimum Order Quantity (${item.minOrderQuantity} units)',
+                                                tr('cart_min_order_error', namedArgs: {
+                                                  'qty': '${item.minOrderQuantity}',
+                                                }),
                                                 isError: true,
                                               );
                                             }
@@ -225,7 +233,11 @@ class CartScreen extends StatelessWidget {
                                       ],
                                     ),
                                     Text(
-                                      'الإجمالي: ${item.subtotal.toStringAsFixed(2)} ج.م',
+                                      tr('cart_item_total', namedArgs: {
+                                        'price': item.subtotal.toStringAsFixed(
+                                          2,
+                                        ),
+                                      }),
                                       style: const TextStyle(
                                         fontWeight: FontWeight.w800,
                                         fontSize: 13,
@@ -261,14 +273,18 @@ class CartScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'إجمالي البضاعة',
+                                tr('cart_goods_total'),
                                 style: TextStyle(
                                   color: Colors.grey[600],
                                   fontSize: 12,
                                 ),
                               ),
                               Text(
-                                '${state.totalAmount.toStringAsFixed(2)} ج.م',
+                                tr('price', namedArgs: {
+                                  'price': state.totalAmount.toStringAsFixed(
+                                    2,
+                                  ),
+                                }),
                                 style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
@@ -292,7 +308,7 @@ class CartScreen extends StatelessWidget {
                                   if (state.hasMultipleSellers) {
                                     ErrorHandler.showSecureSnackBar(
                                       context,
-                                      'يجب إنشاء طلب منفصل لكل بائع. احذف منتجات البائعين الآخرين مؤقتًا.',
+                                      tr('cart_multiple_sellers_error'),
                                       isError: true,
                                     );
                                     return;
@@ -310,9 +326,9 @@ class CartScreen extends StatelessWidget {
                                     context.read<CartCubit>().loadCart();
                                   }
                                 },
-                                child: const Text(
-                                  'متابعة طلب الشراء',
-                                  style: TextStyle(
+                                child: Text(
+                                  tr('cart_continue_order'),
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 14,
@@ -338,7 +354,7 @@ class CartScreen extends StatelessWidget {
                     const SizedBox(height: 12),
                     ElevatedButton(
                       onPressed: () => context.read<CartCubit>().loadCart(),
-                      child: const Text('إعادة المحاولة'),
+                      child: Text(tr('retry')),
                     ),
                   ],
                 ),

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../../../core/errors/error_handler.dart';
 import '../../../../core/network/network_manager.dart';
@@ -141,7 +142,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           100;
       ErrorHandler.showSecureSnackBar(
         context,
-        'تُفتح متابعة الطلب بعد تأكيد رسوم المنصة (${amount.toStringAsFixed(2)} ج.م).',
+        tr(
+          'order_chat_fee_locked',
+          namedArgs: {'amount': amount.toStringAsFixed(2)},
+        ),
         isError: true,
       );
       return;
@@ -162,7 +166,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         MaterialPageRoute(
           builder: (_) => ConversationChatScreen(
             conversationId: id!,
-            title: 'طلب ${_order?.orderNumber ?? ''}',
+            title: tr('order_chat_title', namedArgs: {'number': _order?.orderNumber ?? ''}),
             currentOrganizationId: widget.currentOrganizationId,
             networkManager: widget.networkManager,
           ),
@@ -215,7 +219,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          title: const Text('إرسال إثبات التحويل'),
+          title: Text(tr('payment_submit_proof_title')),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -237,26 +241,26 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               const SizedBox(height: 12),
               TextField(
                 controller: reference,
-                decoration: const InputDecoration(
-                  labelText: 'مرجع/رقم التحويل',
+                decoration: InputDecoration(
+                  labelText: tr('payment_reference_label'),
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'بعد المتابعة اختر صورة إيصال التحويل.',
-                style: TextStyle(fontSize: 12),
+              Text(
+                tr('payment_proof_instruction'),
+                style: const TextStyle(fontSize: 12),
               ),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('إلغاء'),
+              child: Text(tr('cancel')),
             ),
             ElevatedButton.icon(
               onPressed: () => Navigator.pop(context, true),
               icon: const Icon(Icons.upload_file_outlined, size: 18),
-              label: const Text('اختيار الإيصال'),
+              label: Text(tr('payment_choose_receipt')),
             ),
           ],
         ),
@@ -268,7 +272,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         if (mounted) {
           ErrorHandler.showSecureSnackBar(
             context,
-            'أدخل مرجع التحويل أولًا.',
+            tr('payment_reference_required'),
             isError: true,
           );
         }
@@ -288,7 +292,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       if (mounted) {
         ErrorHandler.showSecureSnackBar(
           context,
-          'تم إرسال إثبات التحويل وهو قيد المراجعة.',
+          tr('payment_proof_submitted'),
           isError: false,
         );
       }
@@ -324,7 +328,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       if (mounted) {
         ErrorHandler.showSecureSnackBar(
           context,
-          decision == 'confirm' ? 'تم تأكيد الدفعة.' : 'تم رفض الإثبات.',
+          decision == 'confirm' ? tr('payment_confirmed') : tr('payment_proof_rejected'),
           isError: false,
         );
       }
@@ -350,58 +354,58 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          title: const Text('إضافة محطة متابعة'),
+          title: Text(tr('tracking_add_title')),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               DropdownButtonFormField<String>(
                 initialValue: eventType,
-                items: const [
+                items: [
                   DropdownMenuItem(
                     value: 'checkpoint',
-                    child: Text('محطة عبور'),
+                    child: Text(tr('tracking_type_checkpoint')),
                   ),
                   DropdownMenuItem(
                     value: 'out_for_delivery',
-                    child: Text('خرج للتسليم النهائي'),
+                    child: Text(tr('tracking_type_out_for_delivery')),
                   ),
                   DropdownMenuItem(
                     value: 'delivery_attempt',
-                    child: Text('محاولة تسليم'),
+                    child: Text(tr('tracking_type_delivery_attempt')),
                   ),
                   DropdownMenuItem(
                     value: 'exception',
-                    child: Text('عائق/تأخير'),
+                    child: Text(tr('tracking_type_exception')),
                   ),
                 ],
                 onChanged: (value) =>
                     setDialogState(() => eventType = value ?? eventType),
-                decoration: const InputDecoration(labelText: 'نوع التحديث'),
+                decoration: InputDecoration(labelText: tr('tracking_type_label')),
               ),
               const SizedBox(height: 10),
               TextField(
                 controller: location,
-                decoration: const InputDecoration(
-                  labelText: 'الموقع أو اسم المحطة',
-                  prefixIcon: Icon(Icons.location_on_outlined),
+                decoration: InputDecoration(
+                  labelText: tr('tracking_location_label'),
+                  prefixIcon: const Icon(Icons.location_on_outlined),
                 ),
               ),
               const SizedBox(height: 10),
               TextField(
                 controller: note,
                 maxLines: 3,
-                decoration: const InputDecoration(labelText: 'تفاصيل إضافية'),
+                decoration: InputDecoration(labelText: tr('tracking_note_label')),
               ),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('إلغاء'),
+              child: Text(tr('cancel')),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(context, true),
-              child: const Text('إضافة التحديث'),
+              child: Text(tr('tracking_add')),
             ),
           ],
         ),
@@ -426,7 +430,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       if (mounted) {
         ErrorHandler.showSecureSnackBar(
           context,
-          'تمت إضافة محطة المتابعة.',
+          tr('tracking_added'),
           isError: false,
         );
       }
@@ -448,11 +452,11 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('تفاصيل الطلب'),
+        title: Text(tr('order_details')),
         actions: [
           IconButton(
             onPressed: _busy ? null : () => _load(announceFailure: true),
-            tooltip: 'تحديث البيانات',
+            tooltip: tr('order_details_refresh'),
             icon: const Icon(Icons.refresh_rounded),
           ),
         ],
@@ -482,7 +486,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
             FilledButton.icon(
               onPressed: _load,
               icon: const Icon(Icons.refresh_rounded),
-              label: const Text('إعادة المحاولة'),
+              label: Text(tr('retry')),
             ),
           ],
         ),
@@ -501,7 +505,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         if (order.obligations.isNotEmpty) ...[
           const SizedBox(height: 16),
           Text(
-            'التزامات الدفع',
+            tr('payment_obligations'),
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
@@ -550,17 +554,17 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               runSpacing: 7,
               children: [
                 if (order.attention?.requiresAction == true)
-                  const _MiniChip(
-                    label: 'يتطلب إجراء',
+                  _MiniChip(
+                    label: tr('order_requires_action'),
                     color: AppColors.warning,
                     icon: Icons.priority_high_rounded,
                   ),
                 if (order.paymentState != 'not_issued')
                   _MiniChip(
                     label: switch (order.paymentState) {
-                      'pending' => 'بانتظار الدفع',
-                      'partial' => 'قيد المراجعة',
-                      'paid' => 'المدفوعات مؤكدة',
+                      'pending' => tr('payment_pending'),
+                      'partial' => tr('payment_partial'),
+                      'paid' => tr('payment_paid'),
                       _ => order.paymentState,
                     },
                     color: const Color(0xFF7C3AED),
@@ -591,7 +595,12 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'آخر موعد لإرسال إثبات الدفع: ${_formatDateTime(order.paymentDueAt!)}',
+                        tr(
+                          'order_payment_due',
+                          namedArgs: {
+                            'date': _formatDateTime(order.paymentDueAt!),
+                          },
+                        ),
                         style: const TextStyle(
                           fontSize: 12.5,
                           fontWeight: FontWeight.w600,
@@ -604,31 +613,31 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               ),
             ],
             const Divider(height: 22),
-            _metaRow(Icons.storefront_outlined, 'البائع', order.sellerName),
-            _metaRow(Icons.person_outline_rounded, 'المشتري', order.buyerName),
+            _metaRow(Icons.storefront_outlined, tr('order_seller'), order.sellerName),
+            _metaRow(Icons.person_outline_rounded, tr('order_buyer'), order.buyerName),
             if (order.shipperName.isNotEmpty)
               _metaRow(
                 Icons.local_shipping_outlined,
-                'الشحن',
+                tr('shipping'),
                 order.shipperName,
               ),
             const Divider(height: 22),
             _amountRow(
-              'البضاعة',
+              tr('order_goods'),
               (order.goodsSubtotalPiasters / 100).toStringAsFixed(2),
             ),
             _amountRow(
-              'رسم المنصة',
+              tr('order_platform_fee'),
               (order.platformFeePiasters / 100).toStringAsFixed(2),
             ),
-            _amountRow('الشحن', order.shippingCost.toStringAsFixed(2)),
+            _amountRow(tr('shipping'), order.shippingCost.toStringAsFixed(2)),
             const Divider(height: 22),
             Row(
               children: [
-                const Text('الإجمالي'),
+                Text(tr('total')),
                 const Spacer(),
                 Text(
-                  '${order.totalAmount.toStringAsFixed(2)} ج.م',
+                  '${order.totalAmount.toStringAsFixed(2)} ${tr('currency_egp')}',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: AppColors.primary,
                     fontWeight: FontWeight.w800,
@@ -671,7 +680,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         children: [
           Text(label, style: const TextStyle(color: AppColors.muted)),
           const Spacer(),
-          Text('$value ج.م'),
+          Text('$value ${tr('currency_egp')}'),
         ],
       ),
     );
@@ -685,7 +694,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     if (isBuyer && ['pending', 'rejected'].contains(obligation.status)) {
       return IconButton(
         icon: const Icon(Icons.upload_file),
-        tooltip: 'رفع إثبات الدفع',
+        tooltip: tr('payment_upload_proof'),
         onPressed: _busy ? null : () => _submitProof(obligation),
       );
     }
@@ -693,16 +702,16 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         obligation.beneficiaryOrganizationId == widget.currentOrganizationId;
     if (isBeneficiary && obligation.status == 'proof_submitted') {
       return PopupMenuButton<String>(
-        tooltip: 'مراجعة إثبات الدفع',
+        tooltip: tr('payment_review_proof'),
         onSelected: (value) => _reviewPayment(obligation, value),
-        itemBuilder: (_) => const [
+        itemBuilder: (_) => [
           PopupMenuItem(
             value: 'confirm',
             child: Row(
               children: [
-                Icon(Icons.check_circle_outline, size: 19),
-                SizedBox(width: 10),
-                Text('تأكيد الاستلام'),
+                const Icon(Icons.check_circle_outline, size: 19),
+                const SizedBox(width: 10),
+                Text(tr('payment_confirm_receipt')),
               ],
             ),
           ),
@@ -710,9 +719,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
             value: 'reject',
             child: Row(
               children: [
-                Icon(Icons.cancel_outlined, size: 19),
-                SizedBox(width: 10),
-                Text('رفض الإثبات'),
+                const Icon(Icons.cancel_outlined, size: 19),
+                const SizedBox(width: 10),
+                Text(tr('payment_reject_proof')),
               ],
             ),
           ),
@@ -766,7 +775,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                         ),
                       ),
                       Text(
-                        '${(obligation.amountPiasters / 100).toStringAsFixed(2)} ج.م',
+                        '${(obligation.amountPiasters / 100).toStringAsFixed(2)} ${tr('currency_egp')}',
                         style: const TextStyle(fontWeight: FontWeight.w700),
                       ),
                     ],
@@ -830,7 +839,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'سجل ومتابعة الطلب',
+              tr('order_timeline_title'),
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
@@ -873,14 +882,14 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
             child: OutlinedButton.icon(
               onPressed: _busy ? null : _addTrackingEvent,
               icon: const Icon(Icons.add_location_alt_outlined),
-              label: const Text('إضافة محطة متابعة للشحنة'),
+              label: Text(tr('tracking_add_shipment')),
             ),
           ),
         if (actions.isNotEmpty) ...[
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: Text(
-              'الإجراءات المتاحة',
+              tr('order_available_actions'),
               style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
@@ -933,7 +942,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
             ),
             alignment: Alignment.center,
             child: Text(
-              'لا توجد إجراءات متاحة — الحالة الحالية: ${order.status.displayName}',
+              tr(
+                'order_no_actions',
+                namedArgs: {'status': order.status.displayName},
+              ),
               textAlign: TextAlign.center,
             ),
           ),
@@ -963,15 +975,15 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                 child: Icon(Icons.forum_outlined),
               ),
               const SizedBox(width: 12),
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'متابعة الطلب',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      tr('order_chat_follow'),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    Text('محادثة خاصة بين أطراف الطلب وسجل لكل العمليات.'),
+                    Text(tr('order_chat_description')),
                   ],
                 ),
               ),
@@ -984,7 +996,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : const Icon(Icons.chat_bubble_outline_rounded, size: 18),
-                label: const Text('دخول'),
+                label: Text(tr('order_chat_enter')),
               ),
             ],
           ),
@@ -994,10 +1006,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
     final feeStatus = access?.platformFeeStatus ?? 'not_issued';
     final statusText = switch (feeStatus) {
-      'proof_submitted' => 'إثبات الرسوم قيد مراجعة المنصة',
-      'rejected' => 'تم رفض الإثبات؛ راجع البيانات وأعد الإرسال',
-      'pending' => 'بانتظار تحويل رسوم المنصة',
-      _ => 'تُصدر الرسوم بعد قبول البائع للطلب',
+      'proof_submitted' => tr('order_fee_status_proof_submitted'),
+      'rejected' => tr('order_fee_status_rejected'),
+      'pending' => tr('order_fee_status_pending'),
+      _ => tr('order_fee_status_default'),
     };
     return Card(
       color: const Color(0xFFFFF7E6),
@@ -1012,12 +1024,18 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'متابعة الطلب مقفولة للمشتري',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  Text(
+                    tr('order_chat_locked_buyer'),
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    'تُفتح بعد تأكيد رسوم المنصة (${amount.toStringAsFixed(2)} ج.م).\n$statusText',
+                    tr(
+                      'order_chat_unlock_message',
+                      namedArgs: {
+                        'amount': amount.toStringAsFixed(2),
+                        'statusText': statusText,
+                      },
+                    ),
                   ),
                   if (isBuyer &&
                       platformFee != null &&
@@ -1028,7 +1046,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                           ? null
                           : () => _submitProof(platformFee!),
                       icon: const Icon(Icons.upload_file, size: 18),
-                      label: const Text('رفع إثبات رسوم المنصة'),
+                      label: Text(tr('order_upload_platform_fee')),
                     ),
                   ],
                 ],
@@ -1058,10 +1076,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   Future<String?> _askForNote(String action) async {
     final controller = TextEditingController();
     final title = switch (action) {
-      'reject' => 'سبب رفض الطلب',
-      'cancel' => 'سبب إلغاء الطلب',
-      'open_dispute' => 'سبب فتح النزاع',
-      _ => 'ملخص القرار',
+      'reject' => tr('order_reject_reason_title'),
+      'cancel' => tr('order_cancel_reason_title'),
+      'open_dispute' => tr('order_dispute_reason_title'),
+      _ => tr('order_decision_summary_title'),
     };
     final confirmed = await showDialog<bool>(
       context: context,
@@ -1074,18 +1092,18 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
             maxLines: 4,
             minLines: 2,
             onChanged: (_) => setDialogState(() {}),
-            decoration: const InputDecoration(hintText: 'اكتب تفاصيل واضحة...'),
+            decoration: InputDecoration(hintText: tr('order_note_hint')),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('رجوع'),
+              child: Text(tr('order_back')),
             ),
             FilledButton(
               onPressed: controller.value.text.trim().length >= 3
                   ? () => Navigator.pop(context, true)
                   : null,
-              child: const Text('تأكيد'),
+              child: Text(tr('order_confirm')),
             ),
           ],
         ),
@@ -1097,37 +1115,37 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   }
 
   String _kindName(String kind) => switch (kind) {
-    'platform_fee' => 'رسوم المنصة',
-    'goods' => 'قيمة البضاعة للبائع',
-    'shipping' => 'قيمة الشحن',
+    'platform_fee' => tr('payment_kind_platform_fee'),
+    'goods' => tr('payment_kind_goods'),
+    'shipping' => tr('payment_kind_shipping'),
     _ => kind,
   };
 
   String _paymentStatus(String status) => switch (status) {
-    'pending' => 'بانتظار التحويل',
-    'proof_submitted' => 'الإثبات قيد المراجعة',
-    'confirmed' => 'تم التأكيد',
-    'rejected' => 'الإثبات مرفوض',
-    'disputed' => 'متنازع عليه',
+    'pending' => tr('payment_status_pending'),
+    'proof_submitted' => tr('payment_status_proof_submitted'),
+    'confirmed' => tr('payment_status_confirmed'),
+    'rejected' => tr('payment_status_rejected'),
+    'disputed' => tr('payment_status_disputed'),
     _ => status,
   };
 
   String _trackingEventName(String type) => switch (type) {
-    'picked_up' => 'استلمت شركة الشحن الطلبية',
-    'checkpoint' => 'محطة متابعة',
-    'out_for_delivery' => 'خرجت للتسليم النهائي',
-    'delivery_attempt' => 'محاولة تسليم',
-    'delivered' => 'تم التسليم',
-    'exception' => 'عائق في الشحن',
-    _ => 'تحديث الشحنة',
+    'picked_up' => tr('tracking_event_picked_up'),
+    'checkpoint' => tr('tracking_event_checkpoint'),
+    'out_for_delivery' => tr('tracking_event_out_for_delivery'),
+    'delivery_attempt' => tr('tracking_event_delivery_attempt'),
+    'delivered' => tr('tracking_event_delivered'),
+    'exception' => tr('tracking_event_exception'),
+    _ => tr('tracking_event_default'),
   };
 
   String _roleName(String role) => switch (role.toLowerCase()) {
-    'wholesaler' => 'البائع',
-    'retailer' => 'المشتري',
-    'shipper' => 'شركة الشحن',
-    'admin' => 'إدارة المنصة',
-    _ => 'النظام',
+    'wholesaler' => tr('order_seller'),
+    'retailer' => tr('order_buyer'),
+    'shipper' => tr('order_shipper_role'),
+    'admin' => tr('order_admin_role'),
+    _ => tr('order_system_role'),
   };
 
   static String _formatDateTime(DateTime value) {
@@ -1136,16 +1154,16 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   }
 
   static String _actionLabel(String action) => switch (action) {
-    'accept' => 'قبول الطلب وإصدار التزامات الدفع',
-    'reject' => 'رفض الطلب',
-    'mark_ready' => 'تم تجهيز الطلبية',
-    'confirm_pickup' => 'استلمت الطلبية وخرجت للشحن',
-    'confirm_delivery' => 'تم تسليم الطلبية للمشتري',
-    'confirm_receipt' => 'تأكيد استلام الطلبية',
-    'cancel' => 'إلغاء الطلب',
-    'open_dispute' => 'فتح نزاع',
-    'resolve_dispute_complete' => 'حسم النزاع وإكمال الطلب',
-    'resolve_dispute_cancel' => 'حسم النزاع وإلغاء الطلب',
+    'accept' => tr('order_action_accept'),
+    'reject' => tr('order_action_reject'),
+    'mark_ready' => tr('order_action_mark_ready'),
+    'confirm_pickup' => tr('order_action_confirm_pickup'),
+    'confirm_delivery' => tr('order_action_confirm_delivery'),
+    'confirm_receipt' => tr('order_action_confirm_receipt'),
+    'cancel' => tr('order_action_cancel'),
+    'open_dispute' => tr('order_action_open_dispute'),
+    'resolve_dispute_complete' => tr('order_action_resolve_dispute_complete'),
+    'resolve_dispute_cancel' => tr('order_action_resolve_dispute_cancel'),
     _ => action,
   };
 
@@ -1164,17 +1182,19 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   };
 
   static String _actionSuccessMessage(String action) => switch (action) {
-    'accept' => 'تم قبول الطلب وإصدار التزامات الدفع',
-    'reject' => 'تم رفض الطلب',
-    'mark_ready' => 'تم تأكيد تجهيز الطلبية',
-    'confirm_pickup' => 'تم استلام الطلبية وبدء الشحن',
-    'confirm_delivery' => 'تم تسليم الطلبية للمشتري',
-    'confirm_receipt' => 'تم تأكيد استلام الطلبية',
-    'cancel' => 'تم إلغاء الطلب',
-    'open_dispute' => 'تم فتح النزاع على الطلب',
-    'resolve_dispute_complete' => 'تم حسم النزاع وإكمال الطلب',
-    'resolve_dispute_cancel' => 'تم حسم النزاع وإلغاء الطلب',
-    _ => 'تم تحديث الطلب',
+    'accept' => tr('order_action_success_accept'),
+    'reject' => tr('order_action_success_reject'),
+    'mark_ready' => tr('order_action_success_mark_ready'),
+    'confirm_pickup' => tr('order_action_success_confirm_pickup'),
+    'confirm_delivery' => tr('order_action_success_confirm_delivery'),
+    'confirm_receipt' => tr('order_action_success_confirm_receipt'),
+    'cancel' => tr('order_action_success_cancel'),
+    'open_dispute' => tr('order_action_success_open_dispute'),
+    'resolve_dispute_complete' =>
+        tr('order_action_success_resolve_dispute_complete'),
+    'resolve_dispute_cancel' =>
+        tr('order_action_success_resolve_dispute_cancel'),
+    _ => tr('order_action_success_default'),
   };
 }
 

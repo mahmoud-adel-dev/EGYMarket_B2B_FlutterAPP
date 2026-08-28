@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../auth/data/models/auth_models.dart';
@@ -20,40 +21,40 @@ class AccountHubScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('الحساب والمنشأة')),
+      appBar: AppBar(title: Text(tr('hub_title'))),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           _item(
             context,
             Icons.account_circle_outlined,
-            'الملف الشخصي وبيانات المنشأة',
+            tr('hub_profile_org'),
             const RoleBasedProfileScreen(),
           ),
           _item(
             context,
             Icons.verified_user_outlined,
-            'توثيق المنشأة',
+            tr('hub_org_verification'),
             const OrganizationVerificationScreen(),
           ),
           _item(
             context,
             Icons.workspace_premium_outlined,
-            'الاشتراك والفواتير',
+            tr('hub_subscription_invoices'),
             SubscriptionPlansScreen(userRole: user.role.displayName),
           ),
           if (user.role != UserRole.retailer)
             _item(
               context,
               Icons.account_balance_wallet_outlined,
-              'حسابات استلام التحويلات',
+              tr('hub_transfer_accounts'),
               const MerchantPaymentSettingsScreen(),
             ),
           if (user.role == UserRole.shipper && user.organizationId != null)
             _item(
               context,
               Icons.route_outlined,
-              'تعريفات ومسارات الشحن',
+              tr('hub_shipping_rates'),
               ShippingRatesManagementScreen(
                 organizationId: user.organizationId!,
               ),
@@ -61,7 +62,7 @@ class AccountHubScreen extends StatelessWidget {
           _item(
             context,
             Icons.privacy_tip_outlined,
-            'بياناتي والخصوصية وحذف الحساب',
+            tr('hub_data_privacy_delete'),
             const AccountDataScreen(),
           ),
         ],

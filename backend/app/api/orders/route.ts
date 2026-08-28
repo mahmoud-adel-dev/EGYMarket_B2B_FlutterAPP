@@ -98,6 +98,7 @@ export const POST = withAuth(['Retailer'], async (req: NextRequest, context, ses
   }
 
   const shippingCost = shippingRate?.price_piasters || 0;
+  let orderIsDuplicate = false;
   const order = await Order.create({
     order_number: `ORD-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${randomUUID().slice(0, 8).toUpperCase()}`,
     buyer_organization_id: buyer._id,
@@ -113,6 +114,7 @@ export const POST = withAuth(['Retailer'], async (req: NextRequest, context, ses
     platform_fee_piasters: settings.order_fee_piasters,
     total_payable_piasters: subtotal + shippingCost + settings.order_fee_piasters,
     status: 'requested',
+    client_order_id: data.client_order_id,
     status_history: [{
       status: 'requested',
       changed_by: new mongoose.Types.ObjectId(session.user.id),
@@ -121,7 +123,31 @@ export const POST = withAuth(['Retailer'], async (req: NextRequest, context, ses
       timestamp: new Date(),
       note: 'Wholesale purchase request created',
     }],
+  }).catch(async (error: unknown) => {
+    // O-2 idempotency: an identical (created_by + client_order_id) retry hits the
+    // unique index and must return the original order rather than duplicate it.
+    const isDuplicateKey = (error as { code?: number })?.code === 11000;
+    if (isDuplicateKey && data.client_order_id) {
+      const existing = await Order.findOne({
+        created_by: session.user.id,
+        client_order_id: data.client_order_id,
+      });
+      if (existing) {
+        orderIsDuplicate = true;
+        return existing;
+      }
+    }
+    throw error;
   });
+
+  if (orderIsDuplicate) {
+    // A retry of an already-created request: no cart mutation, no duplicate
+    // notification, no duplicate chat event. Return the existing order.
+    return NextResponse.json(
+      { success: true, message: 'Purchase request already exists', order, idempotent: true },
+      { status: 201 }
+    );
+  }
 
   await Cart.updateOne(
     { buyer_organization_id: buyer._id },

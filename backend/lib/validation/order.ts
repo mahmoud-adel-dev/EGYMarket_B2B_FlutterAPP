@@ -15,6 +15,10 @@ export const CreateOrderSchema = z
         phone: z.string().trim().min(8).max(30),
       })
       .optional(),
+    // O-2: optional client-generated idempotency key. When supplied, a retried
+    // submit with the same key returns the original order instead of creating a
+    // duplicate. Clients should send this for checkout.
+    client_order_id: z.string().trim().min(8).max(100).optional(),
   })
   .superRefine((data, ctx) => {
     if (data.fulfillment_method === 'third_party_shipping' && (!data.shipping_rate_id || !data.shipping_address)) {

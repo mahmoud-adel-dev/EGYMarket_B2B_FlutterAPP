@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../../../core/di/service_locator.dart';
 import '../../../../core/errors/error_handler.dart';
@@ -74,12 +75,12 @@ class _OrdersViewState extends State<_OrdersView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('الطلبات'),
+        title: Text(tr('order_list_title')),
         actions: [
           IconButton(
             onPressed: _refresh,
             icon: const Icon(Icons.refresh_rounded),
-            tooltip: 'تحديث الطلبات',
+            tooltip: tr('order_list_refresh'),
           ),
         ],
       ),
@@ -179,8 +180,8 @@ class _OrdersViewState extends State<_OrdersView> {
             controller: _search,
             onChanged: (_) => setState(() {}),
             decoration: InputDecoration(
-              labelText: 'البحث في الطلبات',
-              hintText: 'رقم الطلب، البائع أو المشتري',
+              labelText: tr('order_list_search_label'),
+              hintText: tr('order_list_search_hint'),
               prefixIcon: const Icon(Icons.search_rounded),
               suffixIcon: _search.text.isEmpty
                   ? null
@@ -190,7 +191,7 @@ class _OrdersViewState extends State<_OrdersView> {
                         setState(() {});
                       },
                       icon: const Icon(Icons.close_rounded),
-                      tooltip: 'مسح البحث',
+                      tooltip: tr('order_list_clear_search'),
                     ),
             ),
           ),
@@ -204,7 +205,7 @@ class _OrdersViewState extends State<_OrdersView> {
               itemBuilder: (context, index) {
                 final status = filters[index];
                 final selected = _filter == status;
-                final label = status == null ? 'الكل' : status.displayName;
+                final label = status == null ? tr('all') : status.displayName;
                 final count = status == null
                     ? orders.length
                     : counts[status] ?? 0;
@@ -230,8 +231,21 @@ class _OrdersViewState extends State<_OrdersView> {
     final attention = order.attention?.requiresAction == true;
     return Semantics(
       button: true,
-      label:
-          'الطلب ${order.orderNumber}، ${order.status.displayName}${attention ? '، يتطلب إجراء' : ''}',
+      label: attention
+          ? tr(
+              'order_card_semantics_attention',
+              namedArgs: {
+                'number': order.orderNumber,
+                'status': order.status.displayName,
+              },
+            )
+          : tr(
+              'order_card_semantics',
+              namedArgs: {
+                'number': order.orderNumber,
+                'status': order.status.displayName,
+              },
+            ),
       child: Card(
         margin: EdgeInsets.zero,
         clipBehavior: Clip.antiAlias,
@@ -266,13 +280,13 @@ class _OrdersViewState extends State<_OrdersView> {
                             ),
                           ),
                           if (attention)
-                            const Chip(
+                            Chip(
                               visualDensity: VisualDensity.compact,
-                              avatar: Icon(
+                              avatar: const Icon(
                                 Icons.priority_high_rounded,
                                 size: 16,
                               ),
-                              label: Text('يتطلب إجراء'),
+                              label: Text(tr('order_requires_action')),
                             ),
                         ],
                       ),
@@ -296,9 +310,9 @@ class _OrdersViewState extends State<_OrdersView> {
                             ),
                           if (widget.userRole == UserRole.retailer &&
                               order.chatAccess?.allowed == false)
-                            const _StatusPill(
-                              label: 'المتابعة مقفولة',
-                              color: Color(0xFFB45309),
+                            _StatusPill(
+                              label: tr('order_chat_locked'),
+                              color: const Color(0xFFB45309),
                               icon: Icons.lock_outline_rounded,
                             ),
                         ],
@@ -307,7 +321,7 @@ class _OrdersViewState extends State<_OrdersView> {
                       Row(
                         children: [
                           Text(
-                            '${order.totalAmount.toStringAsFixed(2)} ج.م',
+                            '${order.totalAmount.toStringAsFixed(2)} ${tr('currency_egp')}',
                             style: const TextStyle(
                               fontWeight: FontWeight.w800,
                               color: Color(0xFF0F766E),
@@ -322,7 +336,7 @@ class _OrdersViewState extends State<_OrdersView> {
                               Icons.visibility_outlined,
                               size: 18,
                             ),
-                            label: const Text('التفاصيل'),
+                            label: Text(tr('order_details')),
                           ),
                         ],
                       ),
@@ -357,9 +371,9 @@ class _OrdersViewState extends State<_OrdersView> {
   }
 
   String _paymentStateName(String state) => switch (state) {
-    'pending' => 'بانتظار الدفع',
-    'partial' => 'قيد المراجعة',
-    'paid' => 'المدفوعات مؤكدة',
+    'pending' => tr('payment_pending'),
+    'partial' => tr('payment_partial'),
+    'paid' => tr('payment_paid'),
     _ => state,
   };
 
@@ -426,13 +440,13 @@ class _OrdersEmpty extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.inventory_2_outlined, size: 62, color: Colors.black26),
-          SizedBox(height: 12),
-          Text('لا توجد طلبات مطابقة'),
+          const Icon(Icons.inventory_2_outlined, size: 62, color: Colors.black26),
+          const SizedBox(height: 12),
+          Text(tr('order_no_matching')),
         ],
       ),
     );
@@ -459,7 +473,7 @@ class _OrdersError extends StatelessWidget {
             FilledButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh_rounded),
-              label: const Text('إعادة المحاولة'),
+              label: Text(tr('retry')),
             ),
           ],
         ),

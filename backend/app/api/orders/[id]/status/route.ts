@@ -19,8 +19,17 @@ import { createOrganizationNotification } from '@/lib/notifications/notification
 import { isOrderActionAllowed } from '@/lib/orders/order_rules';
 import { appendOrderSystemEvent } from '@/lib/orders/order_chat';
 import { getCanonicalOrderDetail } from '@/lib/orders/order_detail_dto';
+import { checkIdentityRateLimit } from '@/lib/auth/rate_limit';
 
 export const PATCH = withAuth([], async (req: NextRequest, context, session) => {
+  // R-1: per-organization cap on order-state mutations (anti-flood / anti-abuse).
+  const limited = await checkIdentityRateLimit(
+    `org:${session.user.organizationId ?? 'none'}:order-status`,
+    'order-status',
+    60,
+    60_000
+  );
+  if (limited.isRateLimited) return limited.response!;
   const params = await context.params;
   const id = params?.id as string;
   if (!mongoose.Types.ObjectId.isValid(id)) throw new ApiError(400, 'Invalid order id');

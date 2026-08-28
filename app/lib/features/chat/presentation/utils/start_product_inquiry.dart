@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/di/service_locator.dart';
@@ -12,32 +13,32 @@ Future<void> startProductInquiry(
 }) async {
   final buyer = await requireBuyer(
     context,
-    actionLabel: 'إرسال استفسار إلى المورد',
+    actionLabel: tr('inquiry_action'),
   );
   if (buyer?.organizationId == null || !context.mounted) return;
 
   final controller = TextEditingController(
-    text: 'مرحبًا، أريد معرفة المزيد عن السعر والتوفر ومدة تجهيز هذا المنتج.',
+    text: tr('inquiry_default_message'),
   );
   final message = await showDialog<String>(
     context: context,
     builder: (dialogContext) => AlertDialog(
-      title: Text('استفسار عن $productName'),
+      title: Text(tr('inquiry_title', namedArgs: {'product': productName})),
       content: TextField(
         controller: controller,
         autofocus: true,
         minLines: 3,
         maxLines: 6,
         maxLength: 3000,
-        decoration: const InputDecoration(
-          labelText: 'اكتب استفسارك',
+        decoration: InputDecoration(
+          labelText: tr('inquiry_hint'),
           alignLabelWithHint: true,
         ),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(dialogContext),
-          child: const Text('إلغاء'),
+          child: Text(tr('cancel')),
         ),
         FilledButton.icon(
           onPressed: () {
@@ -45,7 +46,7 @@ Future<void> startProductInquiry(
             if (value.isNotEmpty) Navigator.pop(dialogContext, value);
           },
           icon: const Icon(Icons.send_rounded),
-          label: const Text('إرسال'),
+          label: Text(tr('send')),
         ),
       ],
     ),
@@ -69,7 +70,7 @@ Future<void> startProductInquiry(
       MaterialPageRoute(
         builder: (_) => ConversationChatScreen(
           conversationId: conversationId,
-          title: 'استفسار: $productName',
+          title: tr('inquiry_conversation_title', namedArgs: {'product': productName}),
           currentOrganizationId: buyer!.organizationId!,
         ),
       ),

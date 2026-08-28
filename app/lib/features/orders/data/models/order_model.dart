@@ -1,18 +1,31 @@
-enum OrderStatus {
-  requested('بانتظار البائع'),
-  rejected('مرفوض'),
-  awaitingPayments('بانتظار الدفع'),
-  preparing('مؤكد — جاري التجهيز'),
-  readyForPickup('جاهز للاستلام'),
-  inTransit('في الطريق'),
-  delivered('تم التسليم بواسطة الشاحن'),
-  completed('مكتمل'),
-  canceled('ملغي'),
-  disputed('نزاع مفتوح'),
-  unknown('حالة غير معروفة');
+import 'package:easy_localization/easy_localization.dart';
 
-  final String displayName;
-  const OrderStatus(this.displayName);
+enum OrderStatus {
+  requested,
+  rejected,
+  awaitingPayments,
+  preparing,
+  readyForPickup,
+  inTransit,
+  delivered,
+  completed,
+  canceled,
+  disputed,
+  unknown;
+
+  String get displayName => switch (this) {
+    OrderStatus.requested => tr('order_status_requested'),
+    OrderStatus.rejected => tr('order_status_rejected'),
+    OrderStatus.awaitingPayments => tr('order_status_awaiting_payments'),
+    OrderStatus.preparing => tr('order_status_preparing'),
+    OrderStatus.readyForPickup => tr('order_status_ready_for_pickup'),
+    OrderStatus.inTransit => tr('order_status_in_transit'),
+    OrderStatus.delivered => tr('order_status_delivered'),
+    OrderStatus.completed => tr('order_status_completed'),
+    OrderStatus.canceled => tr('order_status_canceled'),
+    OrderStatus.disputed => tr('order_status_disputed'),
+    OrderStatus.unknown => tr('order_status_unknown'),
+  };
 
   static OrderStatus fromString(String? value) {
     switch (value) {
@@ -300,8 +313,8 @@ class B2BOrderModel {
     return B2BOrderModel(
       id: json['_id']?.toString() ?? '',
       orderNumber: json['order_number']?.toString() ?? '',
-      sellerName: seller['display_name']?.toString() ?? 'البائع',
-      buyerName: buyer['display_name']?.toString() ?? 'المشتري',
+      sellerName: seller['display_name']?.toString() ?? tr('order_seller'),
+      buyerName: buyer['display_name']?.toString() ?? tr('order_buyer'),
       shipperName: shipper['display_name']?.toString() ?? '',
       sellerOrganizationId: seller['_id']?.toString() ?? '',
       buyerOrganizationId: buyer['_id']?.toString() ?? '',

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -69,18 +70,20 @@ class _SellerProductsScreenState extends State<SellerProductsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('أرشفة المنتج'),
+        title: Text(tr('product_archive_title')),
         content: Text(
-          'هل تريد إخفاء "${product['title']}" نهائيًا من الكتالوج؟',
+          tr('product_archive_confirm', namedArgs: {
+            'title': product['title'],
+          }),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('إلغاء'),
+            child: Text(tr('cancel')),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('أرشفة'),
+            child: Text(tr('product_archive')),
           ),
         ],
       ),
@@ -120,10 +123,10 @@ class _SellerProductsScreenState extends State<SellerProductsScreen> {
         ? Colors.orange
         : Colors.blueGrey;
     final message = verified
-        ? 'المتجر موثّق. المنتجات المنشورة ذات المخزون المتاح تظهر فورًا في الكتالوج والبحث.'
+        ? tr('seller_verified_banner')
         : pending
-        ? 'طلب التوثيق قيد المراجعة. المنتجات الجديدة تُحفظ كمسودة حتى تتم الموافقة ثم تعيد نشرها.'
-        : 'أكمل توثيق المتجر حتى تستطيع نشر المنتجات ويظهر متجرك للمشترين.';
+        ? tr('seller_pending_banner')
+        : tr('seller_unverified_banner');
     return Card(
       color: color.withValues(alpha: 0.10),
       child: Padding(
@@ -140,7 +143,7 @@ class _SellerProductsScreenState extends State<SellerProductsScreen> {
             if (!verified && !pending)
               TextButton(
                 onPressed: _openVerification,
-                child: const Text('ابدأ التوثيق'),
+                child: Text(tr('seller_start_verification')),
               ),
           ],
         ),
@@ -150,10 +153,10 @@ class _SellerProductsScreenState extends State<SellerProductsScreen> {
 
   String _statusLabel(Map<String, dynamic> product) {
     return switch (product['status']?.toString()) {
-      'active' => 'منشور',
-      'out_of_stock' => 'نفد المخزون',
-      'archived' => 'مؤرشف',
-      _ => 'مسودة غير ظاهرة',
+      'active' => tr('product_status_active'),
+      'out_of_stock' => tr('product_status_out_of_stock'),
+      'archived' => tr('product_status_archived'),
+      _ => tr('product_status_draft'),
     };
   }
 
@@ -172,7 +175,7 @@ class _SellerProductsScreenState extends State<SellerProductsScreen> {
                   Center(
                     child: TextButton(
                       onPressed: _load,
-                      child: const Text('إعادة المحاولة'),
+                      child: Text(tr('retry')),
                     ),
                   ),
                 ],
@@ -189,15 +192,15 @@ class _SellerProductsScreenState extends State<SellerProductsScreen> {
                     color: Colors.grey,
                   ),
                   const SizedBox(height: 12),
-                  const Center(
-                    child: Text('لا توجد منتجات. أضف أول منتج جملة.'),
+                  Center(
+                    child: Text(tr('seller_no_products')),
                   ),
                   const SizedBox(height: 12),
                   Center(
                     child: FilledButton.icon(
                       onPressed: () => _openEditor(),
                       icon: const Icon(Icons.add),
-                      label: const Text('إضافة أول منتج'),
+                      label: Text(tr('seller_add_first_product')),
                     ),
                   ),
                 ],
@@ -235,15 +238,22 @@ class _SellerProductsScreenState extends State<SellerProductsScreen> {
                       ),
                       title: Text(product['title']?.toString() ?? ''),
                       subtitle: Text(
-                        '${price.toStringAsFixed(2)} ج.م • مخزون ${product['stock_quantity'] ?? 0} • ${_statusLabel(product)}',
+                        tr('seller_product_subtitle', namedArgs: {
+                          'price': price.toStringAsFixed(2),
+                          'stock': product['stock_quantity'] ?? 0,
+                          'status': _statusLabel(product),
+                        }),
                       ),
                       trailing: PopupMenuButton<String>(
                         onSelected: (value) => value == 'edit'
                             ? _openEditor(product)
                             : _archive(product),
-                        itemBuilder: (_) => const [
-                          PopupMenuItem(value: 'edit', child: Text('تعديل')),
-                          PopupMenuItem(value: 'archive', child: Text('أرشفة')),
+                        itemBuilder: (_) => [
+                          PopupMenuItem(value: 'edit', child: Text(tr('edit'))),
+                          PopupMenuItem(
+                            value: 'archive',
+                            child: Text(tr('product_archive')),
+                          ),
                         ],
                       ),
                       onTap: () => _openEditor(product),
@@ -255,7 +265,7 @@ class _SellerProductsScreenState extends State<SellerProductsScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _openEditor(),
         icon: const Icon(Icons.add),
-        label: const Text('إضافة منتج'),
+        label: Text(tr('add_product')),
       ),
     );
   }
@@ -415,9 +425,7 @@ class _ProductEditorScreenState extends State<ProductEditorScreen> {
           price == null ||
           price <= 0 ||
           !seen.add(quantity)) {
-        throw const FormatException(
-          'اكتب كل شريحة بالشكل: الكمية:السعر، دون تكرار الكمية.',
-        );
+        throw FormatException(tr('seller_tiers_format'));
       }
       return {
         'min_quantity': quantity,
@@ -432,7 +440,7 @@ class _ProductEditorScreenState extends State<ProductEditorScreen> {
       if (line.trim().isEmpty) continue;
       final separator = line.indexOf(':');
       if (separator < 1 || separator == line.length - 1) {
-        throw const FormatException('اكتب كل مواصفة بالشكل: الاسم:القيمة');
+        throw FormatException(tr('seller_spec_format'));
       }
       result[line.substring(0, separator).trim()] = line
           .substring(separator + 1)
@@ -447,7 +455,7 @@ class _ProductEditorScreenState extends State<ProductEditorScreen> {
     ) {
       final separator = line.indexOf('|');
       if (separator < 3 || separator == line.length - 1) {
-        throw const FormatException('اكتب كل سؤال بالشكل: السؤال|الإجابة');
+        throw FormatException(tr('seller_faq_format'));
       }
       return {
         'question': line.substring(0, separator).trim(),
@@ -484,7 +492,7 @@ class _ProductEditorScreenState extends State<ProductEditorScreen> {
     if (_pickedImage == null && existingImages.isEmpty) {
       ErrorHandler.showSecureSnackBar(
         context,
-        'اختر صورة للمنتج',
+        tr('seller_pick_image_required'),
         isError: true,
       );
       return;
@@ -550,18 +558,18 @@ class _ProductEditorScreenState extends State<ProductEditorScreen> {
       final status = product?['status']?.toString() ?? 'draft';
       if (_publish && status != 'active') {
         final message = status == 'out_of_stock'
-            ? 'تم حفظ المنتج، لكنه لن يظهر في الكتالوج حتى تضيف مخزونًا متاحًا.'
-            : 'تم حفظ المنتج كمسودة. أكمل توثيق المتجر ثم افتح المنتج وفعّل النشر ليظهر في البحث والكتالوج.';
+            ? tr('seller_saved_no_stock')
+            : tr('seller_saved_draft');
         await showDialog<void>(
           context: context,
           builder: (dialogContext) => AlertDialog(
             icon: const Icon(Icons.visibility_off_outlined),
-            title: const Text('المنتج غير ظاهر للمشترين بعد'),
+            title: Text(tr('seller_product_not_visible')),
             content: Text(message),
             actions: [
               FilledButton(
                 onPressed: () => Navigator.pop(dialogContext),
-                child: const Text('فهمت'),
+                child: Text(tr('understood')),
               ),
             ],
           ),
@@ -570,8 +578,8 @@ class _ProductEditorScreenState extends State<ProductEditorScreen> {
         ErrorHandler.showSecureSnackBar(
           context,
           status == 'active'
-              ? 'تم حفظ المنتج ونشره في الكتالوج'
-              : 'تم حفظ المنتج كمسودة',
+              ? tr('seller_saved_published')
+              : tr('seller_saved_as_draft'),
           isError: false,
         );
       }
@@ -592,13 +600,15 @@ class _ProductEditorScreenState extends State<ProductEditorScreen> {
   }
 
   String? _required(String? value, {int min = 1}) =>
-      (value?.trim().length ?? 0) < min ? 'هذا الحقل مطلوب' : null;
+      (value?.trim().length ?? 0) < min ? tr('field_required') : null;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.product == null ? 'منتج جديد' : 'تعديل المنتج'),
+        title: Text(
+          widget.product == null ? tr('product_new') : tr('product_edit'),
+        ),
       ),
       body: Form(
         key: _formKey,
@@ -607,20 +617,20 @@ class _ProductEditorScreenState extends State<ProductEditorScreen> {
           children: [
             TextFormField(
               controller: _title,
-              decoration: const InputDecoration(labelText: 'اسم المنتج'),
+              decoration: InputDecoration(labelText: tr('product_name')),
               validator: (value) => _required(value, min: 3),
             ),
             const SizedBox(height: 12),
             TextFormField(
               controller: _description,
               maxLines: 3,
-              decoration: const InputDecoration(labelText: 'الوصف'),
+              decoration: InputDecoration(labelText: tr('product_description')),
               validator: (value) => _required(value, min: 10),
             ),
             const SizedBox(height: 12),
             TextFormField(
               controller: _category,
-              decoration: const InputDecoration(labelText: 'التصنيف'),
+              decoration: InputDecoration(labelText: tr('product_category')),
               validator: (value) => _required(value, min: 2),
             ),
             const SizedBox(height: 12),
@@ -629,13 +639,13 @@ class _ProductEditorScreenState extends State<ProductEditorScreen> {
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
               ),
-              decoration: const InputDecoration(
-                labelText: 'سعر الوحدة بالجنيه',
+              decoration: InputDecoration(
+                labelText: tr('product_unit_price_egp'),
               ),
               validator: (value) =>
                   (double.tryParse((value ?? '').replaceAll(',', '.')) ?? 0) <=
                       0
-                  ? 'أدخل سعرًا صحيحًا'
+                  ? tr('product_price_invalid')
                   : null,
             ),
             const SizedBox(height: 12),
@@ -645,9 +655,9 @@ class _ProductEditorScreenState extends State<ProductEditorScreen> {
                   child: TextFormField(
                     controller: _moq,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(labelText: 'الحد الأدنى'),
+                    decoration: InputDecoration(labelText: tr('moq_label')),
                     validator: (value) => (int.tryParse(value ?? '') ?? 0) < 1
-                        ? 'غير صحيح'
+                        ? tr('invalid_value')
                         : null,
                   ),
                 ),
@@ -656,9 +666,9 @@ class _ProductEditorScreenState extends State<ProductEditorScreen> {
                   child: TextFormField(
                     controller: _stock,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(labelText: 'المخزون'),
+                    decoration: InputDecoration(labelText: tr('stock')),
                     validator: (value) => (int.tryParse(value ?? '') ?? -1) < 0
-                        ? 'غير صحيح'
+                        ? tr('invalid_value')
                         : null,
                   ),
                 ),
@@ -666,7 +676,7 @@ class _ProductEditorScreenState extends State<ProductEditorScreen> {
                 Expanded(
                   child: TextFormField(
                     controller: _unit,
-                    decoration: const InputDecoration(labelText: 'الوحدة'),
+                    decoration: InputDecoration(labelText: tr('unit')),
                     validator: _required,
                   ),
                 ),
@@ -675,17 +685,29 @@ class _ProductEditorScreenState extends State<ProductEditorScreen> {
             const SizedBox(height: 12),
             TextFormField(
               controller: _sku,
-              decoration: const InputDecoration(labelText: 'SKU اختياري'),
+              decoration: InputDecoration(labelText: tr('sku_optional')),
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
               initialValue: _saleType,
-              decoration: const InputDecoration(labelText: 'طريقة البيع'),
-              items: const [
-                DropdownMenuItem(value: 'piece', child: Text('بالقطعة')),
-                DropdownMenuItem(value: 'pack', child: Text('بالعبوة')),
-                DropdownMenuItem(value: 'carton', child: Text('بالكرتونة')),
-                DropdownMenuItem(value: 'pallet', child: Text('بالطبالي')),
+              decoration: InputDecoration(labelText: tr('catalog_sale_type')),
+              items: [
+                DropdownMenuItem(
+                  value: 'piece',
+                  child: Text(tr('sale_type_piece')),
+                ),
+                DropdownMenuItem(
+                  value: 'pack',
+                  child: Text(tr('sale_type_pack')),
+                ),
+                DropdownMenuItem(
+                  value: 'carton',
+                  child: Text(tr('sale_type_carton')),
+                ),
+                DropdownMenuItem(
+                  value: 'pallet',
+                  child: Text(tr('sale_type_pallet')),
+                ),
               ],
               onChanged: (value) =>
                   setState(() => _saleType = value ?? 'piece'),
@@ -697,11 +719,11 @@ class _ProductEditorScreenState extends State<ProductEditorScreen> {
                   child: TextFormField(
                     controller: _unitsPerSale,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: 'عدد القطع في وحدة البيع',
+                    decoration: InputDecoration(
+                      labelText: tr('product_units_per_sale'),
                     ),
                     validator: (value) => (int.tryParse(value ?? '') ?? 0) < 1
-                        ? 'غير صحيح'
+                        ? tr('invalid_value')
                         : null,
                   ),
                 ),
@@ -712,12 +734,14 @@ class _ProductEditorScreenState extends State<ProductEditorScreen> {
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
-                    decoration: const InputDecoration(labelText: 'الخصم %'),
+                    decoration: InputDecoration(labelText: tr('discount_pct')),
                     validator: (value) {
                       final number =
                           double.tryParse((value ?? '').replaceAll(',', '.')) ??
                           -1;
-                      return number < 0 || number > 95 ? '0 إلى 95' : null;
+                      return number < 0 || number > 95
+                          ? tr('discount_range')
+                          : null;
                     },
                   ),
                 ),
@@ -732,9 +756,9 @@ class _ProductEditorScreenState extends State<ProductEditorScreen> {
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
-                    decoration: const InputDecoration(
-                      labelText: 'تكلفة الوحدة (خاصة بك)',
-                      helperText: 'تُستخدم لحساب الربح ولا تظهر للمشتري',
+                    decoration: InputDecoration(
+                      labelText: tr('product_unit_cost'),
+                      helperText: tr('product_cost_helper'),
                     ),
                   ),
                 ),
@@ -743,11 +767,11 @@ class _ProductEditorScreenState extends State<ProductEditorScreen> {
                   child: TextFormField(
                     controller: _leadTime,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: 'مدة التجهيز بالأيام',
+                    decoration: InputDecoration(
+                      labelText: tr('product_lead_time'),
                     ),
                     validator: (value) => (int.tryParse(value ?? '') ?? -1) < 0
-                        ? 'غير صحيح'
+                        ? tr('invalid_value')
                         : null,
                   ),
                 ),
@@ -757,38 +781,38 @@ class _ProductEditorScreenState extends State<ProductEditorScreen> {
             TextFormField(
               controller: _returnPolicy,
               maxLines: 2,
-              decoration: const InputDecoration(
-                labelText: 'سياسة الاستبدال والاسترجاع',
+              decoration: InputDecoration(
+                labelText: tr('product_return_policy'),
               ),
             ),
             const SizedBox(height: 12),
             TextFormField(
               controller: _specifications,
               maxLines: 4,
-              decoration: const InputDecoration(
-                labelText: 'المواصفات',
-                hintText: 'اللون:متعدد\nبلد المنشأ:مصر',
-                helperText: 'كل سطر: اسم المواصفة ثم القيمة',
+              decoration: InputDecoration(
+                labelText: tr('catalog_specifications'),
+                hintText: tr('product_spec_hint'),
+                helperText: tr('product_spec_helper'),
               ),
             ),
             const SizedBox(height: 12),
             TextFormField(
               controller: _faqs,
               maxLines: 5,
-              decoration: const InputDecoration(
-                labelText: 'الأسئلة الشائعة',
-                hintText: 'هل السعر شامل الضريبة؟|نعم، السعر شامل الضريبة.',
-                helperText: 'كل سطر: السؤال|الإجابة',
+              decoration: InputDecoration(
+                labelText: tr('catalog_faqs'),
+                hintText: tr('product_faq_hint'),
+                helperText: tr('product_faq_helper'),
               ),
             ),
             const SizedBox(height: 12),
             TextFormField(
               controller: _tiers,
               maxLines: 4,
-              decoration: const InputDecoration(
-                labelText: 'شرائح سعر الجملة',
-                hintText: '50:95.00\n100:90.00',
-                helperText: 'كل سطر: أقل كمية ثم السعر بالجنيه',
+              decoration: InputDecoration(
+                labelText: tr('product_tier_label'),
+                hintText: tr('product_tier_hint'),
+                helperText: tr('product_tier_helper'),
               ),
             ),
             const SizedBox(height: 12),
@@ -807,17 +831,17 @@ class _ProductEditorScreenState extends State<ProductEditorScreen> {
                     },
               icon: const Icon(Icons.image_outlined),
               label: Text(
-                _pickedImage == null ? 'اختيار صورة' : _pickedImage!.name,
+                _pickedImage == null ? tr('choose_image') : _pickedImage!.name,
               ),
             ),
             const SizedBox(height: 12),
             TextFormField(
               controller: _videoUrls,
               maxLines: 3,
-              decoration: const InputDecoration(
-                labelText: 'روابط فيديو المنتج (اختياري)',
-                hintText: 'ضع رابط فيديو واحدًا في كل سطر',
-                helperText: 'حتى 8 فيديوهات، وتظهر أفقيًا مع صور المنتج.',
+              decoration: InputDecoration(
+                labelText: tr('product_video_urls'),
+                hintText: tr('product_video_hint'),
+                helperText: tr('product_video_helper'),
               ),
             ),
             SwitchListTile(
@@ -825,15 +849,15 @@ class _ProductEditorScreenState extends State<ProductEditorScreen> {
               onChanged: _saving
                   ? null
                   : (value) => setState(() => _publish = value),
-              title: const Text('نشر في الكتالوج'),
-              subtitle: const Text('يتطلب توثيق المنشأة واشتراكًا ساريًا.'),
+              title: Text(tr('product_publish_in_catalog')),
+              subtitle: Text(tr('product_publish_subtitle')),
             ),
             const SizedBox(height: 16),
             FilledButton(
               onPressed: _saving ? null : _save,
               child: _saving
                   ? const CircularProgressIndicator()
-                  : const Text('حفظ المنتج'),
+                  : Text(tr('save_product')),
             ),
           ],
         ),

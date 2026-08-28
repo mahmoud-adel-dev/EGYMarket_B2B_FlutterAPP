@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -58,14 +59,14 @@ class _AccountDataScreenState extends State<AccountDataScreen> {
             TextField(
               controller: password,
               obscureText: true,
-              decoration: const InputDecoration(labelText: 'كلمة المرور'),
+              decoration: InputDecoration(labelText: tr('password')),
             ),
             if (requireDeleteWord) ...[
               const SizedBox(height: 10),
               TextField(
                 controller: confirmation,
-                decoration: const InputDecoration(
-                  labelText: 'اكتب DELETE للتأكيد',
+                decoration: InputDecoration(
+                  labelText: tr('account_delete_confirm_hint'),
                 ),
               ),
             ],
@@ -74,14 +75,14 @@ class _AccountDataScreenState extends State<AccountDataScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('إلغاء'),
+            child: Text(tr('cancel')),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(
               context,
               !requireDeleteWord || confirmation.text.trim() == 'DELETE',
             ),
-            child: const Text('تأكيد'),
+            child: Text(tr('account_confirm')),
           ),
         ],
       ),
@@ -104,7 +105,7 @@ class _AccountDataScreenState extends State<AccountDataScreen> {
       if (mounted) {
         ErrorHandler.showSecureSnackBar(
           context,
-          'تم نسخ ملف بياناتك بصيغة JSON',
+          tr('account_exported'),
           isError: false,
         );
       }
@@ -123,7 +124,7 @@ class _AccountDataScreenState extends State<AccountDataScreen> {
 
   Future<void> _scheduleDeletion() async {
     final password = await _askPassword(
-      title: 'جدولة حذف الحساب بعد 30 يومًا',
+      title: tr('account_schedule_delete_title'),
       requireDeleteWord: true,
     );
     if (password == null || !mounted) return;
@@ -149,7 +150,7 @@ class _AccountDataScreenState extends State<AccountDataScreen> {
 
   Future<void> _cancelDeletion() async {
     final password = await _askPassword(
-      title: 'إلغاء طلب الحذف',
+      title: tr('account_cancel_delete_title'),
       requireDeleteWord: false,
     );
     if (password == null) return;
@@ -177,16 +178,14 @@ class _AccountDataScreenState extends State<AccountDataScreen> {
   Widget build(BuildContext context) {
     final scheduled = _request?['status'] == 'scheduled';
     return Scaffold(
-      appBar: AppBar(title: const Text('بيانات الحساب والخصوصية')),
+      appBar: AppBar(title: Text(tr('account_data_privacy_title'))),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           ListTile(
             leading: const Icon(Icons.download_outlined),
-            title: const Text('تنزيل نسخة من بياناتي'),
-            subtitle: const Text(
-              'ينسخ ملف JSON يتضمن الحساب والمنشأة والطلبات والمدفوعات.',
-            ),
+            title: Text(tr('account_export_data')),
+            subtitle: Text(tr('account_export_data_subtitle')),
             trailing: const Icon(Icons.copy),
             onTap: _working ? null : _export,
           ),
@@ -194,9 +193,14 @@ class _AccountDataScreenState extends State<AccountDataScreen> {
           if (scheduled)
             ListTile(
               leading: const Icon(Icons.restore, color: Colors.orange),
-              title: const Text('إلغاء حذف الحساب'),
+              title: Text(tr('account_cancel_delete')),
               subtitle: Text(
-                'الحذف مجدول في ${_request?['scheduled_for'] ?? ''}',
+                tr(
+                  'account_deletion_scheduled_at',
+                  namedArgs: {
+                    'date': _request?['scheduled_for'] ?? '',
+                  },
+                ),
               ),
               onTap: _working ? null : _cancelDeletion,
             )
@@ -206,10 +210,8 @@ class _AccountDataScreenState extends State<AccountDataScreen> {
                 Icons.delete_forever_outlined,
                 color: Colors.red,
               ),
-              title: const Text('حذف الحساب'),
-              subtitle: const Text(
-                'يتم الحذف بعد 30 يومًا مع الاحتفاظ بالسجلات النظامية اللازمة.',
-              ),
+              title: Text(tr('account_delete')),
+              subtitle: Text(tr('account_delete_subtitle')),
               onTap: _working ? null : _scheduleDeletion,
             ),
           if (_working)

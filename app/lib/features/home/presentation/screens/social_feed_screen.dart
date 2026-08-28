@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -55,7 +56,7 @@ class SocialFeedPost {
     return SocialFeedPost(
       id: json['id'] as String? ?? json['_id'] as String? ?? '',
       wholesalerId: json['wholesalerId'] as String? ?? '',
-      wholesalerName: json['wholesalerName'] as String? ?? 'Merchant',
+      wholesalerName: json['wholesalerName'] as String? ?? tr('feed_merchant'),
       wholesalerGovernorate: json['wholesalerGovernorate'] as String? ?? '',
       wholesalerAvatar: json['wholesalerAvatar'] as String? ?? '',
       caption: json['caption'] as String? ?? '',
@@ -184,7 +185,7 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
       if (!mounted) return;
       if (matching.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('هذا المنشور غير متاح أو تم حذفه.')),
+          SnackBar(content: Text(tr('feed_post_unavailable'))),
         );
         return;
       }
@@ -250,7 +251,9 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
               ),
               const SizedBox(height: 12),
               Text(
-                '${post.commentsCount} Comments',
+                tr('comments', namedArgs: {
+                  'count': '${post.commentsCount}',
+                }),
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -259,7 +262,7 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
               const Divider(),
               Expanded(
                 child: post.comments.isEmpty
-                    ? const Center(child: Text('No comments yet.'))
+                    ? Center(child: Text(tr('no_comments')))
                     : ListView.builder(
                         itemCount: post.comments.length,
                         itemBuilder: (c, i) {
@@ -280,7 +283,7 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
                                   : null,
                             ),
                             title: Text(
-                              comment['buyerName'] ?? 'User',
+                              comment['buyerName'] ?? tr('user_fallback'),
                               style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,
@@ -298,7 +301,7 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
                     child: TextField(
                       controller: commentController,
                       decoration: InputDecoration(
-                        hintText: 'Write a comment...',
+                        hintText: tr('feed_comment_hint'),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
@@ -316,7 +319,7 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
                       if (comment.isEmpty) return;
                       final user = await requireAuthenticatedUser(
                         ctx,
-                        actionLabel: 'إضافة تعليق',
+                        actionLabel: tr('feed_add_comment'),
                       );
                       if (user == null || !ctx.mounted) return;
                       try {
@@ -330,10 +333,8 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
                       } catch (error) {
                         if (ctx.mounted) {
                           ScaffoldMessenger.of(ctx).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'سجل الدخول لإضافة تعليق أو حاول مرة أخرى.',
-                              ),
+                            SnackBar(
+                              content: Text(tr('feed_comment_login_error')),
                             ),
                           );
                         }
@@ -358,7 +359,7 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
     if (feedbackContext == null) return;
     final user = await requireAuthenticatedUser(
       feedbackContext,
-      actionLabel: 'الإعجاب بالمنشور',
+      actionLabel: tr('feed_like_post'),
     );
     if (user == null || !feedbackContext.mounted) return;
     try {
@@ -381,7 +382,11 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
       if (feedbackContext.mounted) {
         ScaffoldMessenger.of(
           feedbackContext,
-        ).showSnackBar(SnackBar(content: Text('تعذر تحديث الإعجاب: $error')));
+        ).showSnackBar(
+          SnackBar(content: Text(tr('feed_like_error', namedArgs: {
+            'error': '$error',
+          }))),
+        );
       }
     }
   }
@@ -406,9 +411,13 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
       if (!feedbackContext.mounted) return;
       ScaffoldMessenger.of(feedbackContext).showSnackBar(
         SnackBar(
-          content: Text('تمت إضافة ${product.productName} للسلة المحلية.'),
+          content: Text(
+            tr('feed_added_local_cart', namedArgs: {
+              'name': product.productName,
+            }),
+          ),
           action: SnackBarAction(
-            label: 'عرض السلة',
+            label: tr('view_cart'),
             onPressed: () {
               if (!feedbackContext.mounted) return;
               Navigator.of(feedbackContext).push(
@@ -421,7 +430,11 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
     } catch (error) {
       if (feedbackContext.mounted) {
         ScaffoldMessenger.of(feedbackContext).showSnackBar(
-          SnackBar(content: Text('تعذرت إضافة المنتج للسلة: $error')),
+          SnackBar(
+            content: Text(
+              tr('feed_add_cart_error', namedArgs: {'error': '$error'}),
+            ),
+          ),
         );
       }
     }
@@ -463,7 +476,7 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
                         controller: _searchController,
                         onSubmitted: (_) => _loadPosts(refresh: true),
                         decoration: InputDecoration(
-                          hintText: 'Search posts...',
+                          hintText: tr('feed_search_hint'),
                           prefixIcon: const Icon(
                             Icons.search,
                             color: AppColors.primary,
@@ -555,7 +568,7 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'No posts found',
+                          tr('no_posts'),
                           style: TextStyle(
                             color: Colors.grey[500],
                             fontSize: 16,
@@ -730,7 +743,11 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
                         : Colors.grey,
                     size: 20,
                   ),
-                  label: Text('إعجاب ${post.likesCount}'),
+                  label: Text(
+                    tr('feed_like_count', namedArgs: {
+                      'count': '${post.likesCount}',
+                    }),
+                  ),
                   onPressed: () => _toggleLike(post),
                 ),
                 TextButton.icon(
@@ -740,14 +757,16 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
                     size: 20,
                   ),
                   label: Text(
-                    'تعليق ${post.commentsCount}',
+                    tr('feed_comment_count', namedArgs: {
+                      'count': '${post.commentsCount}',
+                    }),
                     style: const TextStyle(color: Colors.grey),
                   ),
                   onPressed: () => _showComments(post),
                 ),
                 TextButton.icon(
                   icon: const Icon(Icons.star_outline_rounded, size: 20),
-                  label: const Text('تقييم'),
+                  label: Text(tr('feed_rate')),
                   onPressed: () => Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (_) => WholesalerProfileScreen(
@@ -759,7 +778,7 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
                 if (post.productId?.isNotEmpty == true)
                   TextButton.icon(
                     icon: const Icon(Icons.question_answer_outlined, size: 20),
-                    label: const Text('استفسار'),
+                    label: Text(tr('inquire')),
                     onPressed: () => startProductInquiry(
                       context,
                       productId: post.productId!,
@@ -769,7 +788,7 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
                 if (post.productId?.isNotEmpty == true)
                   TextButton.icon(
                     icon: const Icon(Icons.add_shopping_cart_rounded, size: 20),
-                    label: const Text('أضف للسلة'),
+                    label: Text(tr('add_cart')),
                     onPressed: () => _addLinkedProductToCart(post),
                   ),
                 IconButton(
@@ -787,9 +806,7 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
                     );
                     if (mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('تم نسخ بيانات العرض للمشاركة'),
-                        ),
+                        SnackBar(content: Text(tr('feed_copied_offer'))),
                       );
                     }
                   },
@@ -806,10 +823,16 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
     try {
       final date = DateTime.parse(dateStr);
       final diff = DateTime.now().difference(date);
-      if (diff.inDays > 0) return '${diff.inDays}d';
-      if (diff.inHours > 0) return '${diff.inHours}h';
-      if (diff.inMinutes > 0) return '${diff.inMinutes}m';
-      return 'Just now';
+      if (diff.inDays > 0) {
+        return tr('time_days', namedArgs: {'days': '${diff.inDays}'});
+      }
+      if (diff.inHours > 0) {
+        return tr('time_hours', namedArgs: {'hours': '${diff.inHours}'});
+      }
+      if (diff.inMinutes > 0) {
+        return tr('time_minutes', namedArgs: {'minutes': '${diff.inMinutes}'});
+      }
+      return tr('time_just_now');
     } catch (_) {
       return '';
     }
@@ -946,7 +969,7 @@ class _SocialPostDetailsScreenState extends State<_SocialPostDetailsScreen> {
   Widget build(BuildContext context) {
     final post = widget.post;
     return Scaffold(
-      appBar: AppBar(title: const Text('تفاصيل المنشور')),
+      appBar: AppBar(title: Text(tr('feed_post_details'))),
       body: ListView(
         padding: const EdgeInsets.only(bottom: 30),
         children: [
@@ -1001,18 +1024,26 @@ class _SocialPostDetailsScreenState extends State<_SocialPostDetailsScreen> {
                         ? Icons.thumb_up_alt_rounded
                         : Icons.thumb_up_alt_outlined,
                   ),
-                  label: Text('إعجاب ${post.likesCount}'),
+                  label: Text(
+                    tr('feed_like_count', namedArgs: {
+                      'count': '${post.likesCount}',
+                    }),
+                  ),
                 ),
                 TextButton.icon(
                   onPressed: () => widget.onComments(context),
                   icon: const Icon(Icons.comment_outlined),
-                  label: Text('تعليق ${post.commentsCount}'),
+                  label: Text(
+                    tr('feed_comment_count', namedArgs: {
+                      'count': '${post.commentsCount}',
+                    }),
+                  ),
                 ),
                 if (post.productId?.isNotEmpty == true)
                   TextButton.icon(
                     onPressed: () => widget.onAddToCart(context),
                     icon: const Icon(Icons.add_shopping_cart_rounded),
-                    label: const Text('أضف للسلة'),
+                    label: Text(tr('add_cart')),
                   ),
                 if (post.productId?.isNotEmpty == true)
                   TextButton.icon(
@@ -1022,7 +1053,7 @@ class _SocialPostDetailsScreenState extends State<_SocialPostDetailsScreen> {
                       productName: post.caption,
                     ),
                     icon: const Icon(Icons.question_answer_outlined),
-                    label: const Text('استفسار'),
+                    label: Text(tr('inquire')),
                   ),
               ],
             ),
@@ -1031,20 +1062,22 @@ class _SocialPostDetailsScreenState extends State<_SocialPostDetailsScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 18),
             child: Text(
-              'التعليقات',
+              tr('comments_header'),
               style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
           if (post.comments.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(24),
-              child: Text('لا توجد تعليقات بعد.'),
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Text(tr('no_comments')),
             )
           else
             ...post.comments.map(
               (comment) => ListTile(
                 leading: const CircleAvatar(child: Icon(Icons.person_outline)),
-                title: Text(comment['buyerName']?.toString() ?? 'مستخدم'),
+                title: Text(
+                  comment['buyerName']?.toString() ?? tr('user_fallback'),
+                ),
                 subtitle: Text(comment['text']?.toString() ?? ''),
               ),
             ),

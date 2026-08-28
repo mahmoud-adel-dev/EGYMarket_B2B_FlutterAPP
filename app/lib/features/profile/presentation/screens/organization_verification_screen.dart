@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -23,14 +24,47 @@ class _OrganizationVerificationScreenState
   bool _loading = true;
   bool _submitting = false;
   String _documentType = 'commercial_register';
+  static const _typeValues = [
+    'commercial_register',
+    'tax_card',
+    'national_id',
+    'shipping_license',
+    'other',
+  ];
 
-  static const _types = {
-    'commercial_register': 'السجل التجاري',
-    'tax_card': 'البطاقة الضريبية',
-    'national_id': 'بطاقة الرقم القومي',
-    'shipping_license': 'ترخيص الشحن',
-    'other': 'مستند آخر',
-  };
+  String _documentTypeLabel(String? type) {
+    switch (type) {
+      case 'commercial_register':
+        return tr('verify_doc_commercial_register');
+      case 'tax_card':
+        return tr('verify_doc_tax_card');
+      case 'national_id':
+        return tr('verify_doc_national_id');
+      case 'shipping_license':
+        return tr('verify_doc_shipping_license');
+      case 'other':
+        return tr('verify_doc_other');
+      default:
+        return type ?? '';
+    }
+  }
+
+  String _verificationStatusLabel(String status) {
+    switch (status) {
+      case 'verified':
+        return tr('verified');
+      case 'pending':
+        return tr('verify_status_pending');
+      case 'rejected':
+        return tr('verify_status_rejected');
+      case 'unsubmitted':
+        return tr('verify_status_unsubmitted');
+      case 'approved':
+        return tr('verify_status_approved');
+      default:
+        return status;
+    }
+  }
 
   @override
   void initState() {
@@ -118,7 +152,7 @@ class _OrganizationVerificationScreenState
       if (mounted) {
         ErrorHandler.showSecureSnackBar(
           context,
-          'تم إرسال المستندات للمراجعة',
+          tr('verify_documents_submitted'),
           isError: false,
         );
       }
@@ -142,7 +176,7 @@ class _OrganizationVerificationScreenState
     final existing =
         _organization?['verification_documents'] as List<dynamic>? ?? const [];
     return Scaffold(
-      appBar: AppBar(title: const Text('توثيق المنشأة')),
+      appBar: AppBar(title: Text(tr('verify_title'))),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : ListView(
@@ -155,29 +189,34 @@ class _OrganizationVerificationScreenState
                           ? Icons.verified
                           : Icons.policy_outlined,
                     ),
-                    title: Text('حالة التوثيق: $status'),
-                    subtitle: const Text(
-                      'يراجع مدير المنصة المستندات قبل السماح بالنشر والتداول.',
+                    title: Text(
+                      tr(
+                        'verify_status_label',
+                        namedArgs: {
+                          'status': _verificationStatusLabel(status),
+                        },
+                      ),
                     ),
+                    subtitle: Text(tr('verify_review_note')),
                   ),
                 ),
                 if (existing.isNotEmpty) ...[
                   const SizedBox(height: 16),
-                  const Text(
-                    'المستندات الحالية',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  Text(
+                    tr('verify_current_documents'),
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   ...existing.map((raw) {
                     final document = raw as Map;
                     return ListTile(
                       leading: const Icon(Icons.description_outlined),
                       title: Text(
-                        _types[document['type']] ??
-                            document['type']?.toString() ??
-                            '',
+                        _documentTypeLabel(document['type']?.toString()),
                       ),
                       subtitle: Text(
-                        document['status']?.toString() ?? 'pending',
+                        _verificationStatusLabel(
+                          document['status']?.toString() ?? 'pending',
+                        ),
                       ),
                     );
                   }),
@@ -186,12 +225,12 @@ class _OrganizationVerificationScreenState
                   const Divider(height: 32),
                   DropdownButtonFormField<String>(
                     initialValue: _documentType,
-                    decoration: const InputDecoration(labelText: 'نوع المستند'),
-                    items: _types.entries
+                    decoration: InputDecoration(labelText: tr('verify_doc_type')),
+                    items: _typeValues
                         .map(
-                          (entry) => DropdownMenuItem(
-                            value: entry.key,
-                            child: Text(entry.value),
+                          (value) => DropdownMenuItem(
+                            value: value,
+                            child: Text(_documentTypeLabel(value)),
                           ),
                         )
                         .toList(),
@@ -202,7 +241,7 @@ class _OrganizationVerificationScreenState
                   OutlinedButton.icon(
                     onPressed: _submitting ? null : _pickDocument,
                     icon: const Icon(Icons.upload_file),
-                    label: const Text('اختيار صورة المستند ورفعها'),
+                    label: Text(tr('verify_pick_document')),
                   ),
                   ..._documents.asMap().entries.map(
                     (entry) => ListTile(
@@ -210,7 +249,9 @@ class _OrganizationVerificationScreenState
                         Icons.check_circle_outline,
                         color: Colors.green,
                       ),
-                      title: Text(_types[entry.value['type']] ?? ''),
+                      title: Text(
+                        _documentTypeLabel(entry.value['type']?.toString()),
+                      ),
                       trailing: IconButton(
                         onPressed: () =>
                             setState(() => _documents.removeAt(entry.key)),
@@ -225,7 +266,7 @@ class _OrganizationVerificationScreenState
                         : _submit,
                     child: _submitting
                         ? const CircularProgressIndicator()
-                        : const Text('إرسال للمراجعة'),
+                        : Text(tr('verify_submit_review')),
                   ),
                 ],
               ],

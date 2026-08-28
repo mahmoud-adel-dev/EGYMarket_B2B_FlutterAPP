@@ -572,7 +572,10 @@ class _DesktopSidebar extends StatelessWidget {
                         button: true,
                         selected: selected,
                         label: item.badgeCount > 0
-                            ? '${item.label}، ${item.badgeCount} طلبات تتطلب إجراء'
+                            ? tr('nav_orders_action_needed', namedArgs: {
+                                'label': item.label,
+                                'count': '${item.badgeCount}',
+                              })
                             : item.label,
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
@@ -777,12 +780,8 @@ class _DesktopHeader extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   user == null
-                      ? (isArabic
-                            ? 'سوق الجملة للأعمال في مصر'
-                            : 'Egypt\'s wholesale business marketplace')
-                      : (isArabic
-                            ? 'إدارة أعمالك من مكان واحد'
-                            : 'Manage your business in one place'),
+                      ? tr('nav_header_guest')
+                      : tr('nav_header_signed_in'),
                   style: Theme.of(
                     context,
                   ).textTheme.bodySmall?.copyWith(color: AppColors.muted),
@@ -791,7 +790,7 @@ class _DesktopHeader extends StatelessWidget {
             ),
           ),
           _HeaderAction(
-            tooltip: isArabic ? 'English' : 'العربية',
+            tooltip: isArabic ? tr('english') : tr('arabic'),
             onTap: onToggleLocale,
             child: Text(
               isArabic ? 'EN' : 'ع',
@@ -871,8 +870,10 @@ class _NotificationIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       label: unreadCount > 0
-          ? 'الإشعارات، $unreadCount غير مقروءة'
-          : 'الإشعارات، لا توجد إشعارات غير مقروءة',
+          ? tr('nav_notifications_unread', namedArgs: {
+              'count': '$unreadCount',
+            })
+          : tr('nav_notifications_none'),
       child: ExcludeSemantics(
         child: Stack(
           clipBehavior: Clip.none,
@@ -1022,7 +1023,10 @@ class _MobileNavigation extends StatelessWidget {
                   button: true,
                   selected: selected,
                   label: item.badgeCount > 0
-                      ? '${item.label}، ${item.badgeCount} طلبات تتطلب إجراء'
+                      ? tr('nav_orders_action_needed', namedArgs: {
+                          'label': item.label,
+                          'count': '${item.badgeCount}',
+                        })
                       : item.label,
                   child: InkWell(
                     onTap: () => onTap(index),

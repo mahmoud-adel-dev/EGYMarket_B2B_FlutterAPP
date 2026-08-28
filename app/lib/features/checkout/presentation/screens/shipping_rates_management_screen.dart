@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/di/service_locator.dart';
@@ -74,19 +75,23 @@ class _ShippingRatesManagementScreenState
     final submit = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('تعريفة شحن'),
+        title: Text(tr('shipping_rate_title')),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: from,
-                decoration: const InputDecoration(labelText: 'من محافظة'),
+                decoration: InputDecoration(
+                  labelText: tr('shipping_from_governorate'),
+                ),
               ),
               const SizedBox(height: 10),
               TextField(
                 controller: to,
-                decoration: const InputDecoration(labelText: 'إلى محافظة'),
+                decoration: InputDecoration(
+                  labelText: tr('shipping_to_governorate'),
+                ),
               ),
               const SizedBox(height: 10),
               TextField(
@@ -94,14 +99,16 @@ class _ShippingRatesManagementScreenState
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
-                decoration: const InputDecoration(labelText: 'السعر بالجنيه'),
+                decoration: InputDecoration(
+                  labelText: tr('shipping_price_egp'),
+                ),
               ),
               const SizedBox(height: 10),
               TextField(
                 controller: days,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'مدة التوصيل بالأيام',
+                decoration: InputDecoration(
+                  labelText: tr('shipping_delivery_days'),
                 ),
               ),
             ],
@@ -110,11 +117,11 @@ class _ShippingRatesManagementScreenState
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('إلغاء'),
+            child: Text(tr('cancel')),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('حفظ'),
+            child: Text(tr('save')),
           ),
         ],
       ),
@@ -128,7 +135,7 @@ class _ShippingRatesManagementScreenState
             to.text.trim().length < 2 ||
             priceValue < 0 ||
             daysValue < 1) {
-          throw const FormatException('راجع بيانات التعريفة.');
+          throw FormatException(tr('shipping_rate_invalid'));
         }
         await _network.post<Map<String, dynamic>>(
           '/shippers/rates',
@@ -162,11 +169,11 @@ class _ShippingRatesManagementScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('تعريفات الشحن')),
+      appBar: AppBar(title: Text(tr('shipping_rates_title'))),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _rates.isEmpty
-          ? const Center(child: Text('لا توجد تعريفات نشطة.'))
+          ? Center(child: Text(tr('shipping_no_rates')))
           : RefreshIndicator(
               onRefresh: _load,
               child: ListView.builder(
@@ -183,7 +190,10 @@ class _ShippingRatesManagementScreenState
                         '${rate['from_governorate']} ← ${rate['to_governorate']}',
                       ),
                       subtitle: Text(
-                        '${price.toStringAsFixed(2)} ج.م • ${rate['estimated_days']} يوم',
+                        tr('shipping_rate_item', namedArgs: {
+                          'price': price.toStringAsFixed(2),
+                          'days': rate['estimated_days'],
+                        }),
                       ),
                       trailing: IconButton(
                         onPressed: () => _edit(rate),
@@ -197,7 +207,7 @@ class _ShippingRatesManagementScreenState
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _edit,
         icon: const Icon(Icons.add),
-        label: const Text('إضافة تعريفة'),
+        label: Text(tr('shipping_add_rate')),
       ),
     );
   }

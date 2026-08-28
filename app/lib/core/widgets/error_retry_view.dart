@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../theme/app_theme.dart';
 import '../utils/price_formatter.dart';
 
@@ -25,7 +26,7 @@ class ErrorRetryView extends StatelessWidget {
     IconData icon = Icons.inbox_outlined,
   }) {
     return ErrorRetryView(
-      message: message ?? 'لا توجد بيانات لعرضها',
+      message: message ?? tr('no_data_to_show'),
       icon: icon,
       isEmptyState: true,
     );
@@ -54,7 +55,7 @@ class ErrorRetryView extends StatelessWidget {
               FilledButton.tonalIcon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh_rounded),
-                label: Text(retryLabel ?? 'إعادة المحاولة'),
+                label: Text(retryLabel ?? tr('retry')),
               ),
             ],
           ],

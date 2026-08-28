@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/governorates.dart';
@@ -56,7 +57,7 @@ class _CheckoutViewState extends State<_CheckoutView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('إتمام طلب الجملة')),
+      appBar: AppBar(title: Text(tr('checkout_wholesale_title'))),
       body: BlocConsumer<CheckoutCubit, CheckoutState>(
         listener: (context, state) {
           if (state is CheckoutError) {
@@ -69,9 +70,11 @@ class _CheckoutViewState extends State<_CheckoutView> {
               context: context,
               barrierDismissible: false,
               builder: (dialogContext) => AlertDialog(
-                title: const Text('تم إرسال طلب الشراء'),
+                title: Text(tr('checkout_order_submitted')),
                 content: Text(
-                  'رقم الطلب: ${state.orderNumber}\nلن تدفع الآن. بعد قبول البائع ستظهر التزامات البضاعة ورسم المنصة 50 جنيهًا والشحن إن وجد.',
+                  tr('checkout_success_message', namedArgs: {
+                    'orderNumber': state.orderNumber,
+                  }),
                 ),
                 actions: [
                   TextButton(
@@ -79,7 +82,7 @@ class _CheckoutViewState extends State<_CheckoutView> {
                       Navigator.of(dialogContext).pop();
                       Navigator.of(context).pop(true);
                     },
-                    child: const Text('حسنًا'),
+                    child: Text(tr('ok')),
                   ),
                 ],
               ),
@@ -104,8 +107,8 @@ class _CheckoutViewState extends State<_CheckoutView> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'ملخص الطلب',
+                        Text(
+                          tr('order_summary'),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 17,
@@ -113,25 +116,28 @@ class _CheckoutViewState extends State<_CheckoutView> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          '${widget.cartItems.length} أصناف — ${widget.totalAmount.toStringAsFixed(2)} ج.م للبضاعة',
+                          tr('checkout_items_summary', namedArgs: {
+                            'count': '${widget.cartItems.length}',
+                            'price': widget.totalAmount.toStringAsFixed(2),
+                          }),
                         ),
-                        const Text('رسم المنصة: 50.00 ج.م بعد قبول البائع'),
+                        Text(tr('checkout_platform_fee')),
                       ],
                     ),
                   ),
                 ),
                 const SizedBox(height: 16),
                 SegmentedButton<FulfillmentMethod>(
-                  segments: const [
+                  segments: [
                     ButtonSegment(
                       value: FulfillmentMethod.buyerPickup,
-                      label: Text('استلام من البائع'),
-                      icon: Icon(Icons.store),
+                      label: Text(tr('checkout_buyer_pickup')),
+                      icon: const Icon(Icons.store),
                     ),
                     ButtonSegment(
                       value: FulfillmentMethod.thirdPartyShipping,
-                      label: Text('شركة شحن'),
-                      icon: Icon(Icons.local_shipping),
+                      label: Text(tr('checkout_shipping_company')),
+                      icon: const Icon(Icons.local_shipping),
                     ),
                   ],
                   selected: {state.fulfillmentMethod},
@@ -143,8 +149,8 @@ class _CheckoutViewState extends State<_CheckoutView> {
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
                     initialValue: _governorate,
-                    decoration: const InputDecoration(
-                      labelText: 'محافظة التسليم',
+                    decoration: InputDecoration(
+                      labelText: tr('checkout_delivery_governorate'),
                     ),
                     items: egyptGovernorates
                         .map(
@@ -165,41 +171,43 @@ class _CheckoutViewState extends State<_CheckoutView> {
                   const SizedBox(height: 12),
                   TextFormField(
                     controller: _address,
-                    decoration: const InputDecoration(
-                      labelText: 'العنوان بالتفصيل',
+                    decoration: InputDecoration(
+                      labelText: tr('checkout_detailed_address'),
                     ),
                     validator: (value) => (value?.trim().length ?? 0) < 5
-                        ? 'أدخل العنوان بالتفصيل'
+                        ? tr('checkout_address_required')
                         : null,
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
                     controller: _contactName,
-                    decoration: const InputDecoration(labelText: 'اسم المستلم'),
+                    decoration: InputDecoration(
+                      labelText: tr('checkout_recipient_name'),
+                    ),
                     validator: (value) => (value?.trim().length ?? 0) < 2
-                        ? 'أدخل اسم المستلم'
+                        ? tr('checkout_recipient_name_required')
                         : null,
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
                     controller: _phone,
                     keyboardType: TextInputType.phone,
-                    decoration: const InputDecoration(
-                      labelText: 'هاتف المستلم',
+                    decoration: InputDecoration(
+                      labelText: tr('checkout_recipient_phone'),
                     ),
                     validator: (value) => (value?.trim().length ?? 0) < 8
-                        ? 'أدخل رقم هاتف صحيح'
+                        ? tr('checkout_phone_required')
                         : null,
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    'شركة الشحن',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  Text(
+                    tr('checkout_shipping_company'),
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   if (state.availableShippers.isEmpty)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 12),
-                      child: Text('لا توجد شركة تغطي هذا المسار حاليًا'),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Text(tr('checkout_no_shipper')),
                     )
                   else
                     RadioGroup<String>(
@@ -218,7 +226,12 @@ class _CheckoutViewState extends State<_CheckoutView> {
                                 value: shipper.rateId,
                                 title: Text(shipper.name),
                                 subtitle: Text(
-                                  '${shipper.shippingFee.toStringAsFixed(2)} ج.م — ${shipper.estimatedDays} أيام',
+                                  tr('checkout_shipper_option', namedArgs: {
+                                    'price': shipper.shippingFee.toStringAsFixed(
+                                      2,
+                                    ),
+                                    'days': '${shipper.estimatedDays}',
+                                  }),
                                 ),
                               ),
                             )
@@ -246,7 +259,7 @@ class _CheckoutViewState extends State<_CheckoutView> {
                           },
                     child: state.isSubmitting
                         ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text('إرسال طلب الشراء للبائع'),
+                        : Text(tr('checkout_submit_order')),
                   ),
                 ),
               ],

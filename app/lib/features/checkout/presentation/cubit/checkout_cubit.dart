@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/errors/error_handler.dart';
 import '../../../../core/network/network_manager.dart';
@@ -74,7 +75,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     if (current is! CheckoutLoaded) return;
     if (current.fulfillmentMethod == FulfillmentMethod.thirdPartyShipping &&
         current.selectedShipper == null) {
-      emit(CheckoutError('لا توجد شركة شحن متاحة لهذا المسار'));
+      emit(CheckoutError(tr('err_no_shipper_for_route')));
       return;
     }
     emit(current.copyWith(isSubmitting: true));

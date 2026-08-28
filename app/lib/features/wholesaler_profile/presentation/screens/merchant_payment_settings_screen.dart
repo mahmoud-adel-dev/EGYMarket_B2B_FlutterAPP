@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/di/service_locator.dart';
@@ -66,7 +67,7 @@ class _MerchantPaymentSettingsScreenState
     if (_holder.text.trim().length < 2) {
       ErrorHandler.showSecureSnackBar(
         context,
-        'أدخل اسم صاحب الحساب',
+        tr('merchant_account_holder_required'),
         isError: true,
       );
       return;
@@ -89,7 +90,7 @@ class _MerchantPaymentSettingsScreenState
     if (accounts.isEmpty) {
       ErrorHandler.showSecureSnackBar(
         context,
-        'أضف وسيلة دفع محلية واحدة على الأقل',
+        tr('merchant_add_local_payment'),
         isError: true,
       );
       return;
@@ -103,7 +104,7 @@ class _MerchantPaymentSettingsScreenState
       if (mounted) {
         ErrorHandler.showSecureSnackBar(
           context,
-          'تم حفظ حسابات التحويل المحلية',
+          tr('merchant_saved'),
           isError: false,
         );
       }
@@ -132,47 +133,45 @@ class _MerchantPaymentSettingsScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('حسابات استلام المدفوعات')),
+      appBar: AppBar(title: Text(tr('merchant_payment_title'))),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : ListView(
               padding: const EdgeInsets.all(20),
               children: [
-                const Card(
+                Card(
                   child: Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Text(
-                      'يدفع المشتري مباشرة إلى حسابك. المنصة لا تحتفظ بأموال البضاعة أو الشحن. يجب أن تؤكد استلام كل تحويل من شاشة الطلب.',
-                    ),
+                    padding: const EdgeInsets.all(16),
+                    child: Text(tr('merchant_payment_info')),
                   ),
                 ),
                 const SizedBox(height: 14),
                 TextField(
                   controller: _holder,
-                  decoration: const InputDecoration(
-                    labelText: 'اسم صاحب الحساب',
+                  decoration: InputDecoration(
+                    labelText: tr('merchant_account_holder'),
                   ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: _instapay,
-                  decoration: const InputDecoration(
-                    labelText: 'عنوان InstaPay / IPA',
+                  decoration: InputDecoration(
+                    labelText: tr('merchant_instapay_hint'),
                   ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: _wallet,
                   keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(
-                    labelText: 'رقم المحفظة الإلكترونية',
+                  decoration: InputDecoration(
+                    labelText: tr('merchant_wallet_hint'),
                   ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: _bank,
-                  decoration: const InputDecoration(
-                    labelText: 'IBAN أو رقم الحساب البنكي',
+                  decoration: InputDecoration(
+                    labelText: tr('merchant_bank_hint'),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -182,7 +181,7 @@ class _MerchantPaymentSettingsScreenState
                     onPressed: _saving ? null : _save,
                     child: _saving
                         ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text('حفظ'),
+                        : Text(tr('save')),
                   ),
                 ),
               ],

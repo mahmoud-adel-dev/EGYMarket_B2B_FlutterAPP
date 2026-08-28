@@ -1,5 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../../../../core/di/service_locator.dart';
 import '../../../../core/errors/error_handler.dart';
@@ -46,13 +46,19 @@ class _ProfitReportScreenState extends State<ProfitReportScreen> {
     }
   }
 
-  String _money(dynamic piasters) =>
-      '${NumberFormat('#,##0.00').format(((piasters as num?) ?? 0) / 100)} ج.م';
+  String _money(dynamic piasters) => tr(
+  'price',
+  namedArgs: {
+    'price': NumberFormat('#,##0.00').format(
+      ((piasters as num?) ?? 0) / 100,
+    ),
+  },
+);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('تقرير الأرباح والمخزون')),
+      appBar: AppBar(title: Text(tr('profit_report_title'))),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
@@ -64,7 +70,7 @@ class _ProfitReportScreenState extends State<ProfitReportScreen> {
                   const SizedBox(height: 12),
                   FilledButton(
                     onPressed: _load,
-                    child: const Text('إعادة المحاولة'),
+                    child: Text(tr('retry')),
                   ),
                 ],
               ),
@@ -98,25 +104,25 @@ class _ProfitReportScreenState extends State<ProfitReportScreen> {
             childAspectRatio: 1.25,
             children: [
               _ReportMetric(
-                'إجمالي المبيعات',
+                tr('profit_gross_sales'),
                 _money(sales['gross_sales_piasters']),
                 Icons.payments_outlined,
                 const Color(0xFF2563EB),
               ),
               _ReportMetric(
-                'مجمل الربح',
+                tr('profit_gross_profit'),
                 _money(sales['gross_profit_piasters']),
                 Icons.trending_up_rounded,
                 const Color(0xFF059669),
               ),
               _ReportMetric(
-                'قيمة المخزون',
+                tr('profit_inventory_value'),
                 _money(inventory['retail_value_piasters']),
                 Icons.inventory_2_outlined,
                 const Color(0xFF7C3AED),
               ),
               _ReportMetric(
-                'الوحدات المتاحة',
+                tr('profit_available_units'),
                 '${inventory['available_units'] ?? 0}',
                 Icons.warehouse_outlined,
                 const Color(0xFFEA580C),
@@ -124,7 +130,7 @@ class _ProfitReportScreenState extends State<ProfitReportScreen> {
             ],
           ),
           const SizedBox(height: 20),
-          _sectionTitle('اتجاه المبيعات – آخر 6 أشهر'),
+          _sectionTitle(tr('profit_sales_trend')),
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -165,12 +171,12 @@ class _ProfitReportScreenState extends State<ProfitReportScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          _sectionTitle('تنبيهات المخزون'),
+          _sectionTitle(tr('profit_inventory_alerts')),
           Row(
             children: [
               Expanded(
                 child: _AlertCard(
-                  'مخزون منخفض',
+                  tr('profit_low_stock'),
                   inventory['low_stock_products'] ?? 0,
                   Colors.orange,
                 ),
@@ -178,7 +184,7 @@ class _ProfitReportScreenState extends State<ProfitReportScreen> {
               const SizedBox(width: 10),
               Expanded(
                 child: _AlertCard(
-                  'نفد المخزون',
+                  tr('product_status_out_of_stock'),
                   inventory['out_of_stock_products'] ?? 0,
                   Colors.red,
                 ),
@@ -186,7 +192,7 @@ class _ProfitReportScreenState extends State<ProfitReportScreen> {
             ],
           ),
           const SizedBox(height: 20),
-          _sectionTitle('أداء كل صنف'),
+          _sectionTitle(tr('profit_product_performance')),
           ...products.map((raw) {
             final row = raw as Map;
             return Card(
@@ -198,7 +204,14 @@ class _ProfitReportScreenState extends State<ProfitReportScreen> {
                   overflow: TextOverflow.ellipsis,
                 ),
                 subtitle: Text(
-                  '${row['sku'] ?? 'بدون SKU'} • ربح ${_money(row['gross_profit_piasters'])}',
+                  tr(
+                    'profit_item',
+                    namedArgs: {
+                      'sku':
+                          row['sku']?.toString() ?? tr('profit_no_sku'),
+                      'amount': _money(row['gross_profit_piasters']),
+                    },
+                  ),
                 ),
                 trailing: Text(
                   '${row['sell_through_percent'] ?? 0}%',
@@ -211,10 +224,38 @@ class _ProfitReportScreenState extends State<ProfitReportScreen> {
                       spacing: 16,
                       runSpacing: 8,
                       children: [
-                        Text('المباع: ${row['units_sold'] ?? 0}'),
-                        Text('المتاح: ${row['available_quantity'] ?? 0}'),
-                        Text('الطلبات: ${row['orders_count'] ?? 0}'),
-                        Text('المبيعات: ${_money(row['sales_piasters'])}'),
+                        Text(
+                          tr(
+                            'profit_units_sold',
+                            namedArgs: {
+                              'count': row['units_sold'] ?? 0,
+                            },
+                          ),
+                        ),
+                        Text(
+                          tr(
+                            'profit_available',
+                            namedArgs: {
+                              'count': row['available_quantity'] ?? 0,
+                            },
+                          ),
+                        ),
+                        Text(
+                          tr(
+                            'profit_orders_count',
+                            namedArgs: {
+                              'count': row['orders_count'] ?? 0,
+                            },
+                          ),
+                        ),
+                        Text(
+                          tr(
+                            'profit_sales_value',
+                            namedArgs: {
+                              'amount': _money(row['sales_piasters']),
+                            },
+                          ),
+                        ),
                       ],
                     ),
                   ),

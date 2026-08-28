@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:image_picker/image_picker.dart';
 
 /// Result of a completed media pick+encode.
@@ -80,7 +81,7 @@ Future<MediaUploadPayload> buildImageUploadPayload({
     imageQuality: imageQuality,
     maxWidth: maxWidth,
   );
-  if (picked == null) throw MediaUploadException('لم يتم اختيار صورة');
+  if (picked == null) throw MediaUploadException(tr('err_no_image_picked'));
   final bytes = await picked.readAsBytes();
   final mime = picked.mimeType ?? _mimeFromName(picked.name);
   _validate(mime, 'image', bytes.length);
@@ -95,7 +96,7 @@ Future<MediaUploadPayload> buildImageUploadPayload({
 /// Video uploads are size-capped; oversized picks are rejected before encode.
 Future<MediaUploadPayload> buildVideoUploadPayload() async {
   final picked = await ImagePicker().pickVideo(source: ImageSource.gallery);
-  if (picked == null) throw MediaUploadException('لم يتم اختيار فيديو');
+  if (picked == null) throw MediaUploadException(tr('err_no_video_picked'));
   final bytes = await picked.readAsBytes();
   const mime = 'video/mp4';
   _validate(mime, 'video', bytes.length);
@@ -114,15 +115,17 @@ void _validate(String mime, String type, int byteLength) {
       : const ['video/mp4', 'video/webm', 'video/quicktime'];
   if (!allowed.contains(mime)) {
     throw MediaUploadException(
-      isImage ? 'صيغة الصورة غير مدعومة' : 'صيغة الفيديو غير مدعومة',
+      isImage
+          ? tr('err_unsupported_image_format')
+          : tr('err_unsupported_video_format'),
     );
   }
   final max = type == 'image' ? kMaxImageBytes : kMaxVideoBytes;
   if (byteLength > max) {
     throw MediaUploadException(
       type == 'image'
-          ? 'حجم الصورة يتجاوز 10 ميجابايت'
-          : 'حجم الفيديو يتجاوز 50 ميجابايت',
+          ? tr('err_image_too_large')
+          : tr('err_video_too_large'),
     );
   }
 }

@@ -17,54 +17,68 @@ import '../widgets/role_selector_widget.dart';
 /// server-side governorate filters.
 const List<String> kEgyptianGovernorates = egyptGovernorates;
 
+/// Canonical category interest list. Each entry carries a stable `key` used both
+/// for localization (display) and as the canonical value submitted to the backend.
+/// The visible label is localized via `l10nKey`; the submitted value stays the
+/// canonical English key so catalogue matching is stable across languages.
 const List<Map<String, dynamic>> kProductCategories = [
   {
-    'label': 'Electronics',
+    'key': 'Electronics',
+    'l10nKey': 'cat_electronics',
     'icon': Icons.computer_rounded,
     'color': Color(0xFF6C63FF),
   },
   {
-    'label': 'Fashion',
+    'key': 'Fashion',
+    'l10nKey': 'cat_fashion',
     'icon': Icons.checkroom_rounded,
     'color': Color(0xFFFF6B9D),
   },
   {
-    'label': 'Food & Beverages',
+    'key': 'Food & Beverages',
+    'l10nKey': 'cat_food_beverages',
     'icon': Icons.restaurant_rounded,
     'color': Color(0xFF4ECDC4),
   },
   {
-    'label': 'Home & Living',
+    'key': 'Home & Living',
+    'l10nKey': 'cat_home_living',
     'icon': Icons.home_rounded,
     'color': Color(0xFFFF9800),
   },
   {
-    'label': 'Auto Parts',
+    'key': 'Auto Parts',
+    'l10nKey': 'cat_auto_parts',
     'icon': Icons.directions_car_rounded,
     'color': Color(0xFF9C27B0),
   },
   {
-    'label': 'Cosmetics',
+    'key': 'Cosmetics',
+    'l10nKey': 'cat_cosmetics',
     'icon': Icons.face_retouching_natural,
     'color': Color(0xFFE91E63),
   },
   {
-    'label': 'Office Supplies',
+    'key': 'Office Supplies',
+    'l10nKey': 'cat_office_supplies',
     'icon': Icons.work_rounded,
     'color': Color(0xFF2196F3),
   },
   {
-    'label': 'Toys & Kids',
+    'key': 'Toys & Kids',
+    'l10nKey': 'cat_toys_kids',
     'icon': Icons.toys_rounded,
     'color': Color(0xFF00BCD4),
   },
   {
-    'label': 'Sports',
+    'key': 'Sports',
+    'l10nKey': 'cat_sports',
     'icon': Icons.sports_soccer_rounded,
     'color': Color(0xFF4CAF50),
   },
   {
-    'label': 'Medical',
+    'key': 'Medical',
+    'l10nKey': 'cat_medical',
     'icon': Icons.medical_services_rounded,
     'color': Color(0xFFF44336),
   },
@@ -89,7 +103,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   late final TextEditingController _addressController;
 
   UserRole _selectedRole = UserRole.retailer;
-  String _selectedGovernorate = 'Cairo';
+  String _selectedGovernorate = egyptGovernorates.first;
   bool _isPasswordObscured = true;
   bool _acceptedTerms = false;
   final Set<String> _selectedCategories = {};
@@ -134,7 +148,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (!_acceptedTerms) {
       ErrorHandler.showSecureSnackBar(
         context,
-        'يجب الموافقة على الشروط وسياسة الخصوصية',
+        tr('agree_terms_required'),
         isError: true,
       );
       return;
@@ -144,7 +158,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (_selectedRole == UserRole.retailer && _selectedCategories.isEmpty) {
       ErrorHandler.showSecureSnackBar(
         context,
-        'Please select at least one interest category',
+        tr('select_category_required'),
         isError: true,
       );
       return;
@@ -197,10 +211,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
             );
           } else if (state is RegistrationPendingVerificationState) {
             final message = state.deliveryStatus == 'development_verified'
-                ? 'تم إنشاء الحساب وتأكيد البريد تلقائيًا في بيئة التطوير. يمكنك تسجيل الدخول الآن.'
+                ? tr('account_created_auto_verified')
                 : state.deliveryStatus == 'sent'
-                ? 'تم إنشاء الحساب. افتح بريدك الإلكتروني لتأكيده ثم سجل الدخول.'
-                : 'تم إنشاء الحساب، لكن خدمة البريد غير مضبوطة بعد. استخدم إعادة التحقق من صفحة الدخول في بيئة التطوير.';
+                ? tr('account_created_check_email')
+                : tr('account_created_mail_not_configured');
             ErrorHandler.showSecureSnackBar(context, message, isError: false);
             Navigator.of(context).pop();
           }
@@ -212,7 +226,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             children: [
               // Role Selector
               _SectionCard(
-                title: 'I am a...',
+                title: tr('whats_your_role'),
                 child: RoleSelectorWidget(
                   selectedRole: _selectedRole,
                   onRoleChanged: (r) => setState(() => _selectedRole = r),
@@ -222,7 +236,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
               // Personal Info Card
               _SectionCard(
-                title: 'Account Information',
+                title: tr('account_information'),
                 child: Column(
                   children: [
                     _Field(
@@ -329,13 +343,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       validator: (v) {
                         if (v?.isEmpty ?? true) return tr('password_required');
                         if ((v?.length ?? 0) < 8) {
-                          return 'كلمة المرور لا تقل عن 8 أحرف';
+                          return tr('password_min_length_ar');
                         }
                         if (!RegExp(r'[A-Za-z]').hasMatch(v!)) {
-                          return 'يجب أن تحتوي على حرف';
+                          return tr('password_needs_letter');
                         }
                         if (!RegExp(r'[0-9]').hasMatch(v)) {
-                          return 'يجب أن تحتوي على رقم';
+                          return tr('password_needs_number');
                         }
                         return null;
                       },
@@ -347,7 +361,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
               // Location Card
               _SectionCard(
-                title: 'Location',
+                title: tr('location'),
                 child: Column(
                   children: [
                     DropdownButtonFormField<String>(
@@ -397,22 +411,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
               if (_selectedRole == UserRole.retailer) ...[
                 const SizedBox(height: 12),
                 _SectionCard(
-                  title: '🎯 My Interests',
-                  subtitle: 'Select what you want to buy (choose at least 1)',
+                  title: tr('my_interests'),
+                  subtitle: tr('interests_subtitle'),
                   child: Wrap(
                     spacing: 8,
                     runSpacing: 8,
                     children: kProductCategories.map((cat) {
-                      final label = cat['label'] as String;
+                      final key = cat['key'] as String;
+                      final label = tr(cat['l10nKey'] as String);
                       final color = cat['color'] as Color;
                       final icon = cat['icon'] as IconData;
-                      final isSelected = _selectedCategories.contains(label);
+                      final isSelected = _selectedCategories.contains(key);
                       return GestureDetector(
                         onTap: () => setState(() {
                           if (isSelected) {
-                            _selectedCategories.remove(label);
+                            _selectedCategories.remove(key);
                           } else {
-                            _selectedCategories.add(label);
+                            _selectedCategories.add(key);
                           }
                         }),
                         child: AnimatedContainer(
@@ -469,15 +484,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 title: Wrap(
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    const Text('أوافق على ', style: TextStyle(fontSize: 13)),
+                    Text(
+                      tr('agree_to_terms_prefix'),
+                      style: const TextStyle(fontSize: 13),
+                    ),
                     TextButton(
                       onPressed: () => _openLegalPage('terms'),
-                      child: const Text('شروط الاستخدام'),
+                      child: Text(tr('terms_of_use')),
                     ),
-                    const Text(' و', style: TextStyle(fontSize: 13)),
+                    Text(
+                      tr('agree_to_terms_and'),
+                      style: const TextStyle(fontSize: 13),
+                    ),
                     TextButton(
                       onPressed: () => _openLegalPage('privacy'),
-                      child: const Text('سياسة الخصوصية'),
+                      child: Text(tr('privacy_policy')),
                     ),
                   ],
                 ),

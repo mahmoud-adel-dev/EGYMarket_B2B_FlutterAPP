@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/errors/error_handler.dart';
@@ -71,7 +72,7 @@ class AuthCubit extends Cubit<AuthState> {
       );
       final csrfToken = csrf['csrfToken']?.toString();
       if (csrfToken == null || csrfToken.isEmpty) {
-        throw StateError('تعذر بدء جلسة تسجيل الدخول');
+        throw StateError(tr('err_csrf_failed'));
       }
       final response = await _network.post<Map<String, dynamic>>(
         ApiConstants.credentialsCallback,
@@ -87,9 +88,7 @@ class AuthCubit extends Cubit<AuthState> {
       );
       if (response['error'] != null ||
           response['url']?.toString().contains('error=') == true) {
-        throw StateError(
-          'البريد الإلكتروني أو كلمة المرور غير صحيحة، أو البريد غير مؤكد',
-        );
+        throw StateError(tr('err_invalid_credentials'));
       }
       final me = await _network.get<Map<String, dynamic>>(ApiConstants.me);
       final user = AuthUserModel.fromJson(me);
@@ -98,7 +97,7 @@ class AuthCubit extends Cubit<AuthState> {
     } catch (error) {
       await _storage.clearSession();
       final message = error is NetworkException && error.statusCode == 401
-          ? 'تعذر تسجيل الدخول. تحقق من كلمة المرور ومن تأكيد البريد الإلكتروني.'
+          ? tr('err_login_failed')
           : ErrorHandler.getUserFriendlyMessage(error);
       emit(AuthErrorState(message));
     }

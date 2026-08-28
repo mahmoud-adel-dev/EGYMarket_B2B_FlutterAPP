@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../../../core/di/service_locator.dart';
 import '../../../../core/errors/error_handler.dart';
@@ -137,8 +138,8 @@ class _ShipperDashboardScreenState extends State<ShipperDashboardScreen> {
         SnackBar(
           content: Text(
             action == 'confirm_pickup'
-                ? 'تم استلام الطلبية وبدء الشحن'
-                : 'تم تأكيد تسليم الشحنة',
+                ? tr('shipped_started')
+                : tr('shipped_delivered_confirmed'),
           ),
         ),
       );
@@ -201,7 +202,7 @@ class _ShipperDashboardScreenState extends State<ShipperDashboardScreen> {
                   children: [
                     Expanded(
                       child: _StatCard(
-                        label: 'بانتظار الاستلام',
+                        label: tr('shipped_awaiting_pickup'),
                         value: '${_awaitingPickup.length}',
                         icon: Icons.local_shipping_outlined,
                         color: AppColors.warning,
@@ -210,7 +211,7 @@ class _ShipperDashboardScreenState extends State<ShipperDashboardScreen> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: _StatCard(
-                        label: 'في الطريق',
+                        label: tr('shipped_in_transit'),
                         value: '${_inTransit.length}',
                         icon: Icons.route_rounded,
                         color: AppColors.primary,
@@ -219,7 +220,7 @@ class _ShipperDashboardScreenState extends State<ShipperDashboardScreen> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: _StatCard(
-                        label: 'تم التسليم',
+                        label: tr('shipped_delivered'),
                         value: '${_delivered.length}',
                         icon: Icons.task_alt_rounded,
                         color: AppColors.success,
@@ -243,7 +244,7 @@ class _ShipperDashboardScreenState extends State<ShipperDashboardScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'أجور شحن قيد التحصيل',
+                                tr('shipped_pending_income'),
                                 style: Theme.of(context).textTheme.bodySmall,
                               ),
                               Text(
@@ -265,7 +266,7 @@ class _ShipperDashboardScreenState extends State<ShipperDashboardScreen> {
                 ),
                 const SizedBox(height: 20),
                 if (_awaitingPickup.isNotEmpty) ...[
-                  _SectionHeader(title: 'جاهزة للاستلام من التاجر'),
+                  _SectionHeader(title: tr('shipped_awaiting_section')),
                   ..._awaitingPickup.map(
                     (order) => _ShipmentTile(
                       order: order,
@@ -276,7 +277,7 @@ class _ShipperDashboardScreenState extends State<ShipperDashboardScreen> {
                   ),
                 ],
                 if (_inTransit.isNotEmpty) ...[
-                  _SectionHeader(title: 'قيد النقل'),
+                  _SectionHeader(title: tr('shipped_in_transit_section')),
                   ..._inTransit.map(
                     (order) => _ShipmentTile(
                       order: order,
@@ -287,7 +288,7 @@ class _ShipperDashboardScreenState extends State<ShipperDashboardScreen> {
                   ),
                 ],
                 if (_delivered.isNotEmpty) ...[
-                  _SectionHeader(title: 'مسلّمة — بانتظار تأكيد المشتري'),
+                  _SectionHeader(title: tr('shipped_delivered_section')),
                   ..._delivered.map(
                     (order) => _ShipmentTile(
                       order: order,
@@ -297,10 +298,10 @@ class _ShipperDashboardScreenState extends State<ShipperDashboardScreen> {
                   ),
                 ],
                 if (_orders.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.only(top: 60),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 60),
                     child: ErrorRetryView(
-                      message: 'لا توجد شحنات مسندة حاليًا',
+                      message: tr('shipped_empty'),
                       icon: Icons.inbox_outlined,
                       isEmptyState: true,
                     ),
@@ -320,7 +321,7 @@ class _ShipperDashboardScreenState extends State<ShipperDashboardScreen> {
                         _load(silent: true);
                       }),
                   icon: const Icon(Icons.list_alt_rounded),
-                  label: const Text('كل الطلبات'),
+                  label: Text(tr('shipped_all_orders')),
                 ),
               ],
             ),
@@ -438,7 +439,7 @@ class _ShipmentTile extends StatelessWidget {
             ),
             if (attention)
               Tooltip(
-                message: 'يتطلب إجراء',
+                message: tr('order_requires_action'),
                 child: Icon(
                   Icons.priority_high_rounded,
                   size: 17,
@@ -449,7 +450,7 @@ class _ShipmentTile extends StatelessWidget {
         ),
         subtitle: Text(
           '${order.sellerName} → ${order.buyerName}\n'
-          'شحن: ${PriceFormatter.egp(order.shippingCostPiasters)}',
+          '${tr('shipped_shipping_label', namedArgs: {'amount': PriceFormatter.egp(order.shippingCostPiasters)})}',
         ),
         isThreeLine: true,
         trailing: canAdvance && onAdvance != null
@@ -469,8 +470,8 @@ class _ShipmentTile extends StatelessWidget {
                       ),
                 label: Text(
                   order.status == OrderStatus.readyForPickup
-                      ? 'بدء الشحن'
-                      : 'تسليم',
+                      ? tr('shipped_start_button')
+                      : tr('shipped_deliver_button'),
                 ),
               )
             : const Icon(Icons.chevron_right_rounded),

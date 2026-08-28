@@ -1,7 +1,9 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/di/service_locator.dart';
 import '../../../auth/data/models/auth_models.dart';
+import '../../../auth/presentation/widgets/role_selector_widget.dart';
 import '../cubit/profile_settings_cubit.dart';
 import 'edit_profile_screen.dart';
 
@@ -28,15 +30,17 @@ class _ProfileView extends StatelessWidget {
       listener: (context, state) {
         if (state is ProfileSettingsUpdateSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Profile updated successfully! ✅'),
+            SnackBar(
+              content: Text('${tr('profile_updated')} ✅'),
               backgroundColor: Colors.green,
             ),
           );
         } else if (state is ProfileSettingsError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Error: ${state.message}'),
+              content: Text(
+                tr('profile_error_prefix', namedArgs: {'message': state.message}),
+              ),
               backgroundColor: Colors.redAccent,
             ),
           );
@@ -65,7 +69,7 @@ class _ProfileView extends StatelessWidget {
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
                     icon: const Icon(Icons.refresh),
-                    label: const Text('Retry'),
+                    label: Text(tr('retry')),
                     onPressed: () =>
                         context.read<ProfileSettingsCubit>().fetchProfile(),
                   ),
@@ -125,7 +129,7 @@ class _ProfileView extends StatelessWidget {
                 actions: [
                   IconButton(
                     icon: const Icon(Icons.edit_rounded, color: Colors.white),
-                    tooltip: 'Edit Profile',
+                    tooltip: tr('profile_edit'),
                     onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
@@ -206,7 +210,7 @@ class _ProfileView extends StatelessWidget {
                                 ),
                               ),
                               child: Text(
-                                profile.role,
+                                roleLabel(profile.userRole),
                                 style: TextStyle(
                                   color: _roleColor(profile.userRole),
                                   fontWeight: FontWeight.w600,
@@ -238,42 +242,42 @@ class _ProfileView extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _sectionTitle('Account Information'),
+                          _sectionTitle(tr('account_information')),
                           _infoCard([
                             _infoRow(
                               Icons.person_outline_rounded,
-                              'Full Name',
+                              tr('profile_full_name'),
                               profile.name,
                             ),
                             _infoRow(
                               Icons.email_outlined,
-                              'Email',
+                              tr('profile_email'),
                               profile.email,
                             ),
                             _infoRow(
                               Icons.phone_outlined,
-                              'Phone',
+                              tr('profile_phone'),
                               profile.phone,
                             ),
                             _infoRow(
                               Icons.location_on_outlined,
-                              'Governorate',
+                              tr('governorate'),
                               profile.location?.governorate ?? '—',
                             ),
                             if (profile.location?.address?.isNotEmpty ?? false)
                               _infoRow(
                                 Icons.home_outlined,
-                                'Address',
+                                tr('profile_address'),
                                 profile.location!.address!,
                               ),
                           ]),
 
                           ...[
-                            _sectionTitle('Business Details'),
+                            _sectionTitle(tr('profile_business_details')),
                             _infoCard([
                               _infoRow(
                                 Icons.storefront_outlined,
-                                'Business Name',
+                                tr('profile_business_name'),
                                 profile.businessName ?? '—',
                               ),
                               if (profile
@@ -283,14 +287,14 @@ class _ProfileView extends StatelessWidget {
                                   false)
                                 _infoRow(
                                   Icons.chat_bubble_outline_rounded,
-                                  'WhatsApp',
+                                  tr('profile_whatsapp'),
                                   profile.contactMethods!.whatsapp!,
                                 ),
                               if (profile.contactMethods?.email?.isNotEmpty ??
                                   false)
                                 _infoRow(
                                   Icons.alternate_email_rounded,
-                                  'Business Email',
+                                  tr('business_email'),
                                   profile.contactMethods!.email!,
                                 ),
                             ]),
@@ -302,7 +306,7 @@ class _ProfileView extends StatelessWidget {
                             width: double.infinity,
                             child: ElevatedButton.icon(
                               icon: const Icon(Icons.edit_rounded, size: 18),
-                              label: const Text('Edit My Profile'),
+                              label: Text(tr('profile_edit_my')),
                               onPressed: () {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(

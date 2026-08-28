@@ -9,6 +9,7 @@
     "lint": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
     "bootstrap:admin": "node scripts/create-admin.mjs",
     "seed:mvp": "node scripts/seed-mvp.mjs",
     "qa:order-workflow": "node --env-file=.env scripts/qa-order-workflow.mjs",
@@ -30,6 +31,7 @@
     "@types/nodemailer": "^7.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "mongodb-memory-server": "^11.2.0",
     "typescript": "^5.0.0",
     "vitest": "^3.2.7"
   }

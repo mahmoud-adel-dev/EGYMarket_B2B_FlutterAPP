@@ -6,8 +6,17 @@ import PaymentObligation from '@/models/PaymentObligation';
 import Order from '@/models/Order';
 import { createOrganizationNotification } from '@/lib/notifications/notification_service';
 import { appendOrderSystemEvent } from '@/lib/orders/order_chat';
+import { checkIdentityRateLimit } from '@/lib/auth/rate_limit';
 
 export const POST = withAuth([], async (req: NextRequest, context, session) => {
+  // R-1: cap how often one organization may resubmit payment proofs (anti-spam).
+  const limited = await checkIdentityRateLimit(
+    `org:${session.user.organizationId ?? 'none'}:payment-proof`,
+    'proof',
+    15,
+    60_000
+  );
+  if (limited.isRateLimited) return limited.response!;
   const params = await context.params;
   const orderId = params?.id as string;
   const paymentId = params?.paymentId as string;

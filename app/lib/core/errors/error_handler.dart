@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'network_exception.dart';
 
@@ -11,10 +12,10 @@ class ErrorHandler {
     }
 
     if (error is Exception) {
-      return 'An unexpected error occurred. Please try again.';
+      return tr('err_generic_unexpected');
     }
 
-    return error?.toString() ?? 'An unknown error occurred.';
+    return error?.toString() ?? tr('err_unknown');
   }
 
   static String _mapNetworkExceptionToMessage(NetworkException exception) {
@@ -41,27 +42,27 @@ class ErrorHandler {
     // 2. Fallback to exception category handling
     switch (exception.type) {
       case NetworkExceptionType.timeout:
-        return 'Connection timed out. Please check your internet connection.';
+        return tr('err_network_timeout');
       case NetworkExceptionType.sslPinningFailed:
-        return 'Security check failed. Untrusted network or connection blocked.';
+        return tr('err_ssl_pinning');
       case NetworkExceptionType.unauthorized:
-        return 'Session expired. Please log in again.';
+        return tr('err_session_expired');
       case NetworkExceptionType.paymentRequired:
-        return 'يجب تأكيد رسوم المنصة أولًا لإتاحة متابعة الطلب.';
+        return tr('err_platform_fee');
       case NetworkExceptionType.forbidden:
-        return 'You do not have permission to perform this action.';
+        return tr('err_forbidden');
       case NetworkExceptionType.notFound:
-        return 'The requested resource was not found.';
+        return tr('err_not_found');
       case NetworkExceptionType.serverError:
-        return 'Server unavailable. Our team has been notified.';
+        return tr('err_server_unavailable');
       case NetworkExceptionType.noInternet:
-        return 'Unable to reach the service. Check your connection and try again.';
+        return tr('err_no_internet_service');
       case NetworkExceptionType.badResponse:
       case NetworkExceptionType.cancelled:
       case NetworkExceptionType.unknown:
         return exception.message.isNotEmpty
             ? exception.message
-            : 'Operation failed. Please try again later.';
+            : tr('err_operation_failed');
     }
   }
 
@@ -70,35 +71,35 @@ class ErrorHandler {
     switch (code.toUpperCase()) {
       case 'ERR_INVALID_CREDENTIALS':
       case 'INVALID_CREDENTIALS':
-        return 'Invalid email/phone or password. Please try again.';
+        return tr('err_invalid_credentials');
 
       case 'ERR_USER_EXISTS':
       case 'USER_ALREADY_EXISTS':
-        return 'An account with this email/phone already exists.';
+        return tr('err_user_exists');
 
       case 'ERR_USER_NOT_FOUND':
-        return 'Account not found. Please register first.';
+        return tr('err_user_not_found');
 
       case 'ERR_ACCOUNT_DISABLED':
       case 'ACCOUNT_SUSPENDED':
-        return 'Your account has been suspended. Contact B2B support.';
+        return tr('err_account_suspended');
 
       case 'ERR_INVALID_ROLE':
-        return 'Invalid user role selected.';
+        return tr('err_invalid_role');
 
       case 'ERR_TOKEN_EXPIRED':
-        return 'Your session has expired. Please log in again.';
+        return tr('err_session_expired');
 
       case 'PLATFORM_FEE_REQUIRED':
-        return 'يجب تأكيد رسوم المنصة أولًا لإتاحة متابعة الطلب.';
+        return tr('err_platform_fee');
       case 'ORDER_PARTICIPANT_REQUIRED':
-        return 'هذه المحادثة متاحة فقط لأطراف الطلب المتعاقدين.';
+        return tr('err_chat_participants');
       case 'SHIPPER_NOT_ASSIGNED':
-        return 'لا يمكن إلا لشركة الشحن المعيّنة تحديث هذه الشحنة.';
+        return tr('err_shipper_not_assigned');
       case 'TRACKING_EVENT_NOT_ALLOWED':
-        return 'يمكن إضافة محطات المتابعة أثناء وجود الشحنة في الطريق فقط.';
+        return tr('err_tracking_not_allowed');
       case 'ORG_PERMISSION_REQUIRED':
-        return 'يتطلب هذا الإجراء صلاحية مالك أو مدير الحساب.';
+        return tr('err_org_permission');
 
       default:
         return null;
