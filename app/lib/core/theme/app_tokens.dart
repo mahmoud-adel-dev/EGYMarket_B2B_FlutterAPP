@@ -31,11 +31,10 @@ abstract final class AppInsets {
     horizontal: AppSpacing.lg,
     vertical: 15,
   );
-  static const EdgeInsetsDirectional listItem =
-      EdgeInsetsDirectional.symmetric(
-        horizontal: AppSpacing.lg,
-        vertical: AppSpacing.md,
-      );
+  static const EdgeInsetsDirectional listItem = EdgeInsetsDirectional.symmetric(
+    horizontal: AppSpacing.lg,
+    vertical: AppSpacing.md,
+  );
 }
 
 /// Corner-radius scale.

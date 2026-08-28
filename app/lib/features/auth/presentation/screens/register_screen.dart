@@ -285,7 +285,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     TextFormField(
                       controller: _passwordController,
                       obscureText: _isPasswordObscured,
-                      textDirection: TextDirection.ltr,
+                      textDirection: AppDirectionality.inputTextDirection(
+                        keyboardType: TextInputType.visiblePassword,
+                        obscureText: true,
+                      ),
                       textInputAction: TextInputAction.done,
                       style: const TextStyle(
                         color: Color(0xFF1A1D3B),

@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "incremental": false,
+    "types": ["node", "vitest/globals"]
+  },
+  "include": [
+    "integration/**/*.ts",
+    "lib/**/*.ts",
+    "models/**/*.ts",
+    "types/**/*.d.ts"
+  ],
+  "exclude": ["node_modules", ".next"]
+}

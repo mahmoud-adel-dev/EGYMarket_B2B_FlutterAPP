@@ -73,6 +73,9 @@ export async function startMongoIntegrationDatabase(): Promise<void> {
     uri = replaceDatabaseName(externalUri, activeDatabaseName);
   } else {
     memoryReplicaSet = await MongoMemoryReplSet.create({
+      // Windows/CI hosts with cold filesystem caches may need more than the
+      // library's 10s default while WiredTiger creates its journal files.
+      instanceOpts: [{ launchTimeout: 60_000 }],
       replSet: {
         count: 1,
         storageEngine: 'wiredTiger',
@@ -132,4 +135,3 @@ export function mongoIntegrationRuntime() {
     databaseName: activeDatabaseName,
   };
 }
-

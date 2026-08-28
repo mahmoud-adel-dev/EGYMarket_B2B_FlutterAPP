@@ -551,8 +551,10 @@ class _DesktopSidebar extends StatelessWidget {
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     color: Colors.white38,
                     fontWeight: FontWeight.w800,
-                    letterSpacing:
-                        AppDirectionality.localizedLetterSpacing(context, 1.2),
+                    letterSpacing: AppDirectionality.localizedLetterSpacing(
+                      context,
+                      1.2,
+                    ),
                   ),
                 ),
               ),
@@ -574,10 +576,13 @@ class _DesktopSidebar extends StatelessWidget {
                         button: true,
                         selected: selected,
                         label: item.badgeCount > 0
-                            ? tr('nav_orders_action_needed', namedArgs: {
-                                'label': item.label,
-                                'count': '${item.badgeCount}',
-                              })
+                            ? tr(
+                                'nav_orders_action_needed',
+                                namedArgs: {
+                                  'label': item.label,
+                                  'count': '${item.badgeCount}',
+                                },
+                              )
                             : item.label,
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
@@ -872,9 +877,7 @@ class _NotificationIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       label: unreadCount > 0
-          ? tr('nav_notifications_unread', namedArgs: {
-              'count': '$unreadCount',
-            })
+          ? tr('nav_notifications_unread', namedArgs: {'count': '$unreadCount'})
           : tr('nav_notifications_none'),
       child: ExcludeSemantics(
         child: Stack(
@@ -1025,10 +1028,13 @@ class _MobileNavigation extends StatelessWidget {
                   button: true,
                   selected: selected,
                   label: item.badgeCount > 0
-                      ? tr('nav_orders_action_needed', namedArgs: {
-                          'label': item.label,
-                          'count': '${item.badgeCount}',
-                        })
+                      ? tr(
+                          'nav_orders_action_needed',
+                          namedArgs: {
+                            'label': item.label,
+                            'count': '${item.badgeCount}',
+                          },
+                        )
                       : item.label,
                   child: InkWell(
                     onTap: () => onTap(index),

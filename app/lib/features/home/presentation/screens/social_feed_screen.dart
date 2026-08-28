@@ -184,9 +184,9 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       if (matching.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(tr('feed_post_unavailable'))),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(tr('feed_post_unavailable'))));
         return;
       }
       _openPostDetails(matching.first);
@@ -251,9 +251,7 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
               ),
               const SizedBox(height: 12),
               Text(
-                tr('comments', namedArgs: {
-                  'count': '${post.commentsCount}',
-                }),
+                tr('comments', namedArgs: {'count': '${post.commentsCount}'}),
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -380,12 +378,12 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
       }
     } catch (error) {
       if (feedbackContext.mounted) {
-        ScaffoldMessenger.of(
-          feedbackContext,
-        ).showSnackBar(
-          SnackBar(content: Text(tr('feed_like_error', namedArgs: {
-            'error': '$error',
-          }))),
+        ScaffoldMessenger.of(feedbackContext).showSnackBar(
+          SnackBar(
+            content: Text(
+              tr('feed_like_error', namedArgs: {'error': '$error'}),
+            ),
+          ),
         );
       }
     }
@@ -412,9 +410,10 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
       ScaffoldMessenger.of(feedbackContext).showSnackBar(
         SnackBar(
           content: Text(
-            tr('feed_added_local_cart', namedArgs: {
-              'name': product.productName,
-            }),
+            tr(
+              'feed_added_local_cart',
+              namedArgs: {'name': product.productName},
+            ),
           ),
           action: SnackBarAction(
             label: tr('view_cart'),
@@ -744,9 +743,10 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
                     size: 20,
                   ),
                   label: Text(
-                    tr('feed_like_count', namedArgs: {
-                      'count': '${post.likesCount}',
-                    }),
+                    tr(
+                      'feed_like_count',
+                      namedArgs: {'count': '${post.likesCount}'},
+                    ),
                   ),
                   onPressed: () => _toggleLike(post),
                 ),
@@ -757,9 +757,10 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
                     size: 20,
                   ),
                   label: Text(
-                    tr('feed_comment_count', namedArgs: {
-                      'count': '${post.commentsCount}',
-                    }),
+                    tr(
+                      'feed_comment_count',
+                      namedArgs: {'count': '${post.commentsCount}'},
+                    ),
                     style: const TextStyle(color: Colors.grey),
                   ),
                   onPressed: () => _showComments(post),
@@ -1025,18 +1026,20 @@ class _SocialPostDetailsScreenState extends State<_SocialPostDetailsScreen> {
                         : Icons.thumb_up_alt_outlined,
                   ),
                   label: Text(
-                    tr('feed_like_count', namedArgs: {
-                      'count': '${post.likesCount}',
-                    }),
+                    tr(
+                      'feed_like_count',
+                      namedArgs: {'count': '${post.likesCount}'},
+                    ),
                   ),
                 ),
                 TextButton.icon(
                   onPressed: () => widget.onComments(context),
                   icon: const Icon(Icons.comment_outlined),
                   label: Text(
-                    tr('feed_comment_count', namedArgs: {
-                      'count': '${post.commentsCount}',
-                    }),
+                    tr(
+                      'feed_comment_count',
+                      namedArgs: {'count': '${post.commentsCount}'},
+                    ),
                   ),
                 ),
                 if (post.productId?.isNotEmpty == true)

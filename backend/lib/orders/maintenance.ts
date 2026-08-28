@@ -24,19 +24,20 @@ export async function reconcileOrphanedReservations(now = new Date(), staleMs = 
     inventory_reserved: true,
     inventory_committed: false,
     updatedAt: { $lte: cutoff },
-  }).lean();
+  });
 
   let released = 0;
   for (const order of orphans) {
-    const updated = await Order.findOneAndUpdate(
-      { _id: order._id, status: 'requested', inventory_reserved: true, inventory_committed: false },
-      { $set: { inventory_reserved: false } },
-      { new: true }
-    );
-    if (!updated) continue; // concurrent winner already handled it
-    await releaseReservedStockOnce(updated);
+    // The release helper performs the true->false flag claim itself. Keeping the
+    // status/staleness guard in that same atomic update prevents both a double
+    // release and a race where an order becomes valid while the sweep is running.
+    const won = await releaseReservedStockOnce(order, undefined, {
+      status: 'requested',
+      updatedAt: { $lte: cutoff },
+    });
+    if (!won) continue; // concurrent winner or a legitimate state transition won
     await appendOrderSystemEvent({
-      order: updated,
+      order,
       body: 'تم تحرير مخزون محجوز لطلب عالق في حالة طلب (تعطل غير متوقع)',
       eventType: 'system',
       metadata: { status: 'requested', note: 'orphaned reservation reconciled' },

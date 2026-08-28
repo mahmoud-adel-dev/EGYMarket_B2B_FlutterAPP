@@ -127,9 +127,7 @@ abstract final class AppTheme {
             horizontal: 20,
             vertical: 13,
           ),
-          shape: RoundedRectangleBorder(
-            borderRadius: AppRadius.rMd,
-          ),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.rMd),
           textStyle: fontTheme.labelLarge?.copyWith(
             fontWeight: FontWeight.w700,
           ),
@@ -162,9 +160,7 @@ abstract final class AppTheme {
             vertical: 13,
           ),
           side: const BorderSide(color: AppColors.border),
-          shape: RoundedRectangleBorder(
-            borderRadius: AppRadius.rMd,
-          ),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.rMd),
           textStyle: fontTheme.labelLarge?.copyWith(
             fontWeight: FontWeight.w700,
           ),
@@ -215,7 +211,9 @@ abstract final class AppTheme {
         surfaceTintColor: Colors.transparent,
         showDragHandle: true,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(AppRadius.xl),
+          ),
         ),
       ),
       listTileTheme: const ListTileThemeData(

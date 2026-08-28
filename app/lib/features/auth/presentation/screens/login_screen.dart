@@ -134,11 +134,7 @@ class _LoginScreenState extends State<LoginScreen>
               final isWide = constraints.maxWidth >= 900;
               return Row(
                 children: [
-                  if (isWide)
-                    Expanded(
-                      flex: 11,
-                      child: _LoginValuePanel(),
-                    ),
+                  if (isWide) Expanded(flex: 11, child: _LoginValuePanel()),
                   Expanded(
                     flex: isWide ? 10 : 1,
                     child: Stack(

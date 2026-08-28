@@ -118,10 +118,11 @@ async function reserveItems(items: IOrderItem[], session?: ClientSession) {
  */
 async function claimReservationRelease(
   orderId: mongoose.Types.ObjectId,
-  session?: ClientSession
+  session?: ClientSession,
+  guard: Record<string, unknown> = {}
 ): Promise<boolean> {
   const res = await Order.updateOne(
-    { _id: orderId, inventory_reserved: true, inventory_committed: false },
+    { ...guard, _id: orderId, inventory_reserved: true, inventory_committed: false },
     { $set: { inventory_reserved: false } },
     { session }
   );
@@ -129,9 +130,14 @@ async function claimReservationRelease(
 }
 
 /** Release reserved stock if (and only if) this call wins the release claim. */
-export async function releaseReservedStockOnce(order: IOrder, session?: ClientSession) {
-  const won = await claimReservationRelease(order._id, session);
-  if (!won || !order.items.length) return;
+export async function releaseReservedStockOnce(
+  order: IOrder,
+  session?: ClientSession,
+  guard: Record<string, unknown> = {}
+): Promise<boolean> {
+  const won = await claimReservationRelease(order._id, session, guard);
+  if (!won) return false;
+  if (!order.items.length) return true;
   await Product.bulkWrite(
     order.items.map((item) => ({
       updateOne: {
@@ -141,6 +147,7 @@ export async function releaseReservedStockOnce(order: IOrder, session?: ClientSe
     })),
     { session }
   );
+  return true;
 }
 
 /**

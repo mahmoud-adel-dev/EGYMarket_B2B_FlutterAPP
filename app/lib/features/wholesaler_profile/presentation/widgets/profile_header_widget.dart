@@ -147,9 +147,17 @@ class ProfileHeaderWidget extends StatelessWidget {
                   children: [
                     _buildStatItem(context, profile.totalOrders, tr('orders')),
                     _buildDivider(),
-                    _buildStatItem(context, '⭐ ${profile.rating}', tr('rating')),
+                    _buildStatItem(
+                      context,
+                      '⭐ ${profile.rating}',
+                      tr('rating'),
+                    ),
                     _buildDivider(),
-                    _buildStatItem(context, '${profile.totalProducts}', tr('total_products')),
+                    _buildStatItem(
+                      context,
+                      '${profile.totalProducts}',
+                      tr('total_products'),
+                    ),
                   ],
                 ),
               ),

@@ -325,10 +325,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     padding: const EdgeInsets.only(top: 24, bottom: 12),
     child: Text(
       text.toUpperCase(),
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 13,
         fontWeight: FontWeight.w700,
-        color: Color(0xFF64748B),
+        color: const Color(0xFF64748B),
         letterSpacing: AppDirectionality.localizedLetterSpacing(context, 1),
       ),
     ),
@@ -410,10 +410,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     : tr(
                         'edit_selected_file',
                         namedArgs: {
-                          'name': (isAvatar
-                                  ? _avatarFile
-                                  : _coverFile)!
-                              .name,
+                          'name': (isAvatar ? _avatarFile : _coverFile)!.name,
                         },
                       ),
               ),

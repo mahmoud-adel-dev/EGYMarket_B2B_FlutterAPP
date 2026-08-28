@@ -40,7 +40,10 @@ class _ProfileView extends StatelessWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                tr('profile_error_prefix', namedArgs: {'message': state.message}),
+                tr(
+                  'profile_error_prefix',
+                  namedArgs: {'message': state.message},
+                ),
               ),
               backgroundColor: Colors.redAccent,
             ),
@@ -383,10 +386,7 @@ class _ProfileView extends StatelessWidget {
           fontSize: 13,
           fontWeight: FontWeight.w700,
           color: const Color(0xFF64748B),
-          letterSpacing: AppDirectionality.localizedLetterSpacing(
-            context,
-            0.8,
-          ),
+          letterSpacing: AppDirectionality.localizedLetterSpacing(context, 0.8),
         ),
       ),
     );
