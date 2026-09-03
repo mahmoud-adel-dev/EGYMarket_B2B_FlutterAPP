@@ -57,8 +57,8 @@ Future<AuthUserModel?> requireBuyer(
   if (user == null || !context.mounted) return null;
   if (user.role == UserRole.retailer) return user;
 
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text(tr('buyer_only_action'))),
-  );
+  ScaffoldMessenger.of(
+    context,
+  ).showSnackBar(SnackBar(content: Text(tr('buyer_only_action'))));
   return null;
 }

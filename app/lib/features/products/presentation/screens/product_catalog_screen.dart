@@ -170,7 +170,10 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
   }
 
   Future<void> _followWholesaler(String organizationId) async {
-    final buyer = await requireBuyer(context, actionLabel: tr('catalog_follow_supplier'));
+    final buyer = await requireBuyer(
+      context,
+      actionLabel: tr('catalog_follow_supplier'),
+    );
     if (buyer == null || !mounted) return;
     try {
       await _network.post<Map<String, dynamic>>(
@@ -224,24 +227,34 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                  tr('catalog_smart_filter'),
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
+                tr('catalog_smart_filter'),
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String?>(
                 initialValue: selectedSaleType,
-                decoration: InputDecoration(
-                  labelText: tr('catalog_sale_type'),
-                ),
+                decoration: InputDecoration(labelText: tr('catalog_sale_type')),
                 items: [
                   DropdownMenuItem<String?>(
                     value: null,
                     child: Text(tr('catalog_all_sale_types')),
                   ),
-                  DropdownMenuItem(value: 'piece', child: Text(tr('sale_type_piece'))),
-                  DropdownMenuItem(value: 'pack', child: Text(tr('sale_type_pack'))),
-                  DropdownMenuItem(value: 'carton', child: Text(tr('sale_type_carton'))),
-                  DropdownMenuItem(value: 'pallet', child: Text(tr('sale_type_pallet'))),
+                  DropdownMenuItem(
+                    value: 'piece',
+                    child: Text(tr('sale_type_piece')),
+                  ),
+                  DropdownMenuItem(
+                    value: 'pack',
+                    child: Text(tr('sale_type_pack')),
+                  ),
+                  DropdownMenuItem(
+                    value: 'carton',
+                    child: Text(tr('sale_type_carton')),
+                  ),
+                  DropdownMenuItem(
+                    value: 'pallet',
+                    child: Text(tr('sale_type_pallet')),
+                  ),
                 ],
                 onChanged: (value) =>
                     setSheetState(() => selectedSaleType = value),
@@ -380,10 +393,13 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
       if (!mounted) return false;
       ErrorHandler.showSecureSnackBar(
         context,
-        tr('added_to_cart', namedArgs: {
-          'qty': '${product.minOrderQuantity}',
-          'name': product.productName,
-        }),
+        tr(
+          'added_to_cart',
+          namedArgs: {
+            'qty': '${product.minOrderQuantity}',
+            'name': product.productName,
+          },
+        ),
         isError: false,
       );
       return true;
@@ -567,9 +583,9 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
                   8,
                 ),
                 child: Text(
-                    tr('catalog_recommended_suppliers'),
-                    style: const TextStyle(fontWeight: FontWeight.w800),
-                  ),
+                  tr('catalog_recommended_suppliers'),
+                  style: const TextStyle(fontWeight: FontWeight.w800),
+                ),
               ),
               SizedBox(
                 height: 94,
@@ -610,9 +626,13 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
                                   ),
                                 ),
                                 Text(
-                                  tr('catalog_matching_products', namedArgs: {
-                                    'count': supplier['matching_products'] ?? 0,
-                                  }),
+                                  tr(
+                                    'catalog_matching_products',
+                                    namedArgs: {
+                                      'count':
+                                          supplier['matching_products'] ?? 0,
+                                    },
+                                  ),
                                   style: const TextStyle(
                                     fontSize: 11,
                                     color: AppColors.muted,
@@ -731,9 +751,10 @@ class _CatalogProductCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        tr('catalog_moq_badge', namedArgs: {
-                          'qty': '${product.minOrderQuantity}',
-                        }),
+                        tr(
+                          'catalog_moq_badge',
+                          namedArgs: {'qty': '${product.minOrderQuantity}'},
+                        ),
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 10,
@@ -764,9 +785,12 @@ class _CatalogProductCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          tr('price', namedArgs: {
-                            'price': product.unitPrice.toStringAsFixed(2),
-                          }),
+                          tr(
+                            'price',
+                            namedArgs: {
+                              'price': product.unitPrice.toStringAsFixed(2),
+                            },
+                          ),
                           style: Theme.of(context).textTheme.titleMedium
                               ?.copyWith(
                                 color: AppColors.primary,
@@ -1005,30 +1029,36 @@ class _ProductDetailsSheet extends StatelessWidget {
                       _DetailBadge(icon: Icons.sell_outlined, text: saleType),
                       _DetailBadge(
                         icon: Icons.inventory_2_outlined,
-                        text: tr('catalog_moq_badge', namedArgs: {
-                          'qty': details['moq'] ?? 1,
-                        }),
+                        text: tr(
+                          'catalog_moq_badge',
+                          namedArgs: {'qty': details['moq'] ?? 1},
+                        ),
                       ),
                       _DetailBadge(
                         icon: Icons.layers_outlined,
-                        text: tr('catalog_units_per_sale', namedArgs: {
-                          'count': details['units_per_sale'] ?? 1,
-                        }),
+                        text: tr(
+                          'catalog_units_per_sale',
+                          namedArgs: {'count': details['units_per_sale'] ?? 1},
+                        ),
                       ),
                       _DetailBadge(
                         icon: Icons.schedule_outlined,
-                        text: tr('catalog_lead_time', namedArgs: {
-                          'days': details['lead_time_days'] ?? 1,
-                        }),
+                        text: tr(
+                          'catalog_lead_time',
+                          namedArgs: {'days': details['lead_time_days'] ?? 1},
+                        ),
                       ),
                       if (discount > 0)
                         _DetailBadge(
                           icon: Icons.percent_rounded,
-                          text: tr('catalog_discount', namedArgs: {
-                            'percent': discount.toStringAsFixed(
-                              discount % 1 == 0 ? 0 : 1,
-                            ),
-                          }),
+                          text: tr(
+                            'catalog_discount',
+                            namedArgs: {
+                              'percent': discount.toStringAsFixed(
+                                discount % 1 == 0 ? 0 : 1,
+                              ),
+                            },
+                          ),
                         ),
                     ],
                   ),
@@ -1052,14 +1082,16 @@ class _ProductDetailsSheet extends StatelessWidget {
                           color: AppColors.primary,
                         ),
                         title: Text(
-                          tr('catalog_tier_from', namedArgs: {
-                            'count': tier['min_quantity'],
-                          }),
+                          tr(
+                            'catalog_tier_from',
+                            namedArgs: {'count': tier['min_quantity']},
+                          ),
                         ),
                         trailing: Text(
-                          tr('price', namedArgs: {
-                            'price': price.toStringAsFixed(2),
-                          }),
+                          tr(
+                            'price',
+                            namedArgs: {'price': price.toStringAsFixed(2)},
+                          ),
                           style: const TextStyle(fontWeight: FontWeight.w800),
                         ),
                       );
@@ -1154,9 +1186,10 @@ class _ProductDetailsSheet extends StatelessWidget {
                     onPressed: onPurchase,
                     icon: const Icon(Icons.shopping_bag_rounded),
                     label: Text(
-                      tr('catalog_moq_purchase', namedArgs: {
-                        'qty': '${product.minOrderQuantity}',
-                      }),
+                      tr(
+                        'catalog_moq_purchase',
+                        namedArgs: {'qty': '${product.minOrderQuantity}'},
+                      ),
                     ),
                   ),
                   TextButton.icon(

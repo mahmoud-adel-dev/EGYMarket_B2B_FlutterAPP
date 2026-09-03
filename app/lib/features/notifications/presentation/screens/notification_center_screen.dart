@@ -486,19 +486,22 @@ String _relativeTime(DateTime? value) {
   final difference = DateTime.now().difference(value.toLocal());
   if (difference.inMinutes < 1) return tr('time_just_now');
   if (difference.inHours < 1) {
-    return tr('notification_time_minutes', namedArgs: {
-      'count': '${difference.inMinutes}',
-    });
+    return tr(
+      'notification_time_minutes',
+      namedArgs: {'count': '${difference.inMinutes}'},
+    );
   }
   if (difference.inDays < 1) {
-    return tr('notification_time_hours', namedArgs: {
-      'count': '${difference.inHours}',
-    });
+    return tr(
+      'notification_time_hours',
+      namedArgs: {'count': '${difference.inHours}'},
+    );
   }
   if (difference.inDays < 7) {
-    return tr('notification_time_days', namedArgs: {
-      'count': '${difference.inDays}',
-    });
+    return tr(
+      'notification_time_days',
+      namedArgs: {'count': '${difference.inDays}'},
+    );
   }
   return '${value.toLocal().day}/${value.toLocal().month}/${value.toLocal().year}';
 }

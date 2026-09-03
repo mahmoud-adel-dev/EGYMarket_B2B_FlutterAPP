@@ -89,7 +89,9 @@ class ChatConversationModel {
           ? tr('inquiry_title', namedArgs: {'product': productTitle!})
           : '${names.join(tr('conversation_name_separator'))} ${tr('conversation_name_divider')} $productTitle';
     }
-    return names.isEmpty ? tr('conversation_order') : names.join(tr('conversation_name_separator'));
+    return names.isEmpty
+        ? tr('conversation_order')
+        : names.join(tr('conversation_name_separator'));
   }
 }
 

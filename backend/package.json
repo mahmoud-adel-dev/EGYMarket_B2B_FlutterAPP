@@ -14,9 +14,11 @@
     "test:integration:live": "node scripts/run-mongodb-integration.mjs",
     "typecheck:integration": "tsc --noEmit --project tsconfig.integration.json",
     "bootstrap:admin": "node scripts/create-admin.mjs",
+    "reset:test-admins": "node scripts/reset-test-admins.mjs",
     "seed:mvp": "node scripts/seed-mvp.mjs",
     "qa:order-workflow": "node --env-file=.env scripts/qa-order-workflow.mjs",
-    "migrate:inquiries": "node scripts/migrate-conversation-inquiries.mjs"
+    "migrate:inquiries": "node scripts/migrate-conversation-inquiries.mjs",
+    "migrate:product-sku-index": "node scripts/migrate-product-sku-index.mjs"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

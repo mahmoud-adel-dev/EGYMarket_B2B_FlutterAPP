@@ -86,10 +86,7 @@ class NetworkManager implements INetworkManager {
             receiveTimeout: const Duration(seconds: 15),
             sendTimeout: const Duration(seconds: 15),
             extra: {'withCredentials': true},
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-            },
+            headers: {'Accept': 'application/json'},
           ),
         );
 

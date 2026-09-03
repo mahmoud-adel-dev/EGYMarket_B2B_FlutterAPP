@@ -24,7 +24,10 @@ abstract final class AppColors {
 }
 
 abstract final class AppTheme {
-  static ThemeData light({required bool isArabic}) {
+  static ThemeData light({
+    required bool isArabic,
+    TextTheme? fontThemeOverride,
+  }) {
     final base = ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
@@ -38,9 +41,11 @@ abstract final class AppTheme {
         error: AppColors.danger,
       ),
     );
-    final fontTheme = isArabic
-        ? GoogleFonts.cairoTextTheme(base.textTheme)
-        : GoogleFonts.interTextTheme(base.textTheme);
+    final fontTheme =
+        fontThemeOverride ??
+        (isArabic
+            ? GoogleFonts.cairoTextTheme(base.textTheme)
+            : GoogleFonts.interTextTheme(base.textTheme));
 
     return base.copyWith(
       scaffoldBackgroundColor: AppColors.background,

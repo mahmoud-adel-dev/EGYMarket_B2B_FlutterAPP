@@ -161,7 +161,17 @@ const ProductSchema = new Schema<IProduct>(
 ProductSchema.index({ category: 1, isActive: 1 });
 ProductSchema.index({ wholesaler_id: 1, isActive: 1 });
 ProductSchema.index({ organization_id: 1, status: 1 });
-ProductSchema.index({ organization_id: 1, sku: 1 }, { unique: true, sparse: true });
+// Optional SKUs must not make every product without an SKU collide on `null`.
+// A partial index enforces uniqueness only for real string values and is more
+// explicit than a sparse unique index, which still indexes an explicitly stored
+// null value.
+ProductSchema.index(
+  { organization_id: 1, sku: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { sku: { $type: 'string' } },
+  }
+);
 ProductSchema.index({ title: 'text', description: 'text', category: 'text', tags: 'text' });
 
 const Product: Model<IProduct> =

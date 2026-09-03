@@ -242,13 +242,13 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
                         tr(
                           'subscription_summary',
                           namedArgs: {
-                            'status': _subscriptionStatusLabel(
+                            'status':
+                                _subscriptionStatusLabel(
                                   _subscription?['status']?.toString(),
                                 ) ??
                                 tr('subscription_none'),
                             'date':
-                                _subscription?['current_period_ends_at'] ??
-                                '-',
+                                _subscription?['current_period_ends_at'] ?? '-',
                           },
                         ),
                       ),
@@ -329,7 +329,9 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
                                       ? null
                                       : () =>
                                             _subscribe(plan['_id'].toString()),
-                                  child: Text(tr('subscription_create_invoice')),
+                                  child: Text(
+                                    tr('subscription_create_invoice'),
+                                  ),
                                 ),
                               ),
                             ],

@@ -73,7 +73,10 @@ class _WholesalerProfileViewState extends State<_WholesalerProfileView>
   }
 
   Future<void> _submitRating() async {
-    final buyer = await requireBuyer(context, actionLabel: tr('review_rate_merchant'));
+    final buyer = await requireBuyer(
+      context,
+      actionLabel: tr('review_rate_merchant'),
+    );
     if (buyer == null || !mounted) return;
 
     try {

@@ -1,4 +1,4 @@
-﻿'use client';
+�'use client';
 
 import { useState } from 'react';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
@@ -60,7 +60,7 @@ export function OrgDirectory({
   const columns: Column<OrgWithStats>[] = [
     {
       key: 'display_name',
-      header: 'Ø§Ù„Ù…Ø¤Ø³Ø³Ø©',
+      header: 'ا��&ؤسسة',
       render: (row) => (
         <div className="min-w-40">
           <p className="font-extrabold text-ink">{row.display_name}</p>
@@ -74,27 +74,27 @@ export function OrgDirectory({
       ? [
           {
             key: 'type',
-            header: 'Ø§Ù„Ù†ÙˆØ¹',
+            header: 'ا�� ��ع',
             render: (row: OrgWithStats) => <OrgTypeBadge type={row.type} />,
           } satisfies Column<OrgWithStats>,
         ]
       : []),
     {
       key: 'verification',
-      header: 'Ø§Ù„ØªÙˆØ«ÙŠÙ‚',
+      header: 'ا�ت��ث�`�',
       render: (row) => <StatusBadge kind="verification" value={row.verification_status} />,
     },
     ...(statsEnabled
       ? [
           {
             key: 'orders',
-            header: 'Ø§Ù„Ø·Ù„Ø¨Ø§Øª',
+            header: 'ا�ط�بات',
             align: 'center' as const,
             render: (row: OrgWithStats) => compactNumber(row.stats?.orders_count ?? 0),
           },
           {
             key: 'money',
-            header: fixedType === 'wholesaler' ? 'Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø§Ù„Ù…Ø¨ÙŠØ¹Ø§Øª' : fixedType === 'buyer' ? 'Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø§Ù„Ø´Ø±Ø§Ø¡' : 'Ø­Ø±ÙƒØ© Ù…Ø§Ù„ÙŠØ©',
+            header: fixedType === 'wholesaler' ? 'إج�&ا��` ا��&ب�`عات' : fixedType === 'buyer' ? 'إج�&ا��` ا�شراء' : 'حرْة �&ا��`ة',
             align: 'end' as const,
             render: (row: OrgWithStats) =>
               egp(
@@ -105,7 +105,7 @@ export function OrgDirectory({
           },
           {
             key: 'disputes',
-            header: 'Ù†Ø²Ø§Ø¹Ø§Øª Ù…ÙØªÙˆØ­Ø©',
+            header: '� زاعات �&فت��حة',
             align: 'center' as const,
             render: (row: OrgWithStats) =>
               row.stats?.open_disputes ? (
@@ -118,18 +118,18 @@ export function OrgDirectory({
       : []),
     {
       key: 'createdAt',
-      header: 'Ø§Ù„ØªØ³Ø¬ÙŠÙ„',
+      header: 'ا�تسج�`�',
       align: 'end',
       render: (row) => <span className="text-xs text-muted">{formatDate(row.createdAt)}</span>,
     },
     {
       key: 'is_active',
-      header: 'Ø§Ù„Ø­Ø§Ù„Ø©',
+      header: 'ا�حا�ة',
       render: (row) =>
         row.is_active ? (
-          <span className="text-xs font-bold text-emerald-700">Ù†Ø´Ø·Ø©</span>
+          <span className="text-xs font-bold text-emerald-700">� شطة</span>
         ) : (
-          <span className="text-xs font-bold text-red-600">Ù…ÙˆÙ‚ÙˆÙØ©</span>
+          <span className="text-xs font-bold text-red-600">�&�����فة</span>
         ),
     },
   ];
@@ -139,22 +139,22 @@ export function OrgDirectory({
       <PageHeader title={title} description={description} breadcrumb={breadcrumb} />
 
       <Card className="mb-4 flex flex-wrap items-end gap-3 p-4">
-        <Field label="Ø¨Ø­Ø«">
-          <SearchInput value={search} onChange={(value) => { setSearch(value); setPage(1); }} placeholder="Ø§Ø³Ù… Ø§Ù„Ù…Ø¤Ø³Ø³Ø©ØŒ Ø¨Ø±ÙŠØ¯ Ø£Ùˆ Ù‡Ø§ØªÙâ€¦" />
+        <Field label="بحث">
+          <SearchInput value={search} onChange={(value) => { setSearch(value); setPage(1); }} placeholder="اس�& ا��&ؤسسة�R بر�`د أ�� �!اتف⬦" />
         </Field>
         {showTypeFilter ? (
-          <Field label="Ø§Ù„Ù†ÙˆØ¹">
+          <Field label="ا�� ��ع">
             <Select value={type} onChange={(event) => { setType(event.target.value); setPage(1); }} className="w-44">
-              <option value="">ÙƒÙ„ Ø§Ù„Ø£Ù†ÙˆØ§Ø¹</option>
-              <option value="wholesaler">Ø¨Ø§Ø¦Ø¹ Ø¬Ù…Ù„Ø©</option>
-              <option value="buyer">Ù…Ø´ØªØ±ÙŠ</option>
-              <option value="shipper">Ø´Ø±ÙƒØ© Ø´Ø­Ù†</option>
+              <option value="">ْ� ا�أ� ��اع</option>
+              <option value="wholesaler">بائع ج�&�ة</option>
+              <option value="buyer">�&شتر�`</option>
+              <option value="shipper">شرْة شح� </option>
             </Select>
           </Field>
         ) : null}
-        <Field label="Ø­Ø§Ù„Ø© Ø§Ù„ØªÙˆØ«ÙŠÙ‚">
+        <Field label="حا�ة ا�ت��ث�`�">
           <Select value={verificationStatus} onChange={(event) => { setVerificationStatus(event.target.value); setPage(1); }} className="w-44">
-            <option value="">ÙƒÙ„ Ø§Ù„Ø­Ø§Ù„Ø§Øª</option>
+            <option value="">ْ� ا�حا�ات</option>
             {Object.entries(VERIFICATION_STATUS_LABELS).map(([value, label]) => (
               <option key={value} value={value}>
                 {label}
@@ -171,7 +171,7 @@ export function OrgDirectory({
           loading={query.isLoading}
           error={query.isError ? (query.error as Error).message : null}
           onRetry={() => query.refetch()}
-          emptyTitle="Ù„Ø§ ØªÙˆØ¬Ø¯ Ù…Ø¤Ø³Ø³Ø§Øª Ù…Ø·Ø§Ø¨Ù‚Ø©"
+          emptyTitle="�ا ت��جد �&ؤسسات �&طاب�ة"
           pagination={{
             page,
             totalPages: query.data?.pagination.total_pages ?? 1,

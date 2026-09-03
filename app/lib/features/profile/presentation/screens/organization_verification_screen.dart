@@ -192,9 +192,7 @@ class _OrganizationVerificationScreenState
                     title: Text(
                       tr(
                         'verify_status_label',
-                        namedArgs: {
-                          'status': _verificationStatusLabel(status),
-                        },
+                        namedArgs: {'status': _verificationStatusLabel(status)},
                       ),
                     ),
                     subtitle: Text(tr('verify_review_note')),
@@ -225,7 +223,9 @@ class _OrganizationVerificationScreenState
                   const Divider(height: 32),
                   DropdownButtonFormField<String>(
                     initialValue: _documentType,
-                    decoration: InputDecoration(labelText: tr('verify_doc_type')),
+                    decoration: InputDecoration(
+                      labelText: tr('verify_doc_type'),
+                    ),
                     items: _typeValues
                         .map(
                           (value) => DropdownMenuItem(

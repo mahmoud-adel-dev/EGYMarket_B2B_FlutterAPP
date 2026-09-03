@@ -127,7 +127,7 @@ Status legend: **Complete** · **Partial** · **Backend only** · **Frontend onl
 | Concern | Status |
 |---|---|
 | Multi-tenant isolation on all protected reads/writes | Verified route-by-route (see ENTERPRISE_AUDIT P1/P2 table) |
-| Arabic/English + RTL/LTR | easy_localization present; partial key coverage (tracked debt) |
+| Arabic/English + RTL/LTR | Design-system/directionality contract verified; legacy translation coverage remains tracked debt |
 | Responsive mobile/tablet/desktop shell | Desktop sidebar ≥1024px, tablet tuning improved this pass |
 | Health/live + health/ready endpoints | Present; Docker healthchecks wired |
 | Request correlation IDs + structured logs | Added this pass |

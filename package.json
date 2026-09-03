@@ -1,0 +1,12 @@
+{
+  "name": "seals-local-services",
+  "version": "1.0.0",
+  "private": true,
+  "description": "One-command local launcher for the SEALS services.",
+  "scripts": {
+    "local:start": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\start-local.ps1",
+    "local:start:build": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\start-local.ps1 -Build",
+    "local:stop": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\stop-local.ps1",
+    "local:admin": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\bootstrap-local-admin.ps1"
+  }
+}

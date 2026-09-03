@@ -47,13 +47,11 @@ class _ProfitReportScreenState extends State<ProfitReportScreen> {
   }
 
   String _money(dynamic piasters) => tr(
-  'price',
-  namedArgs: {
-    'price': NumberFormat('#,##0.00').format(
-      ((piasters as num?) ?? 0) / 100,
-    ),
-  },
-);
+    'price',
+    namedArgs: {
+      'price': NumberFormat('#,##0.00').format(((piasters as num?) ?? 0) / 100),
+    },
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -68,10 +66,7 @@ class _ProfitReportScreenState extends State<ProfitReportScreen> {
                 children: [
                   Text(_error!),
                   const SizedBox(height: 12),
-                  FilledButton(
-                    onPressed: _load,
-                    child: Text(tr('retry')),
-                  ),
+                  FilledButton(onPressed: _load, child: Text(tr('retry'))),
                 ],
               ),
             )
@@ -207,8 +202,7 @@ class _ProfitReportScreenState extends State<ProfitReportScreen> {
                   tr(
                     'profit_item',
                     namedArgs: {
-                      'sku':
-                          row['sku']?.toString() ?? tr('profit_no_sku'),
+                      'sku': row['sku']?.toString() ?? tr('profit_no_sku'),
                       'amount': _money(row['gross_profit_piasters']),
                     },
                   ),
@@ -227,9 +221,7 @@ class _ProfitReportScreenState extends State<ProfitReportScreen> {
                         Text(
                           tr(
                             'profit_units_sold',
-                            namedArgs: {
-                              'count': row['units_sold'] ?? 0,
-                            },
+                            namedArgs: {'count': row['units_sold'] ?? 0},
                           ),
                         ),
                         Text(
@@ -243,9 +235,7 @@ class _ProfitReportScreenState extends State<ProfitReportScreen> {
                         Text(
                           tr(
                             'profit_orders_count',
-                            namedArgs: {
-                              'count': row['orders_count'] ?? 0,
-                            },
+                            namedArgs: {'count': row['orders_count'] ?? 0},
                           ),
                         ),
                         Text(

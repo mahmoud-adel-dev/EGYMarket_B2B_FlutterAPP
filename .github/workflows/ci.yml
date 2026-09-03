@@ -24,6 +24,15 @@ jobs:
         run: npm run lint
       - name: Unit tests
         run: npm test
+      - name: Cache MongoDB integration binary
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/mongodb-binaries
+          key: mongodb-memory-${{ runner.os }}-${{ hashFiles('backend/package-lock.json') }}
+      - name: Integration test typecheck
+        run: npm run typecheck:integration
+      - name: MongoDB integration and purchase chaos tests
+        run: npm run test:integration
       - name: Production build
         run: npm run build
         env:
@@ -54,9 +63,29 @@ jobs:
         env:
           API_BASE_URL_PROD: https://api.example.com/api
 
+  admin:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: admin-panle
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: admin-panle/package-lock.json
+      - run: npm ci
+      - name: Dependency security audit (high+)
+        run: npm audit --audit-level=high
+      - name: Typecheck
+        run: npm run lint
+      - name: Production build
+        run: npm run build
+
   docker:
     runs-on: ubuntu-latest
-    needs: [backend, flutter]
+    needs: [backend, flutter, admin]
     if: github.event_name == 'push'
     steps:
       - uses: actions/checkout@v4

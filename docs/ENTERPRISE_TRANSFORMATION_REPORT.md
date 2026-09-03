@@ -1,5 +1,9 @@
 # SEALS Enterprise Transformation Report
 
+> Historical report for the 2026-08-22 hardening pass. The later release,
+> MongoDB integration/chaos, RTL/LTR, and 2026-08-29 verification results are
+> recorded in [Final Engineering Verification](FINAL_VERIFICATION_REPORT_2026-08-29.md).
+
 Date: 2026-08-22 · Scope: full repository (`app/` Flutter, `backend/` Next.js API+Admin,
 infrastructure, CI, documentation).
 

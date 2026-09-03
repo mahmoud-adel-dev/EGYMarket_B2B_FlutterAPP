@@ -444,7 +444,11 @@ class _OrdersEmpty extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.inventory_2_outlined, size: 62, color: Colors.black26),
+          const Icon(
+            Icons.inventory_2_outlined,
+            size: 62,
+            color: Colors.black26,
+          ),
           const SizedBox(height: 12),
           Text(tr('order_no_matching')),
         ],

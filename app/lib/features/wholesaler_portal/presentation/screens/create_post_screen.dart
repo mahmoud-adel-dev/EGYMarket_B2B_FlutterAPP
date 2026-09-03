@@ -224,9 +224,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 children: [
                   const Icon(Icons.info_outline),
                   const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(tr('post_info')),
-                  ),
+                  Expanded(child: Text(tr('post_info'))),
                 ],
               ),
             ),
@@ -302,8 +300,10 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             decoration: InputDecoration(labelText: tr('post_category_label')),
             items: categories
                 .map(
-                  (value) =>
-                      DropdownMenuItem(value: value, child: Text(_categoryLabel(value))),
+                  (value) => DropdownMenuItem(
+                    value: value,
+                    child: Text(_categoryLabel(value)),
+                  ),
                 )
                 .toList(),
             onChanged: (value) =>

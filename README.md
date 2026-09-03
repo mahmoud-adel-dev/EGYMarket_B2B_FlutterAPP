@@ -157,59 +157,44 @@ flowchart LR
 - MongoDB محلي للتطوير أو MongoDB Atlas؛ Replica Set مطلوب لضمان المعاملات متعددة المستندات.
 - Cloudinary لرفع الميديا الحقيقي، وSMTP للتحقق من البريد واستعادة الحساب في البيئات المكتملة.
 
-## التشغيل المحلي
+## التشغيل المحلي الموحد
 
 ```powershell
 git clone https://github.com/mahmoud-adel-dev/EGYMarket_B2B_FlutterAPP.git
 cd EGYMarket_B2B_FlutterAPP
 ```
 
-شغّل كل مكوّن في Terminal منفصل، وابدأ بالباك إند.
-
-### 1. Backend API — `http://localhost:3000`
+من جذر المستودع شغّل الأمر التالي؛ سيبدأ الـbackend واللوحة المستقلة وFlutter Chrome في الخلفية:
 
 ```powershell
-cd backend
-Copy-Item .env.example .env
-# راجع MONGODB_URI وNEXTAUTH_SECRET وباقي القيم المحلية
-npm ci
-npm run dev
+npm run local:start:build
 ```
 
-بيانات تجريبية اختيارية — السكربت يرفض قواعد الإنتاج افتراضيًا:
+بعد أول بناء، يكفي استخدام `npm run local:start`. لإيقاف الخدمات كلها:
 
 ```powershell
-npm run seed:mvp
+npm run local:stop
 ```
 
-### 2. Flutter Web — `http://localhost:8080`
+السجلات محفوظة داخل `.local-logs/`.
 
-```powershell
-cd ..\app
-Copy-Item .env.example .env
-flutter pub get
-flutter run -d chrome --web-port 8080
-```
-
-### 3. Standalone Admin — `http://localhost:3100`
-
-```powershell
-cd ..\admin-panle
-Copy-Item .env.example .env.local
-npm ci
-npm run dev
-```
-
-استخدم حسابًا بدور `Admin`. لإنشاء مدير محلي راجع
-[`backend/scripts/create-admin.mjs`](backend/scripts/create-admin.mjs) و
-[Environment Variables](docs/ENVIRONMENT_VARIABLES.md).
+### الخدمات والروابط
 
 | الخدمة | الرابط المحلي |
 |---|---|
-| Flutter Web | `http://localhost:8080` |
+| Flutter Web | `http://localhost:5173` |
 | API readiness | `http://localhost:3000/api/health/ready` |
 | الإدارة المدمجة | `http://localhost:3000/admin/login` |
 | لوحة الإدارة المستقلة | `http://localhost:3100/login` |
+
+لإنشاء مدير محلي تفاعليًا، استخدم من الجذر:
+
+```powershell
+npm run local:admin
+```
+
+سيُستخدم الاسم `memo` والبريد `memo@seals.local` افتراضيًا. كلمة المرور يجب أن تكون 12 حرفًا أو أكثر؛
+كلمة `123456` مرفوضة عمدًا لأن الحساب مدير وقاعدة البيانات الحالية قد تكون مشتركة وليست محلية.
 
 حسابات العرض وآلية Seed موثقة في [MVP Demo Data](docs/MVP_DEMO_DATA.md).
 
@@ -235,8 +220,8 @@ npm run lint
 npm run build
 ```
 
-GitHub Actions يفحص حاليًا الباك إند وFlutter وصور Docker. إضافة `admin-panle/` إلى CI وبيئة Docker
-الموحدة مدرجة ضمن خارطة الطريق؛ بناء اللوحة مستقل ومتاح بالأوامر السابقة.
+GitHub Actions يفحص الباك إند واختبارات MongoDB/chaos وFlutter ولوحة `admin-panle/` وصور Docker.
+تبقى إضافة اللوحة المستقلة إلى بيئة Docker الموحدة قرار نشر منفصل؛ بناؤها محمي الآن داخل CI.
 
 ## النشر
 
@@ -255,7 +240,7 @@ docker compose --env-file .env.production up -d --build
 
 | المرحلة | الهدف |
 |---|---|
-| تثبيت الـMVP | E2E واختبارات تكامل MongoDB، إكمال تجربة reset-password، استكمال ترجمة الإنجليزية، وتحسين التشغيل والمراقبة |
+| تثبيت الـMVP | E2E على staging وخدمات الطرف الثالث، إكمال تجربة reset-password، استكمال ترجمة الإنجليزية، وتحسين التشغيل والمراقبة |
 | أداء واكتشاف | Atlas Search أو محرك بحث Adapter، Cache مقاس بالبيانات، projections للتقارير، وتحسين التوصيات دون ادعاء ML |
 | تواصل لحظي | SSE/WebSocket للشات، Push Notifications عبر Adapter مستقل، وworker موثوق للـOutbox |
 | تكاملات السوق | مزودو دفع مصريون، شركات شحن وخرائط عند توفر عقود API، مع بقاء الإثبات اليدوي كخيار fallback |
@@ -274,6 +259,7 @@ docker compose --env-file .env.production up -d --build
 - [Testing](docs/TESTING.md) · [Environment Variables](docs/ENVIRONMENT_VARIABLES.md)
 - [Docker](docs/DOCKER.md) · [Deployment](docs/DEPLOYMENT.md) · [Backup & Restore](docs/BACKUP_RESTORE.md)
 - [Production Runbook](docs/PRODUCTION_RUNBOOK.md) · [Enterprise Audit](docs/ENTERPRISE_AUDIT.md)
+- [Mobile Release](app/docs/RELEASE_BUILD.md) · [Final Verification 2026-08-29](docs/FINAL_VERIFICATION_REPORT_2026-08-29.md)
 
 ## الأمان والخصوصية
 

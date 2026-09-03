@@ -49,6 +49,22 @@ Minimum required edits:
 
 Never commit the filled copies.
 
+### Existing installations: migrate the optional-SKU index
+
+Before starting this version against an existing database, replace the old
+compound sparse index. The migration first aborts if duplicate real SKU values
+exist, then makes the `(organization_id, sku)` uniqueness rule apply only when
+`sku` is a string. It is safe to rerun.
+
+```bash
+cd backend
+node --env-file=.env.production scripts/migrate-product-sku-index.mjs
+cd ..
+```
+
+Run this before the upgraded API process starts. New databases receive the
+correct partial index directly from the Mongoose schema.
+
 ## Step 3 — Validate and build
 
 ```bash
@@ -109,6 +125,9 @@ curl -fsS https://<API_DOMAIN>/api/health/ready   # {"status":"ready","database"
 ```
 
 Then load `https://<APP_DOMAIN>` in a browser and confirm the SPA renders and reaches the API.
+
+For signed Android artifacts and iOS/Xcode prerequisites, follow
+[`app/docs/RELEASE_BUILD.md`](../app/docs/RELEASE_BUILD.md).
 
 ### Smoke checklist
 

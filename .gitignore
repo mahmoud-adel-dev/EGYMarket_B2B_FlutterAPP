@@ -49,3 +49,5 @@ artifacts/
 **/service-account*.json
 **/credentials*.json
 **/firebase-admin*.json
+.local-logs/
+.local-services.json

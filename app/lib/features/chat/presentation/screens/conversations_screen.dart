@@ -351,9 +351,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                     Semantics(
                       label: tr(
                         'conversation_unread_count',
-                        namedArgs: {
-                          'count': '${conversation.unreadCount}',
-                        },
+                        namedArgs: {'count': '${conversation.unreadCount}'},
                       ),
                       child: Container(
                         constraints: const BoxConstraints(
@@ -914,7 +912,10 @@ class _ConversationChatScreenState extends State<ConversationChatScreen>
     if (message.isSystem) {
       return Semantics(
         container: true,
-        label: tr('chat_system_update_semantics', namedArgs: {'body': message.body}),
+        label: tr(
+          'chat_system_update_semantics',
+          namedArgs: {'body': message.body},
+        ),
         child: Container(
           width: double.infinity,
           margin: const EdgeInsets.only(bottom: 10),
@@ -986,11 +987,14 @@ class _ConversationChatScreenState extends State<ConversationChatScreen>
     };
     return Semantics(
       container: true,
-      label: tr('chat_message_semantics', namedArgs: {
-        'sender': senderLabel,
-        'body': message.body,
-        'delivery': deliveryLabel,
-      }),
+      label: tr(
+        'chat_message_semantics',
+        namedArgs: {
+          'sender': senderLabel,
+          'body': message.body,
+          'delivery': deliveryLabel,
+        },
+      ),
       child: Align(
         alignment: isMine
             ? AlignmentDirectional.centerEnd

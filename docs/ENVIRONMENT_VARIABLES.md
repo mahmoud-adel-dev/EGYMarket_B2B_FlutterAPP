@@ -31,7 +31,7 @@ Scope legend:
 | `NEXTAUTH_SECRET` | Yes | runtime api | NextAuth JWT/cookie signing key. Generate: `openssl rand -base64 48` (minimum 32 characters). Readiness fails closed if weaker in production. |
 | `NEXTAUTH_URL` | Yes | runtime api | Canonical API origin (`https://<API_DOMAIN>`); required in production for secure cookies/callbacks. |
 | `APP_ORIGIN` | Yes | runtime api | First-party frontend origin (`https://<APP_DOMAIN>`) used for CORS/cookie context. |
-| `APP_ORIGINS` | No | runtime api | Comma-separated extra trusted origins for CORS. Leave empty unless you operate another first-party frontend. |
+| `APP_ORIGINS` | No | runtime api | Comma-separated extra trusted origins for CORS. Leave empty unless you operate another first-party frontend. In non-production development only, loopback origins are also accepted so Flutter Web can use a random local port; production remains exact-allowlist only. |
 | `TRUST_PROXY_HEADERS` | Yes (behind Caddy) | runtime api | `true` only when requests arrive through Caddy, which overwrites `X-Forwarded-For` with the real client address. The rate limiter then trusts the last XFF hop. When unset/false, every caller collapses into one shared "untrusted" bucket — limits still apply but are stricter than necessary (fail closed). Never set `true` with a directly reachable API or clients can spoof their rate-limit identity. |
 | `CLOUDINARY_CLOUD_NAME` | Yes (prod) | runtime api | Cloudinary account identifier for media uploads. Without these three variables the upload endpoint rejects payloads. |
 | `CLOUDINARY_API_KEY` | Yes (prod) | runtime api | See above. |

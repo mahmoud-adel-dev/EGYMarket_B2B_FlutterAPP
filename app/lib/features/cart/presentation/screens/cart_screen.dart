@@ -146,11 +146,13 @@ class CartScreen extends StatelessWidget {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        tr('cart_unit_price', namedArgs: {
-                                          'price': item.unitPrice.toStringAsFixed(
-                                            2,
-                                          ),
-                                        }),
+                                        tr(
+                                          'cart_unit_price',
+                                          namedArgs: {
+                                            'price': item.unitPrice
+                                                .toStringAsFixed(2),
+                                          },
+                                        ),
                                         style: const TextStyle(
                                           color: Colors.blueAccent,
                                           fontWeight: FontWeight.w600,
@@ -169,9 +171,12 @@ class CartScreen extends StatelessWidget {
                                           ),
                                         ),
                                         child: Text(
-                                          tr('min_order', namedArgs: {
-                                            'qty': '${item.minOrderQuantity}',
-                                          }),
+                                          tr(
+                                            'min_order',
+                                            namedArgs: {
+                                              'qty': '${item.minOrderQuantity}',
+                                            },
+                                          ),
                                           style: TextStyle(
                                             fontSize: 11,
                                             color: Colors.blue[900],
@@ -204,9 +209,13 @@ class CartScreen extends StatelessWidget {
                                             if (!success) {
                                               ErrorHandler.showSecureSnackBar(
                                                 context,
-                                                tr('cart_min_order_error', namedArgs: {
-                                                  'qty': '${item.minOrderQuantity}',
-                                                }),
+                                                tr(
+                                                  'cart_min_order_error',
+                                                  namedArgs: {
+                                                    'qty':
+                                                        '${item.minOrderQuantity}',
+                                                  },
+                                                ),
                                                 isError: true,
                                               );
                                             }
@@ -233,11 +242,13 @@ class CartScreen extends StatelessWidget {
                                       ],
                                     ),
                                     Text(
-                                      tr('cart_item_total', namedArgs: {
-                                        'price': item.subtotal.toStringAsFixed(
-                                          2,
-                                        ),
-                                      }),
+                                      tr(
+                                        'cart_item_total',
+                                        namedArgs: {
+                                          'price': item.subtotal
+                                              .toStringAsFixed(2),
+                                        },
+                                      ),
                                       style: const TextStyle(
                                         fontWeight: FontWeight.w800,
                                         fontSize: 13,
@@ -280,11 +291,14 @@ class CartScreen extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                tr('price', namedArgs: {
-                                  'price': state.totalAmount.toStringAsFixed(
-                                    2,
-                                  ),
-                                }),
+                                tr(
+                                  'price',
+                                  namedArgs: {
+                                    'price': state.totalAmount.toStringAsFixed(
+                                      2,
+                                    ),
+                                  },
+                                ),
                                 style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,

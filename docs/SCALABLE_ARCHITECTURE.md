@@ -83,7 +83,7 @@ flowchart LR
 - `NotificationOutbox` يحتوي بيانات ومنطق retry/dead-letter/idempotent delivery، لكن لا يوجد حاليًا
   worker مجدول يعالج backlog العام، كما أنه ليس بعد Domain Outbox ذريًا مع كل تغيير Aggregate.
 - الشات والإشعارات داخل التطبيق تستخدم polling حاليًا؛ لا يوجد WebSocket/SSE transport.
-- لوحة `admin-panle/` مستقلة عبر BFF، لكنها ليست ضمن Docker Compose أو Caddy أو CI الحالي.
+- لوحة `admin-panle/` مستقلة عبر BFF ومشمولة في CI، لكنها ليست ضمن Docker Compose أو Caddy الحاليين.
 
 ### Dependency direction
 

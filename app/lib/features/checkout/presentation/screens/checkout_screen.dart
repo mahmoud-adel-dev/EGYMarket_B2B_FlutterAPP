@@ -72,9 +72,10 @@ class _CheckoutViewState extends State<_CheckoutView> {
               builder: (dialogContext) => AlertDialog(
                 title: Text(tr('checkout_order_submitted')),
                 content: Text(
-                  tr('checkout_success_message', namedArgs: {
-                    'orderNumber': state.orderNumber,
-                  }),
+                  tr(
+                    'checkout_success_message',
+                    namedArgs: {'orderNumber': state.orderNumber},
+                  ),
                 ),
                 actions: [
                   TextButton(
@@ -116,10 +117,13 @@ class _CheckoutViewState extends State<_CheckoutView> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          tr('checkout_items_summary', namedArgs: {
-                            'count': '${widget.cartItems.length}',
-                            'price': widget.totalAmount.toStringAsFixed(2),
-                          }),
+                          tr(
+                            'checkout_items_summary',
+                            namedArgs: {
+                              'count': '${widget.cartItems.length}',
+                              'price': widget.totalAmount.toStringAsFixed(2),
+                            },
+                          ),
                         ),
                         Text(tr('checkout_platform_fee')),
                       ],
@@ -226,12 +230,14 @@ class _CheckoutViewState extends State<_CheckoutView> {
                                 value: shipper.rateId,
                                 title: Text(shipper.name),
                                 subtitle: Text(
-                                  tr('checkout_shipper_option', namedArgs: {
-                                    'price': shipper.shippingFee.toStringAsFixed(
-                                      2,
-                                    ),
-                                    'days': '${shipper.estimatedDays}',
-                                  }),
+                                  tr(
+                                    'checkout_shipper_option',
+                                    namedArgs: {
+                                      'price': shipper.shippingFee
+                                          .toStringAsFixed(2),
+                                      'days': '${shipper.estimatedDays}',
+                                    },
+                                  ),
                                 ),
                               ),
                             )

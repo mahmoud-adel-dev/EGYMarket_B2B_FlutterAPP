@@ -72,9 +72,7 @@ class _SellerProductsScreenState extends State<SellerProductsScreen> {
       builder: (context) => AlertDialog(
         title: Text(tr('product_archive_title')),
         content: Text(
-          tr('product_archive_confirm', namedArgs: {
-            'title': product['title'],
-          }),
+          tr('product_archive_confirm', namedArgs: {'title': product['title']}),
         ),
         actions: [
           TextButton(
@@ -192,9 +190,7 @@ class _SellerProductsScreenState extends State<SellerProductsScreen> {
                     color: Colors.grey,
                   ),
                   const SizedBox(height: 12),
-                  Center(
-                    child: Text(tr('seller_no_products')),
-                  ),
+                  Center(child: Text(tr('seller_no_products'))),
                   const SizedBox(height: 12),
                   Center(
                     child: FilledButton.icon(
@@ -238,11 +234,14 @@ class _SellerProductsScreenState extends State<SellerProductsScreen> {
                       ),
                       title: Text(product['title']?.toString() ?? ''),
                       subtitle: Text(
-                        tr('seller_product_subtitle', namedArgs: {
-                          'price': price.toStringAsFixed(2),
-                          'stock': product['stock_quantity'] ?? 0,
-                          'status': _statusLabel(product),
-                        }),
+                        tr(
+                          'seller_product_subtitle',
+                          namedArgs: {
+                            'price': price.toStringAsFixed(2),
+                            'stock': product['stock_quantity'] ?? 0,
+                            'status': _statusLabel(product),
+                          },
+                        ),
                       ),
                       trailing: PopupMenuButton<String>(
                         onSelected: (value) => value == 'edit'

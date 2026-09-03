@@ -197,9 +197,7 @@ class _AccountDataScreenState extends State<AccountDataScreen> {
               subtitle: Text(
                 tr(
                   'account_deletion_scheduled_at',
-                  namedArgs: {
-                    'date': _request?['scheduled_for'] ?? '',
-                  },
+                  namedArgs: {'date': _request?['scheduled_for'] ?? ''},
                 ),
               ),
               onTap: _working ? null : _cancelDeletion,

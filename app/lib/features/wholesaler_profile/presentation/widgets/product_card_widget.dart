@@ -90,9 +90,7 @@ class ProductCardWidget extends StatelessWidget {
                   child: Text(
                     tr(
                       'moq',
-                      namedArgs: {
-                        'qty': '${product.minOrderQuantity}',
-                      },
+                      namedArgs: {'qty': '${product.minOrderQuantity}'},
                     ),
                     style: TextStyle(
                       fontSize: 11,

@@ -166,7 +166,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         MaterialPageRoute(
           builder: (_) => ConversationChatScreen(
             conversationId: id!,
-            title: tr('order_chat_title', namedArgs: {'number': _order?.orderNumber ?? ''}),
+            title: tr(
+              'order_chat_title',
+              namedArgs: {'number': _order?.orderNumber ?? ''},
+            ),
             currentOrganizationId: widget.currentOrganizationId,
             networkManager: widget.networkManager,
           ),
@@ -328,7 +331,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       if (mounted) {
         ErrorHandler.showSecureSnackBar(
           context,
-          decision == 'confirm' ? tr('payment_confirmed') : tr('payment_proof_rejected'),
+          decision == 'confirm'
+              ? tr('payment_confirmed')
+              : tr('payment_proof_rejected'),
           isError: false,
         );
       }
@@ -380,7 +385,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                 ],
                 onChanged: (value) =>
                     setDialogState(() => eventType = value ?? eventType),
-                decoration: InputDecoration(labelText: tr('tracking_type_label')),
+                decoration: InputDecoration(
+                  labelText: tr('tracking_type_label'),
+                ),
               ),
               const SizedBox(height: 10),
               TextField(
@@ -394,7 +401,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               TextField(
                 controller: note,
                 maxLines: 3,
-                decoration: InputDecoration(labelText: tr('tracking_note_label')),
+                decoration: InputDecoration(
+                  labelText: tr('tracking_note_label'),
+                ),
               ),
             ],
           ),
@@ -613,8 +622,16 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               ),
             ],
             const Divider(height: 22),
-            _metaRow(Icons.storefront_outlined, tr('order_seller'), order.sellerName),
-            _metaRow(Icons.person_outline_rounded, tr('order_buyer'), order.buyerName),
+            _metaRow(
+              Icons.storefront_outlined,
+              tr('order_seller'),
+              order.sellerName,
+            ),
+            _metaRow(
+              Icons.person_outline_rounded,
+              tr('order_buyer'),
+              order.buyerName,
+            ),
             if (order.shipperName.isNotEmpty)
               _metaRow(
                 Icons.local_shipping_outlined,
@@ -1190,10 +1207,12 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     'confirm_receipt' => tr('order_action_success_confirm_receipt'),
     'cancel' => tr('order_action_success_cancel'),
     'open_dispute' => tr('order_action_success_open_dispute'),
-    'resolve_dispute_complete' =>
-        tr('order_action_success_resolve_dispute_complete'),
-    'resolve_dispute_cancel' =>
-        tr('order_action_success_resolve_dispute_cancel'),
+    'resolve_dispute_complete' => tr(
+      'order_action_success_resolve_dispute_complete',
+    ),
+    'resolve_dispute_cancel' => tr(
+      'order_action_success_resolve_dispute_cancel',
+    ),
     _ => tr('order_action_success_default'),
   };
 }

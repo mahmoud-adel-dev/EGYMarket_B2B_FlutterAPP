@@ -182,10 +182,13 @@ class _LocalCartScreenState extends State<LocalCartScreen> {
                                           ),
                                           Text(item.sellerName),
                                           Text(
-                                            tr('price', namedArgs: {
-                                              'price': item.subtotal
-                                                  .toStringAsFixed(2),
-                                            }),
+                                            tr(
+                                              'price',
+                                              namedArgs: {
+                                                'price': item.subtotal
+                                                    .toStringAsFixed(2),
+                                              },
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -246,9 +249,12 @@ class _LocalCartScreenState extends State<LocalCartScreen> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Text(
-                          tr('local_cart_total', namedArgs: {
-                            'price': (total / 100).toStringAsFixed(2),
-                          }),
+                          tr(
+                            'local_cart_total',
+                            namedArgs: {
+                              'price': (total / 100).toStringAsFixed(2),
+                            },
+                          ),
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         const SizedBox(height: 8),

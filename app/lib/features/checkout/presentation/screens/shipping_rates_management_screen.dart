@@ -190,10 +190,13 @@ class _ShippingRatesManagementScreenState
                         '${rate['from_governorate']} ← ${rate['to_governorate']}',
                       ),
                       subtitle: Text(
-                        tr('shipping_rate_item', namedArgs: {
-                          'price': price.toStringAsFixed(2),
-                          'days': rate['estimated_days'],
-                        }),
+                        tr(
+                          'shipping_rate_item',
+                          namedArgs: {
+                            'price': price.toStringAsFixed(2),
+                            'days': rate['estimated_days'],
+                          },
+                        ),
                       ),
                       trailing: IconButton(
                         onPressed: () => _edit(rate),

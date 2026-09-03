@@ -11,15 +11,10 @@ Future<void> startProductInquiry(
   required String productId,
   required String productName,
 }) async {
-  final buyer = await requireBuyer(
-    context,
-    actionLabel: tr('inquiry_action'),
-  );
+  final buyer = await requireBuyer(context, actionLabel: tr('inquiry_action'));
   if (buyer?.organizationId == null || !context.mounted) return;
 
-  final controller = TextEditingController(
-    text: tr('inquiry_default_message'),
-  );
+  final controller = TextEditingController(text: tr('inquiry_default_message'));
   final message = await showDialog<String>(
     context: context,
     builder: (dialogContext) => AlertDialog(
@@ -70,7 +65,10 @@ Future<void> startProductInquiry(
       MaterialPageRoute(
         builder: (_) => ConversationChatScreen(
           conversationId: conversationId,
-          title: tr('inquiry_conversation_title', namedArgs: {'product': productName}),
+          title: tr(
+            'inquiry_conversation_title',
+            namedArgs: {'product': productName},
+          ),
           currentOrganizationId: buyer!.organizationId!,
         ),
       ),

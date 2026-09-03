@@ -49,20 +49,26 @@ export async function seedOrderTestContext(): Promise<OrderTestContext> {
     }),
   ]);
 
-  await PlatformSettings.create({
-    key: 'default',
-    order_fee_piasters: 5000,
-    payment_deadline_hours: 48,
-    platform_payment_accounts: [
-      {
-        method: 'instapay',
-        label: 'Platform Instapay',
-        account_holder: 'SEALS',
-        account_reference: 'seals@instapay',
-        is_active: true,
+  await PlatformSettings.findOneAndUpdate(
+    { key: 'default' },
+    {
+      $set: {
+        order_fee_piasters: 5000,
+        payment_deadline_hours: 48,
+        platform_payment_accounts: [
+          {
+            method: 'instapay',
+            label: 'Platform Instapay',
+            account_holder: 'SEALS',
+            account_reference: 'seals@instapay',
+            is_active: true,
+          },
+        ],
       },
-    ],
-  });
+      $setOnInsert: { key: 'default' },
+    },
+    { upsert: true, new: true, setDefaultsOnInsert: true }
+  );
 
   const sellerUserId = new mongoose.Types.ObjectId().toHexString();
   const buyerUserId = new mongoose.Types.ObjectId().toHexString();
@@ -148,4 +154,3 @@ export async function createRequestedOrder(
     ...overrides,
   });
 }
-

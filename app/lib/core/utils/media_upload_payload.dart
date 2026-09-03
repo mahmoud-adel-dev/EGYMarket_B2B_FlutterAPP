@@ -123,9 +123,7 @@ void _validate(String mime, String type, int byteLength) {
   final max = type == 'image' ? kMaxImageBytes : kMaxVideoBytes;
   if (byteLength > max) {
     throw MediaUploadException(
-      type == 'image'
-          ? tr('err_image_too_large')
-          : tr('err_video_too_large'),
+      type == 'image' ? tr('err_image_too_large') : tr('err_video_too_large'),
     );
   }
 }
