@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import clsx from 'clsx';
 import { signOutSession } from '@/lib/api-client';
+import { useLanguage, type TranslationKey } from '@/lib/i18n';
 import { useSession } from './providers';
 
 interface NavItem {
@@ -40,6 +41,16 @@ interface NavSection {
   label?: string;
   items: NavItem[];
 }
+
+const NAV_KEYS: Record<string, TranslationKey> = {
+  '/dashboard': 'dashboard', '/orders': 'orders', '/buyers': 'buyers', '/sellers': 'sellers', '/organizations': 'organizations',
+  '/payments': 'payments', '/transactions': 'transactions', '/platform-fees': 'platformFees', '/refunds': 'refunds',
+  '/subscriptions': 'subscriptions', '/invoices': 'invoices', '/verification': 'verification', '/disputes': 'disputes',
+  '/reports': 'reports', '/admins': 'admins', '/roles': 'roles', '/audit-logs': 'auditLogs', '/settings': 'settings',
+};
+const SECTION_KEYS: Record<string, TranslationKey> = {
+  'Ø§Ù„ØªØ¬Ø§Ø±Ø©': 'commerce', 'Ø§Ù„Ù…Ø§Ù„ÙŠØ©': 'finance', 'Ø§Ù„ØªØ´ØºÙŠÙ„': 'operations', 'Ø§Ù„Ø¥Ø¯Ø§Ø±Ø©': 'administration',
+};
 
 const NAVIGATION: NavSection[] = [
   {
@@ -135,6 +146,7 @@ function Sidebar({
   onNavigate: () => void;
   showClose?: boolean;
 }) {
+  const { t } = useLanguage();
   return (
     <aside
       className={clsx(
@@ -149,7 +161,7 @@ function Sidebar({
         </div>
         {!collapsed ? (
           <div className="leading-tight">
-            <p className="text-sm font-extrabold tracking-wide">SEALS B2B</p>
+            <p className="text-sm font-extrabold tracking-wide">EG B2B MR</p>
             <p className="text-[10px] font-bold tracking-widest text-white/40">SUPER ADMIN</p>
           </div>
         ) : null}
@@ -170,7 +182,7 @@ function Sidebar({
           <div key={section.label ?? sectionIndex}>
             {section.label && !collapsed ? (
               <p className="mb-1.5 px-3 text-[10px] font-extrabold uppercase tracking-widest text-white/35">
-                {section.label}
+                {section.label && SECTION_KEYS[section.label] ? t(SECTION_KEYS[section.label]) : section.label}
               </p>
             ) : null}
             <ul className="space-y-1">
@@ -214,13 +226,14 @@ function NavLink({
   onNavigate,
 }: NavItem & { collapsed: boolean; onNavigate: () => void }) {
   const pathname = usePathname();
+  const { t } = useLanguage();
   const active = pathname === href || pathname.startsWith(`${href}/`);
 
   return (
     <Link
       href={href}
       onClick={onNavigate}
-      title={collapsed ? label : undefined}
+      title={collapsed ? t(NAV_KEYS[href]) : undefined}
       aria-current={active ? 'page' : undefined}
       className={clsx(
         'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold transition-colors',
@@ -231,13 +244,14 @@ function NavLink({
       )}
     >
       <Icon size={19} />
-      {!collapsed ? <span className="truncate">{label}</span> : null}
+      {!collapsed ? <span className="truncate">{t(NAV_KEYS[href])}</span> : null}
     </Link>
   );
 }
 
 function Header({ onMenu }: { onMenu: () => void }) {
   const session = useSession();
+  const { t, toggleLocale, locale } = useLanguage();
   const router = useRouter();
   const pathname = usePathname();
   const [signingOut, setSigningOut] = useState(false);
@@ -250,7 +264,8 @@ function Header({ onMenu }: { onMenu: () => void }) {
     router.refresh();
   }
 
-  const pageTitle =
+  const currentHref = NAVIGATION.flatMap((section) => section.items).find((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))?.href;
+  const pageKey =
     NAVIGATION.flatMap((section) => section.items).find(
       (item) => pathname === item.href || pathname.startsWith(`${item.href}/`),
     )?.label ?? 'لوحة التحكم';
@@ -266,8 +281,11 @@ function Header({ onMenu }: { onMenu: () => void }) {
         >
           <Menu size={20} />
         </button>
-        <h1 className="truncate text-base font-extrabold text-ink">{pageTitle}</h1>
+        <h1 className="truncate text-base font-extrabold text-ink">{currentHref ? t(NAV_KEYS[currentHref]) : t('panel')}</h1>
         <div className="ms-auto flex items-center gap-2.5">
+          <button type="button" onClick={toggleLocale} aria-label={t('language')} className="rounded-xl border border-line px-3 py-2 text-xs font-extrabold text-ink hover:bg-canvas">
+            {locale === 'ar' ? 'EN' : 'عربي'}
+          </button>
           <div className="hidden items-center gap-2 rounded-xl border border-line bg-canvas px-3 py-1.5 sm:flex">
             <span className="flex size-7 items-center justify-center rounded-lg bg-brand-700 text-xs font-extrabold text-white">
               {session.user.name?.trim().charAt(0) || 'A'}

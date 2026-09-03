@@ -40,7 +40,7 @@ class B2BMarketplaceApp extends StatelessWidget {
         storageService: ServiceLocator.storage,
       )..checkAuthStatus(),
       child: MaterialApp(
-        title: 'SEALS B2B Marketplace',
+        title: 'EG B2B MR',
         debugShowCheckedModeBanner: false,
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,

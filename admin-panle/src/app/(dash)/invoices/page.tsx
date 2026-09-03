@@ -1,4 +1,4 @@
-�'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -41,13 +41,11 @@ export default function InvoicesPage() {
       financeService.reviewInvoice(
         decision.invoice._id,
         decision.decision,
-        decision.decision === 'reject' ? 'إثبات ا�سداد غ�`ر �&طاب�' : undefined,
+        decision.decision === 'reject' ? 'Ø¥Ø«Ø¨Ø§Øª Ø§ï¿½Ø³Ø¯Ø§Ø¯ Øºï¿½`Ø± ï¿½&Ø·Ø§Ø¨ï¿½' : undefined,
       ),
     onSuccess: async (_data, variables) => {
       toast.push(
-        variables.decision === 'approve'
-          ? `ت�& اعت�&اد ا�فات��رة ${variables.invoice.invoice_number} ��تفع�`� ا�اشتراْ.`
-          : `ت�& رفض ا�فات��رة ${variables.invoice.invoice_number}.`,
+        variables.decision === 'approve' ? 'Invoice approved successfully.' : 'Invoice rejected.',
         variables.decision === 'approve' ? 'success' : 'info',
       );
       setPendingDecision(null);
@@ -65,20 +63,20 @@ export default function InvoicesPage() {
   return (
     <div>
       <PageHeader
-        title="ف��ات�`ر ا�اشتراْات"
-        description="ف��ات�`ر اشتراْ ا��&ؤسسات ���&راجعة إثباتات سداد�!ا"
-        breadcrumb={['���حة ا�تحْ�&', 'ا��&ا��`ة']}
+        title="Ùï¿½ï¿½Ø§Øªï¿½`Ø± Ø§ï¿½Ø§Ø´ØªØ±Ø§Ù’Ø§Øª"
+        description="Ùï¿½ï¿½Ø§Øªï¿½`Ø± Ø§Ø´ØªØ±Ø§Ù’ Ø§ï¿½ï¿½&Ø¤Ø³Ø³Ø§Øª ï¿½ï¿½ï¿½&Ø±Ø§Ø¬Ø¹Ø© Ø¥Ø«Ø¨Ø§ØªØ§Øª Ø³Ø¯Ø§Ø¯ï¿½!Ø§"
+        breadcrumb={['ï¿½ï¿½ï¿½Ø­Ø© Ø§ï¿½ØªØ­Ù’ï¿½&', 'Ø§ï¿½ï¿½&Ø§ï¿½ï¿½`Ø©']}
         actions={
           <div className="w-56">
-            <SearchInput value={search} onChange={(value) => { setSearch(value); setPage(1); }} placeholder="ر��& فات��رة أ�� �&ؤسسة⬦" />
+            <SearchInput value={search} onChange={(value) => { setSearch(value); setPage(1); }} placeholder="Ø±ï¿½ï¿½& ÙØ§Øªï¿½ï¿½Ø±Ø© Ø£ï¿½ï¿½ ï¿½&Ø¤Ø³Ø³Ø©â¬¦" />
           </div>
         }
       />
 
       <div className="mb-4 grid gap-4 sm:grid-cols-3">
-        <StatCard label="ف��ات�`ر ا�صفحة" value={String(invoices.length)} />
-        <StatCard label="با� تظار ا��&راجعة (با�صفحة)" value={String(pendingCount)} tone={pendingCount ? 'warning' : 'default'} />
-        <StatCard label="ا��&حص�� با�صفحة" value={egp(paidAmount)} tone="positive" />
+        <StatCard label="Ùï¿½ï¿½Ø§Øªï¿½`Ø± Ø§ï¿½ØµÙØ­Ø©" value={String(invoices.length)} />
+        <StatCard label="Ø¨Ø§ï¿½ ØªØ¸Ø§Ø± Ø§ï¿½ï¿½&Ø±Ø§Ø¬Ø¹Ø© (Ø¨Ø§ï¿½ØµÙØ­Ø©)" value={String(pendingCount)} tone={pendingCount ? 'warning' : 'default'} />
+        <StatCard label="Ø§ï¿½ï¿½&Ø­Øµï¿½ï¿½ Ø¨Ø§ï¿½ØµÙØ­Ø©" value={egp(paidAmount)} tone="positive" />
       </div>
 
       <Card>
@@ -86,7 +84,7 @@ export default function InvoicesPage() {
           columns={[
             {
               key: 'invoice_number',
-              header: 'ا�فات��رة',
+              header: 'Ø§ï¿½ÙØ§Øªï¿½ï¿½Ø±Ø©',
               render: (row) => (
                 <span dir="ltr" className="font-extrabold text-ink">
                   {row.invoice_number}
@@ -95,26 +93,26 @@ export default function InvoicesPage() {
             },
             {
               key: 'organization',
-              header: 'ا��&ؤسسة',
-              render: (row) => row.organization_id?.display_name ?? '�',
+              header: 'Ø§ï¿½ï¿½&Ø¤Ø³Ø³Ø©',
+              render: (row) => row.organization_id?.display_name ?? 'ï¿½',
             },
             {
               key: 'plan',
-              header: 'ا�خطة',
+              header: 'Ø§ï¿½Ø®Ø·Ø©',
               render: (row) =>
-                row.plan_id?.name_ar ? `${row.plan_id.name_ar}${row.plan_id.code ? ` (${row.plan_id.code})` : ''}` : '�',
+                row.plan_id?.name_ar ? `${row.plan_id.name_ar}${row.plan_id.code ? ` (${row.plan_id.code})` : ''}` : 'ï¿½',
             },
-            { key: 'status', header: 'ا�حا�ة', render: (row) => <StatusBadge kind="invoice" value={row.status} /> },
-            { key: 'amount', header: 'ا��&ب�غ', align: 'end', render: (row) => <span className="font-extrabold">{egp(row.amount_piasters)}</span> },
+            { key: 'status', header: 'Ø§ï¿½Ø­Ø§ï¿½Ø©', render: (row) => <StatusBadge kind="invoice" value={row.status} /> },
+            { key: 'amount', header: 'Ø§ï¿½ï¿½&Ø¨ï¿½Øº', align: 'end', render: (row) => <span className="font-extrabold">{egp(row.amount_piasters)}</span> },
             {
               key: 'createdAt',
-              header: 'أُ� شئت',
+              header: 'Ø£Ùï¿½ Ø´Ø¦Øª',
               align: 'end',
               render: (row) => <span className="text-xs text-muted">{formatDateTime(row.createdAt)}</span>,
             },
             {
               key: 'reviewed',
-              header: 'آخر �&راجعة',
+              header: 'Ø¢Ø®Ø± ï¿½&Ø±Ø§Ø¬Ø¹Ø©',
               align: 'end',
               render: (row) => <span className="text-xs text-muted">{formatDateTime(row.reviewed_at)}</span>,
             },
@@ -126,16 +124,16 @@ export default function InvoicesPage() {
                 <div className="flex flex-wrap items-center justify-end gap-1.5">
                   {row.proof_url ? (
                     <a href={row.proof_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-[11px] font-bold text-brand-700 hover:bg-brand-50">
-                      ا�إ�`صا� <ExternalLink size={11} />
+                      Ø§ï¿½Ø¥ï¿½`ØµØ§ï¿½ <ExternalLink size={11} />
                     </a>
                   ) : null}
                   {row.status === 'proof_submitted' ? (
                     <>
                       <Button size="sm" onClick={() => setPendingDecision({ invoice: row, decision: 'approve' })} disabled={mutation.isPending}>
-                        تفع�`�
+                        ØªÙØ¹ï¿½`ï¿½
                       </Button>
                       <Button size="sm" variant="outline" onClick={() => setPendingDecision({ invoice: row, decision: 'reject' })} disabled={mutation.isPending}>
-                        رفض
+                        Ø±ÙØ¶
                       </Button>
                     </>
                   ) : null}
@@ -147,7 +145,7 @@ export default function InvoicesPage() {
           loading={query.isLoading}
           error={query.isError ? (query.error as Error).message : null}
           onRetry={() => query.refetch()}
-          emptyTitle="�ا ت��جد ف��ات�`ر"
+          emptyTitle="ï¿½Ø§ Øªï¿½ï¿½Ø¬Ø¯ Ùï¿½ï¿½Ø§Øªï¿½`Ø±"
           pagination={{
             page,
             totalPages: query.data?.pagination.total_pages ?? 1,
@@ -161,23 +159,20 @@ export default function InvoicesPage() {
         open={Boolean(pendingDecision)}
         loading={mutation.isPending}
         danger={pendingDecision?.decision === 'reject'}
-        title={pendingDecision?.decision === 'approve' ? 'اعت�&اد سداد ا�فات��رة' : 'رفض إثبات ا�سداد'}
+        title={pendingDecision?.decision === 'approve' ? 'Ø§Ø¹Øªï¿½&Ø§Ø¯ Ø³Ø¯Ø§Ø¯ Ø§ï¿½ÙØ§Øªï¿½ï¿½Ø±Ø©' : 'Ø±ÙØ¶ Ø¥Ø«Ø¨Ø§Øª Ø§ï¿½Ø³Ø¯Ø§Ø¯'}
         description={
           pendingDecision?.decision === 'approve' ? (
-            <p>
-              س�`ُعت�&د سداد ا�فات��رة{' '}
-              <strong dir="ltr">{pendingDecision?.invoice.invoice_number}</strong> ب��`�&ة{' '}
-              <strong>{egp(pendingDecision?.invoice.amount_piasters ?? 0)}</strong> ���`بدأ/�`تجدد اشتراْ ا��&ؤسسة ��&دة
-              د��رة ا�فات��رة ْا�&�ة. �`ُسج�}�� ا��رار ف�` سج� ا�تد��`�.
-            </p>
+            <p>Invoice approval will update the subscription status.</p>
           ) : (
-            <p>س�`ُرفض ا�إثبات ��تع��د ا�فات��رة �حا�ة «�&رف��ضة» �&ع إ�`�اف �&سار ا�اشتراْ ا��&رتبط.</p>
+            <p>Ø³ï¿½`ÙØ±ÙØ¶ Ø§ï¿½Ø¥Ø«Ø¨Ø§Øª ï¿½ï¿½ØªØ¹ï¿½ï¿½Ø¯ Ø§ï¿½ÙØ§Øªï¿½ï¿½Ø±Ø© ï¿½Ø­Ø§ï¿½Ø© Â«ï¿½&Ø±Ùï¿½ï¿½Ø¶Ø©Â» ï¿½&Ø¹ Ø¥ï¿½`ï¿½Ø§Ù ï¿½&Ø³Ø§Ø± Ø§ï¿½Ø§Ø´ØªØ±Ø§Ù’ Ø§ï¿½ï¿½&Ø±ØªØ¨Ø·.</p>
           )
         }
-        confirmLabel={pendingDecision?.decision === 'approve' ? '� ع�&�R اعت�&د ��فع��' : '� ع�&�R ارفض'}
+        confirmLabel={pendingDecision?.decision === 'approve' ? 'ï¿½ Ø¹ï¿½&ï¿½R Ø§Ø¹Øªï¿½&Ø¯ ï¿½ï¿½ÙØ¹ï¿½ï¿½' : 'ï¿½ Ø¹ï¿½&ï¿½R Ø§Ø±ÙØ¶'}
         onConfirm={() => pendingDecision && mutation.mutate(pendingDecision)}
         onCancel={() => setPendingDecision(null)}
       />
     </div>
   );
 }
+
+

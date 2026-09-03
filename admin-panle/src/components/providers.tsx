@@ -3,6 +3,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import type { MeResponse } from '@/types/api';
+import { LanguageProvider } from '@/lib/i18n';
 
 /* ---------------- Auth context ---------------- */
 
@@ -119,9 +120,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ToastProvider>{children}</ToastProvider>
-    </QueryClientProvider>
+    <LanguageProvider>
+      <QueryClientProvider client={queryClient}>
+        <ToastProvider>{children}</ToastProvider>
+      </QueryClientProvider>
+    </LanguageProvider>
   );
 }
 

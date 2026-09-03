@@ -1,4 +1,4 @@
-�'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
@@ -13,14 +13,14 @@ import { compactNumber, egp, formatDate } from '@/lib/format';
 import type { AdminSubscription } from '@/types/api';
 
 const STATUS_OPTIONS = [
-  { value: 'active', label: '� شط' },
-  { value: 'trialing', label: 'تجر�`ب�`' },
-  { value: 'under_review', label: '��`د ا��&راجعة' },
-  { value: 'pending_payment', label: 'با� تظار ا�دفع' },
-  { value: 'grace_period', label: '�&�!�ة س�&اح' },
-  { value: 'expired', label: '�&� ت�!�`' },
-  { value: 'canceled', label: '�&�غ�`' },
-  { value: 'rejected', label: '�&رف��ض' },
+  { value: 'active', label: 'ï¿½ Ø´Ø·' },
+  { value: 'trialing', label: 'ØªØ¬Ø±ï¿½`Ø¨ï¿½`' },
+  { value: 'under_review', label: 'ï¿½ï¿½`Ø¯ Ø§ï¿½ï¿½&Ø±Ø§Ø¬Ø¹Ø©' },
+  { value: 'pending_payment', label: 'Ø¨Ø§ï¿½ ØªØ¸Ø§Ø± Ø§ï¿½Ø¯ÙØ¹' },
+  { value: 'grace_period', label: 'ï¿½&ï¿½!ï¿½Ø© Ø³ï¿½&Ø§Ø­' },
+  { value: 'expired', label: 'ï¿½&ï¿½ Øªï¿½!ï¿½`' },
+  { value: 'canceled', label: 'ï¿½&ï¿½Øºï¿½`' },
+  { value: 'rejected', label: 'ï¿½&Ø±Ùï¿½ï¿½Ø¶' },
 ];
 
 export default function SubscriptionsPage() {
@@ -47,16 +47,16 @@ export default function SubscriptionsPage() {
   return (
     <div>
       <PageHeader
-        title="ا�اشتراْات"
-        description="اشتراْات ا��&ؤسسات ف�` ج�&�`ع ا�حا�ات �&ع ا�خطط ��د��رات ا�تجد�`د"
-        breadcrumb={['���حة ا�تحْ�&', 'ا��&ا��`ة']}
+        title="Ø§ï¿½Ø§Ø´ØªØ±Ø§Ù’Ø§Øª"
+        description="Ø§Ø´ØªØ±Ø§Ù’Ø§Øª Ø§ï¿½ï¿½&Ø¤Ø³Ø³Ø§Øª Ùï¿½` Ø¬ï¿½&ï¿½`Ø¹ Ø§ï¿½Ø­Ø§ï¿½Ø§Øª ï¿½&Ø¹ Ø§ï¿½Ø®Ø·Ø· ï¿½ï¿½Ø¯ï¿½ï¿½Ø±Ø§Øª Ø§ï¿½ØªØ¬Ø¯ï¿½`Ø¯"
+        breadcrumb={['ï¿½ï¿½ï¿½Ø­Ø© Ø§ï¿½ØªØ­Ù’ï¿½&', 'Ø§ï¿½ï¿½&Ø§ï¿½ï¿½`Ø©']}
       />
 
       <div className="mb-4 grid gap-4 sm:grid-cols-3">
-        <StatCard label="اشتراْات با�صفحة" value={compactNumber(rows.length)} />
-        <StatCard label="� شطة با�صفحة" value={compactNumber(activeCount)} tone="positive" />
+        <StatCard label="Ø§Ø´ØªØ±Ø§Ù’Ø§Øª Ø¨Ø§ï¿½ØµÙØ­Ø©" value={compactNumber(rows.length)} />
+        <StatCard label="ï¿½ Ø´Ø·Ø© Ø¨Ø§ï¿½ØµÙØ­Ø©" value={compactNumber(activeCount)} tone="positive" />
         <StatCard
-          label="ت� ت�!�` خ�ا� ٧ أ�`ا�& (با�صفحة)"
+          label="Øªï¿½ Øªï¿½!ï¿½` Ø®ï¿½Ø§ï¿½ Ù§ Ø£ï¿½`Ø§ï¿½& (Ø¨Ø§ï¿½ØµÙØ­Ø©)"
           value={compactNumber(
             rows.filter((row) => {
               const end = new Date(row.current_period_ends_at).getTime();
@@ -69,12 +69,12 @@ export default function SubscriptionsPage() {
       </div>
 
       <Card className="mb-4 flex flex-wrap items-end gap-3 p-4">
-        <Field label="بحث">
-          <SearchInput value={search} onChange={(value) => { setSearch(value); setPage(1); }} placeholder="اس�& ا��&ؤسسة⬦" />
+        <Field label="Ø¨Ø­Ø«">
+          <SearchInput value={search} onChange={(value) => { setSearch(value); setPage(1); }} placeholder="Ø§Ø³ï¿½& Ø§ï¿½ï¿½&Ø¤Ø³Ø³Ø©â¬¦" />
         </Field>
-        <Field label="ا�حا�ة">
+        <Field label="Ø§ï¿½Ø­Ø§ï¿½Ø©">
           <Select value={status} onChange={(event) => { setStatus(event.target.value); setPage(1); }} className="w-44">
-            <option value="">ْ� ا�حا�ات</option>
+            <option value="">Ù’ï¿½ Ø§ï¿½Ø­Ø§ï¿½Ø§Øª</option>
             {STATUS_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
@@ -89,49 +89,49 @@ export default function SubscriptionsPage() {
           columns={[
             {
               key: 'organization',
-              header: 'ا��&ؤسسة',
+              header: 'Ø§ï¿½ï¿½&Ø¤Ø³Ø³Ø©',
               render: (row) => (
                 <div className="min-w-36">
-                  <p className="font-extrabold">{row.organization_id?.display_name ?? '�'}</p>
+                  <p className="font-extrabold">{row.organization_id?.display_name ?? 'ï¿½'}</p>
                   <p className="text-[11px] text-muted">{row.organization_id?.type ?? ''}</p>
                 </div>
               ),
             },
             {
               key: 'plan',
-              header: 'ا�خطة',
+              header: 'Ø§ï¿½Ø®Ø·Ø©',
               render: (row) =>
                 row.plan_id ? (
                   <div className="text-xs leading-5">
                     <p className="font-bold">{row.plan_id.name_ar}</p>
                     <p className="text-muted">
-                      {egp(row.plan_id.price_piasters)} · {row.plan_id.billing_interval === 'yearly' ? 'س� ���`' : 'ش�!ر�`'}
+                      {egp(row.plan_id.price_piasters)} Â· {row.plan_id.billing_interval === 'yearly' ? 'Ø³ï¿½ ï¿½ï¿½ï¿½`' : 'Ø´ï¿½!Ø±ï¿½`'}
                     </p>
                   </div>
                 ) : (
-                  '�'
+                  'ï¿½'
                 ),
             },
-            { key: 'status', header: 'ا�حا�ة', render: (row) => <StatusBadge kind="subscription" value={row.status} /> },
-            { key: 'starts', header: 'ا�بدا�`ة', align: 'end', render: (row) => <span className="text-xs">{formatDate(row.starts_at)}</span> },
+            { key: 'status', header: 'Ø§ï¿½Ø­Ø§ï¿½Ø©', render: (row) => <StatusBadge kind="subscription" value={row.status} /> },
+            { key: 'starts', header: 'Ø§ï¿½Ø¨Ø¯Ø§ï¿½`Ø©', align: 'end', render: (row) => <span className="text-xs">{formatDate(row.starts_at)}</span> },
             {
               key: 'ends',
-              header: '� �!ا�`ة ا�د��رة',
+              header: 'ï¿½ ï¿½!Ø§ï¿½`Ø© Ø§ï¿½Ø¯ï¿½ï¿½Ø±Ø©',
               align: 'end',
               render: (row) => <span className="text-xs">{formatDate(row.current_period_ends_at)}</span>,
             },
             {
               key: 'renewal',
-              header: 'ا�تجد�`د ا�ت��ائ�`',
+              header: 'Ø§ï¿½ØªØ¬Ø¯ï¿½`Ø¯ Ø§ï¿½Øªï¿½ï¿½Ø§Ø¦ï¿½`',
               align: 'center',
-              render: (row) => (row.cancel_at_period_end ? <span className="text-xs font-bold text-red-600">�&ت���ف</span> : <span className="text-xs text-emerald-700">�&فع��</span>),
+              render: (row) => (row.cancel_at_period_end ? <span className="text-xs font-bold text-red-600">ï¿½&Øªï¿½ï¿½ï¿½Ù</span> : <span className="text-xs text-emerald-700">ï¿½&ÙØ¹ï¿½ï¿½</span>),
             },
           ]}
           rows={query.data?.subscriptions}
           loading={query.isLoading}
           error={query.isError ? (query.error as Error).message : null}
           onRetry={() => query.refetch()}
-          emptyTitle="�ا ت��جد اشتراْات"
+          emptyTitle="ï¿½Ø§ Øªï¿½ï¿½Ø¬Ø¯ Ø§Ø´ØªØ±Ø§Ù’Ø§Øª"
           pagination={{
             page,
             totalPages: query.data?.pagination.total_pages ?? 1,
@@ -143,3 +143,4 @@ export default function SubscriptionsPage() {
     </div>
   );
 }
+

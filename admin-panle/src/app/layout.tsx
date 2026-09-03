@@ -3,7 +3,7 @@ import './globals.css';
 import { Providers } from '@/components/providers';
 
 export const metadata: Metadata = {
-  title: { default: 'لوحة تحكم Seals B2B', template: '%s · Seals B2B' },
+  title: { default: 'لوحة تحكم EG B2B MR', template: '%s · EG B2B MR' },
   description: 'مركز التحكم الإداري لمنصة سيال B2B',
 };
 

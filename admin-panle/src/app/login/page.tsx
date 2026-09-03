@@ -36,7 +36,7 @@ export default function LoginPage() {
           <div className="flex size-14 items-center justify-center rounded-2xl bg-brand-600 shadow-lg shadow-brand-600/30">
             <ShieldCheck size={28} />
           </div>
-          <h1 className="text-xl font-extrabold">مركز التحكم — Seals B2B</h1>
+          <h1 className="text-xl font-extrabold">مركز التحكم — EG B2B MR</h1>
           <p className="text-sm text-white/60">دخول خاص بإدارة المنصة</p>
         </div>
 
